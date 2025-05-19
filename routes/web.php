@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\AksesorisController;
 use App\Http\Controllers\Admin\SyaratController;
+use App\Http\Controllers\Pengajuan\PengajuanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,6 +50,10 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
     Route::get('syarat-ketentuan/{id}/edit', [SyaratController::class, 'edit'])->name('admin.syarat_ketentuan.edit');
     Route::put('syarat-ketentuan/{id}', [SyaratController::class, 'update'])->name('admin.syarat_ketentuan.update');
     Route::delete('syarat-ketentuan/{id}', [SyaratController::class, 'destroy'])->name('admin.syarat_ketentuan.destroy');
+});
+
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::resource('pengajuan', PengajuanController::class);
 });
 
 require __DIR__.'/auth.php';
