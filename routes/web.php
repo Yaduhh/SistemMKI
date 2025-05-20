@@ -54,6 +54,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('pengajuan', PengajuanController::class);
+    Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
 });
 
 require __DIR__.'/auth.php';
