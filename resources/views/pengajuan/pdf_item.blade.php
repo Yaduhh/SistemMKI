@@ -53,7 +53,7 @@
         </p>
     </div>
 
-    <h3>Pintuu Balkon</h3>
+    <h3>{{ $pengajuan->title_produk }}</h3>
     <table>
         <thead>
             <tr>
@@ -83,7 +83,7 @@
         </tbody>
     </table>
 
-    <h3>Engsel</h3>
+    <h3>{{ $pengajuan->title_aksesoris }}</h3>
     <table>
         <thead>
             <tr>
