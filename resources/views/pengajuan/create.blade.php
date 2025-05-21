@@ -48,7 +48,7 @@
                 <flux:select name="json_produk" id="produkSelect">
                     <option value="" disabled selected>{{ __('Pilih Produk') }}</option>
                     @foreach ($produk as $prod)
-                        <option value="{{ $prod->id }}" data-harga="{{ $prod->harga }}"
+                        <option value="{{ $prod->id }}" data-harga="{{ $prod->harga }}" data-type="{{ $prod->type }}"
                             data-dimensi-lebar="{{ $prod->dimensi_lebar }}" data-dimensi-tinggi="{{ $prod->dimensi_tinggi }}"
                             data-panjang="{{ $prod->panjang }}" data-warna="{{ $prod->warna }}"
                             {{ in_array($prod->id, old('json_produk', [])) ? 'selected' : '' }}>
@@ -166,11 +166,13 @@
                 const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 1;
                 const hargaText = row.querySelector('td:nth-child(4)').textContent;
                 const harga = parseFloat(hargaText.replace(/[^0-9]/g, ''));
+                const type = row.querySelector('td:nth-child(1)').textContent;
                 const dimensiText = row.querySelector('td:nth-child(2)').textContent;
                 const warnaText = row.querySelector('td:nth-child(3)').textContent;
 
                 produkData.push({
                     id: id,
+                    type: type,
                     quantity: quantity,
                     harga: harga,
                     dimensi: dimensiText,
