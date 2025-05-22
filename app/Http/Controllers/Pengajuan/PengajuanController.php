@@ -22,11 +22,9 @@ class PengajuanController extends Controller
         // Decode JSON fields to arrays
         $json_produk = json_decode($pengajuan->json_produk, true);
         $json_aksesoris = json_decode($pengajuan->json_aksesoris, true);
+        $json_syarat_ketentuan = json_decode($pengajuan->syarat_kondisi, true);
 
-        // dd($json_produk, $json_aksesoris);
-
-        // Render tampilan untuk PDF per item
-        $pdf = PDF::loadView('pengajuan.pdf_item', compact('pengajuan', 'json_produk', 'json_aksesoris'));
+        $pdf = PDF::loadView('pengajuan.pdf_item', compact('pengajuan', 'json_produk', 'json_aksesoris', 'json_syarat_ketentuan'));
 
         // Sanitize the filename to remove illegal characters
         $safeFilename = str_replace(['/', '\\'], '-', $pengajuan->nomor_pengajuan);

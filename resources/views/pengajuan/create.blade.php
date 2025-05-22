@@ -194,9 +194,11 @@
                 const hargaText = row.querySelector('td:nth-child(3)').textContent;
                 const harga = parseFloat(hargaText.replace(/[^0-9]/g, ''));
                 const satuanText = row.querySelector('td:nth-child(2)').textContent;
+                const typeText = row.querySelector('td:nth-child(1)').textContent;
 
                 aksesorisData.push({
                     id: id,
+                    type: typeText,
                     quantity: quantity,
                     harga: harga,
                     satuan: satuanText
