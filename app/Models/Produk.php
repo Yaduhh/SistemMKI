@@ -23,6 +23,8 @@ class Produk extends Model
         'warna',
         'harga',
         'status_deleted',
+        'nama_produk',
+        'image_produk', 
     ];
 
     /**

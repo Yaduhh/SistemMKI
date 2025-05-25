@@ -5,7 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form action="{{ route('admin.produk.store') }}" method="POST" class="flex flex-col gap-6">
+        <form action="{{ route('admin.produk.store') }}" method="POST" class="flex flex-col gap-6" enctype="multipart/form-data">
             @csrf
 
             <!-- Type -->
@@ -61,6 +61,25 @@
                 type="number"
                 required
                 :placeholder="__('Masukkan harga produk')"
+            />
+
+            <!-- Nama Produk -->
+            <flux:input
+                name="nama_produk"
+                :label="__('Nama Produk')"
+                type="text"
+                required
+                autocomplete="off"
+                :placeholder="__('Masukkan nama produk')"
+            />
+
+            <!-- Image Produk -->
+            <flux:input
+                name="image_produk"
+                :label="__('Image Produk')"
+                type="file"
+                accept="image/*"
+                required
             />
 
             <div class="flex items-center justify-end">
