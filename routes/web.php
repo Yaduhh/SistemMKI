@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\AksesorisController;
 use App\Http\Controllers\Admin\SyaratController;
+use App\Http\Controllers\Admin\SuratJalanController;
 use App\Http\Controllers\Pengajuan\PengajuanController;
 
 Route::get('/', function () {
@@ -16,6 +17,11 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('surat_jalan', SuratJalanController::class);
+});
+
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -55,6 +61,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('pengajuan', PengajuanController::class);
     Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
+    Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
 });
 
 require __DIR__.'/auth.php';

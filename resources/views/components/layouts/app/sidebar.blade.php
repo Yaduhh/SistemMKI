@@ -28,6 +28,10 @@
                 <flux:navlist.group :heading="__('Data Pengajuan')" class="grid mt-10">
                     <flux:navlist.item icon="folder" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Pengajuan') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Data Surat Jalan')" class="grid mt-10">
+                    <flux:navlist.item icon="folder" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
+                </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
