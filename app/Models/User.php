@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'notelp',
+        'profile',
         'status',
         'status_deleted', 
     ];

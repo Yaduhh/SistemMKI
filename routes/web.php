@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\AksesorisController;
 use App\Http\Controllers\Admin\SyaratController;
 use App\Http\Controllers\Admin\SuratJalanController;
+use App\Http\Controllers\Admin\DistributorController;
+use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\AkunController;
 use App\Http\Controllers\Pengajuan\PengajuanController;
 
 Route::get('/', function () {
@@ -62,6 +65,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('pengajuan', PengajuanController::class);
     Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
     Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
+});
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Distributor Routes
+    Route::resource('distributor', DistributorController::class);
+
+    // Client Routes
+    Route::resource('client', ClientController::class);
+});
+
+Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
+    // Akun Management Routes
+    Route::resource('akun', AkunController::class);
 });
 
 require __DIR__.'/auth.php';

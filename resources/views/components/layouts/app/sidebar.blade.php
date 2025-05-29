@@ -19,10 +19,12 @@
                 <flux:navlist.group :heading="__('Produk & Aksesoris')" class="grid mt-10">
                     <flux:navlist.item icon="folder" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Produk') }}</flux:navlist.item>
                     <flux:navlist.item icon="folder" :href="route('admin.aksesoris.index')" :current="request()->routeIs('admin.aksesoris.index')" wire:navigate>{{ __('Aksesoris') }}</flux:navlist.item>
-                </flux:navlist.group>
-
-                <flux:navlist.group :heading="__('Syarat & Ketentuan')" class="grid mt-10">
                     <flux:navlist.item icon="folder" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
+                </flux:navlist.group>
+                
+                <flux:navlist.group :heading="__('Client & Distribusi')" class="grid mt-10">
+                    <flux:navlist.item icon="folder" :href="route('admin.distributor.index')" :current="request()->routeIs('admin.distributor.index')" wire:navigate>{{ __('Distributor') }}</flux:navlist.item>
+                    <flux:navlist.item icon="folder" :href="route('admin.client.index')" :current="request()->routeIs('admin.client.index')" wire:navigate>{{ __('Client') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Data Pengajuan')" class="grid mt-10">
@@ -31,6 +33,10 @@
 
                 <flux:navlist.group :heading="__('Data Surat Jalan')" class="grid mt-10">
                     <flux:navlist.item icon="folder" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
+                </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Akun')" class="grid mt-10">
+                    <flux:navlist.item icon="folder" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
