@@ -14,8 +14,9 @@ class DeckingController extends Controller
      */
     public function index()
     {
-        $deckings = Decking::active()->latest()->get();
-        return view('admin.decking.index', compact('deckings'));
+        $deckings = Decking::active()->latest()->where('status_aksesoris', 0)->get();
+        $aksesorisDeckings = Decking::active()->latest()->where('status_aksesoris', 1)->get();
+        return view('admin.decking.index', compact('deckings', 'aksesorisDeckings'));
     }
 
     /**
@@ -43,6 +44,7 @@ class DeckingController extends Controller
 
         $validated['created_by'] = auth()->id();
         $validated['status_deleted'] = false;
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
 
         Decking::create($validated);
 
@@ -80,6 +82,8 @@ class DeckingController extends Controller
             'luas_btg' => 'required|numeric|min:0',
             'luas_m2' => 'required|numeric|min:0',
         ]);
+
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
 
         $decking->update($validated);
 

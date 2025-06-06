@@ -10,6 +10,10 @@
             </x-button>
         </div>
     </x-slot>
+    
+    <x-flash-message type="success" :message="session('success')" />
+    <x-flash-message type="error" :message="session('error')" />
+
 
     <div class="py-12">
         <div class="w-full mx-auto">
@@ -122,6 +126,15 @@
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-show="luas_btg > 0">
                                 Jumlah batang per m²: <span x-text="luas_m2.toFixed(2)"></span> btg
                             </p>
+                        </div>
+
+                        <div class="col-span-2">
+                            <flux:checkbox
+                                name="status_aksesoris"
+                                :label="__('Is Accessory')"
+                                :checked="old('status_aksesoris', $decking->status_aksesoris)"
+                                value="1"
+                            />
                         </div>
                     </div>
 

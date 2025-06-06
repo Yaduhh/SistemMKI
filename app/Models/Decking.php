@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Decking extends Model
 {
@@ -24,14 +25,16 @@ class Decking extends Model
      */
     protected $fillable = [
         'code',
+        'slug',
         'lebar',
         'tebal',
         'panjang',
         'luas_btg',
         'luas_m2',
         'satuan',
+        'status_deleted',
+        'status_aksesoris',
         'created_by',
-        'status_deleted'
     ];
 
     /**
@@ -46,6 +49,7 @@ class Decking extends Model
         'luas_btg' => 'double',
         'luas_m2' => 'double',
         'status_deleted' => 'boolean',
+        'status_aksesoris' => 'boolean',
     ];
 
     /**
@@ -59,5 +63,45 @@ class Decking extends Model
     public function scopeActive($query)
     {
         return $query->where('status_deleted', false);
+    }
+
+    /**
+     * Generate a unique slug for the decking.
+     *
+     * @param string $code
+     * @return string
+     */
+    public static function generateUniqueSlug($code)
+    {
+        $slug = Str::slug($code);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($decking) {
+            if (empty($decking->slug)) {
+                $decking->slug = static::generateUniqueSlug($decking->code);
+            }
+        });
+
+        static::updating(function ($decking) {
+            if ($decking->isDirty('code') && !$decking->isDirty('slug')) {
+                $decking->slug = static::generateUniqueSlug($decking->code);
+            }
+        });
     }
 } 
