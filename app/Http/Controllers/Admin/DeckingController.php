@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Decking;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class DeckingController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $deckings = Decking::active()->latest()->get();
+        return view('admin.decking.index', compact('deckings'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('admin.decking.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:decking,code',
+            'lebar' => 'required|numeric|min:0',
+            'tebal' => 'required|numeric|min:0',
+            'panjang' => 'required|numeric|min:0',
+            'satuan' => 'required|string|max:255',
+            'luas_btg' => 'required|numeric|min:0',
+            'luas_m2' => 'required|numeric|min:0',
+        ]);
+
+        $validated['created_by'] = auth()->id();
+        $validated['status_deleted'] = false;
+
+        Decking::create($validated);
+
+        return redirect()->route('admin.decking.index')
+            ->with('success', 'Decking created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Decking $decking)
+    {
+        return view('admin.decking.show', compact('decking'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Decking $decking)
+    {
+        return view('admin.decking.edit', compact('decking'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Decking $decking)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:decking,code,' . $decking->id,
+            'lebar' => 'required|numeric|min:0',
+            'tebal' => 'required|numeric|min:0',
+            'panjang' => 'required|numeric|min:0',
+            'satuan' => 'required|string|max:255',
+            'luas_btg' => 'required|numeric|min:0',
+            'luas_m2' => 'required|numeric|min:0',
+        ]);
+
+        $decking->update($validated);
+
+        return redirect()->route('admin.decking.index')
+            ->with('success', 'Decking updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Decking $decking)
+    {
+        $decking->update(['status_deleted' => true]);
+        
+        return redirect()->route('admin.decking.index')
+            ->with('success', 'Decking deleted successfully.');
+    }
+} 

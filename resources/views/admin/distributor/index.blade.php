@@ -40,6 +40,9 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Aksi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Detail</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-accent-foreground divide-y divide-gray-200 dark:divide-gray-700">
@@ -98,6 +101,13 @@
                                                 Hapus
                                             </button>
                                         </form>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="flex items-center justify-center">
+                                            <p class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900 hover:bg-cyan-200 dark:hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-gray-800">
+                                                Detail
+                                            </p>
+                                        </button>
                                     </td>
                                 </tr>
                             @empty

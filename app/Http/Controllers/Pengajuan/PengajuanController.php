@@ -35,8 +35,36 @@ class PengajuanController extends Controller
         
     public function index()
     {
-        $pengajuan = Pengajuan::latest()->paginate(10);
-        return view('pengajuan.index', compact('pengajuan'));
+        $query = Pengajuan::query();
+
+        // Search functionality
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_pengajuan', 'like', "%{$search}%")
+                  ->orWhere('judul_pengajuan', 'like', "%{$search}%")
+                  ->orWhere('client', 'like', "%{$search}%")
+                  ->orWhere('nama_client', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by user
+        if (request('user')) {
+            $query->where('id_user', request('user'));
+        }
+
+        // Filter by status
+        if (request()->has('status') && request('status') !== '') {
+            $query->where('status', request('status'));
+        }
+
+        // Get users for filter dropdown
+        $users = User::where('status_deleted', 0)->get();
+
+        // Get filtered and paginated results
+        $pengajuan = $query->latest()->paginate(10);
+
+        return view('pengajuan.index', compact('pengajuan', 'users'));
     }
 
     public function create()
@@ -199,5 +227,19 @@ class PengajuanController extends Controller
     {
         $pengajuan->delete();
         return redirect()->route('admin.pengajuan.index')->with('success', 'Pengajuan berhasil dihapus.');
+    }
+
+    // Setujui pengajuan
+    public function approve(Pengajuan $pengajuan)
+    {
+        $pengajuan->update(['status' => 1]);
+        return redirect()->route('admin.pengajuan.index')->with('success', 'Pengajuan berhasil disetujui.');
+    }
+
+    // Tolak pengajuan
+    public function reject(Pengajuan $pengajuan)
+    {
+        $pengajuan->update(['status' => 2]);
+        return redirect()->route('admin.pengajuan.index')->with('success', 'Pengajuan berhasil ditolak.');
     }
 }

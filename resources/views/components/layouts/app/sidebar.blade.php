@@ -16,27 +16,44 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
                 
+                <flux:navlist.group :heading="__('Manajemen Proyek')" class="grid mt-10">
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Semua Proyek') }}</flux:navlist.item>
+                </flux:navlist.group>
+
                 <flux:navlist.group :heading="__('Produk & Aksesoris')" class="grid mt-10">
-                    <flux:navlist.item icon="folder" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Produk') }}</flux:navlist.item>
-                    <flux:navlist.item icon="folder" :href="route('admin.aksesoris.index')" :current="request()->routeIs('admin.aksesoris.index')" wire:navigate>{{ __('Aksesoris') }}</flux:navlist.item>
-                    <flux:navlist.item icon="folder" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="cube" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Produk') }}</flux:navlist.item>
+                    <flux:navlist.item icon="wrench-screwdriver" :href="route('admin.aksesoris.index')" :current="request()->routeIs('admin.aksesoris.*')" wire:navigate>{{ __('Aksesoris') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
+                    
+                    
+                    <flux:navlist.group heading="Semua Produk WPC" expandable>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.decking.index')" :current="request()->routeIs('admin.decking.*')" wire:navigate>{{ __('Decking') }}</flux:navlist.item>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.facade.index')" :current="request()->routeIs('admin.facade.*')" wire:navigate>{{ __('Facade') }}</flux:navlist.item>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.flooring.index')" :current="request()->routeIs('admin.flooring.*')" wire:navigate>{{ __('Flooring') }}</flux:navlist.item>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.wallpanels.index')" :current="request()->routeIs('admin.wallpanels.*')" wire:navigate>{{ __('Wallpanel') }}</flux:navlist.item>
+                    </flux:navlist.group>
                 </flux:navlist.group>
                 
                 <flux:navlist.group :heading="__('Client & Distribusi')" class="grid mt-10">
-                    <flux:navlist.item icon="folder" :href="route('admin.distributor.index')" :current="request()->routeIs('admin.distributor.index')" wire:navigate>{{ __('Distributor') }}</flux:navlist.item>
-                    <flux:navlist.item icon="folder" :href="route('admin.client.index')" :current="request()->routeIs('admin.client.index')" wire:navigate>{{ __('Client') }}</flux:navlist.item>
+                    <flux:navlist.item icon="truck" :href="route('admin.distributor.index')" :current="request()->routeIs('admin.distributor.index')" wire:navigate>{{ __('Distributor') }}</flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('admin.client.index')" :current="request()->routeIs('admin.client.index')" wire:navigate>{{ __('Client') }}</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Data Pengajuan')" class="grid mt-10">
-                    <flux:navlist.item icon="folder" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Pengajuan') }}</flux:navlist.item>
+                <flux:navlist.group :heading="__('Data Penawaran')" class="grid mt-10">
+                    <flux:navlist.item icon="document-duplicate" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Penawaran') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Data Surat Jalan')" class="grid mt-10">
-                    <flux:navlist.item icon="folder" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Akun')" class="grid mt-10">
-                    <flux:navlist.item icon="folder" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
+                    <flux:navlist.item icon="user-circle" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
+                </flux:navlist.group>
+
+                <!-- Daily Activity -->
+                <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
+                    <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -150,6 +167,7 @@
 
         {{ $slot }}
 
+        @stack('scripts')
         @fluxScripts
     </body>
 </html>

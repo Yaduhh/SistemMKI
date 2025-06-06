@@ -12,6 +12,10 @@ use App\Http\Controllers\Admin\DistributorController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\AkunController;
 use App\Http\Controllers\Pengajuan\PengajuanController;
+use App\Http\Controllers\Admin\DailyActivityController;
+use App\Http\Controllers\Admin\DeckingController;
+use App\Http\Controllers\Admin\FacadeController;
+use App\Http\Controllers\Admin\FlooringController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,8 +67,19 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('pengajuan', PengajuanController::class);
+    Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
+    Route::put('pengajuan/{pengajuan}/reject', [PengajuanController::class, 'reject'])->name('pengajuan.reject');
     Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
     Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
+    
+    // Daily Activity Routes
+    Route::get('/daily-activity', [DailyActivityController::class, 'index'])->name('daily-activity.index');
+    Route::get('/daily-activity/create', [DailyActivityController::class, 'create'])->name('daily-activity.create');
+    Route::post('/daily-activity', [DailyActivityController::class, 'store'])->name('daily-activity.store');
+    Route::get('/daily-activity/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+    Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
+    Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+    Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -73,6 +88,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Client Routes
     Route::resource('client', ClientController::class);
+    Route::resource('decking', DeckingController::class);
+    Route::resource('facade', FacadeController::class);
+    Route::resource('flooring', FlooringController::class);
+    
+    Route::resource('wallpanels', \App\Http\Controllers\Admin\WallpanelController::class);
 });
 
 Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
