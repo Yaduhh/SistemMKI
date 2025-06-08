@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Wallpanel Management') }}
             </h2>
-            <x-button href="{{ route('admin.wallpanels.create') }}" class="bg-white/30 hover:bg-gray-700">
+            <x-button href="{{ route('admin.wallpanel.create') }}" class="bg-white/30 hover:bg-gray-700">
                 <x-icon name="plus" class="w-4 h-4 mr-2" />
                 {{ __('Add New Wallpanel') }}
             </x-button>
@@ -43,10 +43,10 @@
                                     <td class="px-6 py-4">{{ $wallpanel->creator->name ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
-                                            <x-button href="{{ route('admin.wallpanels.edit', $wallpanel) }}" size="sm" variant="secondary">
+                                            <x-button href="{{ route('admin.wallpanel.edit', $wallpanel) }}" size="sm" variant="secondary">
                                                 <x-icon name="pencil" class="w-4 h-4" />
                                             </x-button>
-                                            <form action="{{ route('admin.wallpanels.destroy', $wallpanel) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.wallpanel.destroy', $wallpanel) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <x-button type="submit" size="sm" variant="danger" onclick="return confirm('Are you sure you want to delete this wallpanel?')">

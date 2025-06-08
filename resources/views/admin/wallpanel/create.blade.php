@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Add New Wallpanel') }}
             </h2>
-            <x-button href="{{ route('admin.wallpanels.index') }}" variant="secondary">
+            <x-button href="{{ route('admin.wallpanel.index') }}" variant="secondary">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
                 {{ __('Back to List') }}
             </x-button>
@@ -14,7 +14,7 @@
     <div class="py-12">
         <div class="w-full mx-auto">
             <x-card>
-                <form action="{{ route('admin.wallpanels.store') }}" method="POST" class="space-y-6" 
+                <form action="{{ route('admin.wallpanel.store') }}" method="POST" class="space-y-6" 
                     x-data="wallpanelForm({{ old('lebar', 0) }}, {{ old('panjang', 0) }})"
                     x-init="calculateArea()"
                 >

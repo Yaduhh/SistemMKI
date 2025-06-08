@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Wallpanel;
+use App\Models\Ceiling;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class WallpanelController extends Controller
+class CeilingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $wallpanels = Wallpanel::where('status_deleted', false)
+        $ceilings = Ceiling::where('status_deleted', false)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('admin.wallpanel.index', compact('wallpanels'));
+        return view('admin.ceiling.index', compact('ceilings'));
     }
 
     /**
@@ -26,7 +26,7 @@ class WallpanelController extends Controller
      */
     public function create()
     {
-        return view('admin.wallpanel.create');
+        return view('admin.ceiling.create');
     }
 
     /**
@@ -50,7 +50,7 @@ class WallpanelController extends Controller
                 ->withInput();
         }
 
-        $wallpanel = Wallpanel::create([
+        $ceiling = Ceiling::create([
             'code' => $request->code,
             'lebar' => $request->lebar,
             'tebal' => $request->tebal,
@@ -61,30 +61,30 @@ class WallpanelController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return redirect()->route('admin.wallpanel.index')
-            ->with('success', 'Wallpanel berhasil ditambahkan');
+        return redirect()->route('admin.ceiling.index')
+            ->with('success', 'Ceiling berhasil ditambahkan');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Wallpanel $wallpanel)
+    public function show(Ceiling $ceiling)
     {
-        return view('admin.wallpanel.show', compact('wallpanel'));
+        return view('admin.ceiling.show', compact('ceiling'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Wallpanel $wallpanel)
+    public function edit(Ceiling $ceiling)
     {
-        return view('admin.wallpanel.edit', compact('wallpanel'));
+        return view('admin.ceiling.edit', compact('ceiling'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Wallpanel $wallpanel)
+    public function update(Request $request, Ceiling $ceiling)
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:255',
@@ -102,7 +102,7 @@ class WallpanelController extends Controller
                 ->withInput();
         }
 
-        $wallpanel->update([
+        $ceiling->update([
             'code' => $request->code,
             'lebar' => $request->lebar,
             'tebal' => $request->tebal,
@@ -112,18 +112,18 @@ class WallpanelController extends Controller
             'satuan' => $request->satuan,
         ]);
 
-        return redirect()->route('admin.wallpanel.index')
-            ->with('success', 'Wallpanel berhasil diperbarui');
+        return redirect()->route('admin.ceiling.index')
+            ->with('success', 'Ceiling berhasil diperbarui');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Wallpanel $wallpanel)
+    public function destroy(Ceiling $ceiling)
     {
-        $wallpanel->update(['status_deleted' => true]);
+        $ceiling->update(['status_deleted' => true]);
 
-        return redirect()->route('admin.wallpanel.index')
-            ->with('success', 'Wallpanel berhasil dihapus');
+        return redirect()->route('admin.ceiling.index')
+            ->with('success', 'Ceiling berhasil dihapus');
     }
 } 

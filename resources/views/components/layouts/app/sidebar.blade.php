@@ -30,7 +30,8 @@
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.decking.index')" :current="request()->routeIs('admin.decking.*')" wire:navigate>{{ __('Decking') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.facade.index')" :current="request()->routeIs('admin.facade.*')" wire:navigate>{{ __('Facade') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.flooring.index')" :current="request()->routeIs('admin.flooring.*')" wire:navigate>{{ __('Flooring') }}</flux:navlist.item>
-                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.wallpanels.index')" :current="request()->routeIs('admin.wallpanels.*')" wire:navigate>{{ __('Wallpanel') }}</flux:navlist.item>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.wallpanel.index')" :current="request()->routeIs('admin.wallpanel.*')" wire:navigate>{{ __('Wallpanel') }}</flux:navlist.item>
+                        <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.ceiling.index')" :current="request()->routeIs('admin.ceiling.*')" wire:navigate>{{ __('Ceiling') }}</flux:navlist.item>
                     </flux:navlist.group>
                 </flux:navlist.group>
                 
@@ -40,7 +41,8 @@
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Data Penawaran')" class="grid mt-10">
-                    <flux:navlist.item icon="document-duplicate" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Penawaran') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-duplicate" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Pengajuan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-chart-bar" :href="route('admin.penawaran.index')" :current="request()->routeIs('admin.penawaran.*')" wire:navigate>{{ __('Penawaran') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Data Surat Jalan')" class="grid mt-10">

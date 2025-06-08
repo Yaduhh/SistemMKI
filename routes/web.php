@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\DailyActivityController;
 use App\Http\Controllers\Admin\DeckingController;
 use App\Http\Controllers\Admin\FacadeController;
 use App\Http\Controllers\Admin\FlooringController;
+use App\Http\Controllers\Admin\WallpanelController;
+use App\Http\Controllers\Admin\CeilingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -91,8 +93,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('decking', DeckingController::class);
     Route::resource('facade', FacadeController::class);
     Route::resource('flooring', FlooringController::class);
-    
-    Route::resource('wallpanels', \App\Http\Controllers\Admin\WallpanelController::class);
+    Route::resource('wallpanel', WallpanelController::class);
+    Route::resource('ceiling', CeilingController::class);
+    Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
 });
 
 Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {

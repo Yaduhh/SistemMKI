@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Edit Wallpanel') }}
+                {{ __('Add New Ceiling') }}
             </h2>
-            <x-button href="{{ route('admin.wallpanels.index') }}" variant="secondary">
+            <x-button href="{{ route('admin.ceiling.index') }}" variant="secondary">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
                 {{ __('Back to List') }}
             </x-button>
@@ -14,12 +14,11 @@
     <div class="py-12">
         <div class="w-full mx-auto">
             <x-card>
-                <form action="{{ route('admin.wallpanels.update', $wallpanel) }}" method="POST" class="space-y-6"
-                    x-data="wallpanelForm({{ old('lebar', $wallpanel->lebar) }}, {{ old('panjang', $wallpanel->panjang) }})"
+                <form action="{{ route('admin.ceiling.store') }}" method="POST" class="space-y-6" 
+                    x-data="ceilingForm({{ old('lebar', 0) }}, {{ old('panjang', 0) }})"
                     x-init="calculateArea()"
                 >
                     @csrf
-                    @method('PUT')
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="col-span-2">
@@ -29,8 +28,8 @@
                                 type="text" 
                                 required 
                                 autocomplete="off"
-                                :placeholder="__('Enter wallpanel code')"
-                                :value="old('code', $wallpanel->code)" 
+                                :placeholder="__('Enter ceiling code')"
+                                :value="old('code')" 
                             />
                         </div>
 
@@ -44,7 +43,7 @@
                                     required 
                                     autocomplete="off"
                                     :placeholder="__('Enter width')"
-                                    :value="old('lebar', $wallpanel->lebar)"
+                                    :value="old('lebar')"
                                     x-model.number="lebar"
                                     @input="calculateArea"
                                 />
@@ -59,7 +58,7 @@
                                     required 
                                     autocomplete="off"
                                     :placeholder="__('Enter thickness')"
-                                    :value="old('tebal', $wallpanel->tebal)" 
+                                    :value="old('tebal')" 
                                 />
                             </div>
 
@@ -69,9 +68,9 @@
                                     :label="__('Unit Satuan')" 
                                     required
                                 >
-                                    <option value="mm" {{ old('satuan', $wallpanel->satuan) == 'mm' ? 'selected' : '' }}>mm</option>
-                                    <option value="cm" {{ old('satuan', $wallpanel->satuan) == 'cm' ? 'selected' : '' }}>cm</option>
-                                    <option value="m" {{ old('satuan', $wallpanel->satuan) == 'm' ? 'selected' : '' }}>m</option>
+                                    <option value="mm" {{ old('satuan') == 'mm' ? 'selected' : '' }}>mm</option>
+                                    <option value="cm" {{ old('satuan') == 'cm' ? 'selected' : '' }}>cm</option>
+                                    <option value="m" {{ old('satuan') == 'm' ? 'selected' : '' }}>m</option>
                                 </flux:select>
                             </div>
                         </div>
@@ -84,7 +83,7 @@
                             required 
                             autocomplete="off"
                             :placeholder="__('Enter length')"
-                            :value="old('panjang', $wallpanel->panjang)"
+                            :value="old('panjang')"
                             x-model.number="panjang"
                             @input="calculateArea"
                         />
@@ -98,7 +97,7 @@
                                 required
                                 autocomplete="off"
                                 :placeholder="__('Enter area per piece')"
-                                :value="old('luas_btg', $wallpanel->luas_btg)"
+                                :value="old('luas_btg')"
                                 x-model.number="luas_btg"
                             />
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-show="lebar > 0 && panjang > 0">
@@ -115,7 +114,7 @@
                                 required 
                                 autocomplete="off"
                                 :placeholder="__('Enter area in m²')"
-                                :value="old('luas_m2', $wallpanel->luas_m2)"
+                                :value="old('luas_m2')"
                                 x-model.number="luas_m2"
                                 readonly
                             />
@@ -133,7 +132,7 @@
 
                     <div class="flex items-center justify-end">
                         <x-button type="submit" variant="secondary">
-                            {{ __('Update Wallpanel') }}
+                            {{ __('Save Ceiling') }}
                         </x-button>
                     </div>
                 </form>
@@ -144,7 +143,7 @@
     @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('wallpanelForm', (initialLebar = 0, initialPanjang = 0) => ({
+            Alpine.data('ceilingForm', (initialLebar = 0, initialPanjang = 0) => ({
                 lebar: initialLebar,
                 panjang: initialPanjang,
                 luas_btg: 0,

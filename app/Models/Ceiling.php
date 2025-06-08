@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Wallpanel extends Model
+class Ceiling extends Model
 {
     use HasFactory;
 
-    protected $table = 'wallpanel';
+    protected $table = 'ceiling';
 
     protected $fillable = [
         'code',
@@ -34,7 +34,7 @@ class Wallpanel extends Model
         'status_deleted' => 'boolean',
     ];
 
-    // Relationship with User who created the wallpanel
+    // Relationship with User who created the ceiling
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -59,16 +59,16 @@ class Wallpanel extends Model
     {
         parent::boot();
 
-        static::creating(function ($wallpanel) {
-            if (empty($wallpanel->slug)) {
-                $wallpanel->slug = Str::slug($wallpanel->code);
+        static::creating(function ($ceiling) {
+            if (empty($ceiling->slug)) {
+                $ceiling->slug = Str::slug($ceiling->code);
             }
-            $wallpanel->slug = static::createUniqueSlug($wallpanel->slug);
+            $ceiling->slug = static::createUniqueSlug($ceiling->slug);
         });
 
-        static::updating(function ($wallpanel) {
-            if ($wallpanel->isDirty('slug')) {
-                $wallpanel->slug = static::createUniqueSlug($wallpanel->slug);
+        static::updating(function ($ceiling) {
+            if ($ceiling->isDirty('slug')) {
+                $ceiling->slug = static::createUniqueSlug($ceiling->slug);
             }
         });
     }
