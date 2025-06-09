@@ -27,6 +27,21 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Add new route group for sales users (role 2)
+Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(function () {
+    Route::view('dashboard', 'sales.dashboard')->name('dashboard');
+    
+    // Daily Activity Routes for Sales
+    Route::get('/daily-activity', [App\Http\Controllers\Sales\DailyActivityController::class, 'index'])->name('daily-activity.index');
+    Route::get('/daily-activity/create', [App\Http\Controllers\Sales\DailyActivityController::class, 'create'])->name('daily-activity.create');
+    Route::post('/daily-activity', [App\Http\Controllers\Sales\DailyActivityController::class, 'store'])->name('daily-activity.store');
+    Route::get('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'show'])->name('daily-activity.show');
+    Route::get('/daily-activity/{dailyActivity}/edit', [App\Http\Controllers\Sales\DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+    Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'update'])->name('daily-activity.update');
+    Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+    Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Sales\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+});
+
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('surat_jalan', SuratJalanController::class);
 });
@@ -67,6 +82,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
     Route::delete('syarat-ketentuan/{id}', [SyaratController::class, 'destroy'])->name('admin.syarat_ketentuan.destroy');
 });
 
+// ROUTE FOR ADMIN & SALES
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
@@ -74,14 +90,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
     Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
     
-    // Daily Activity Routes
-    Route::get('/daily-activity', [DailyActivityController::class, 'index'])->name('daily-activity.index');
-    Route::get('/daily-activity/create', [DailyActivityController::class, 'create'])->name('daily-activity.create');
-    Route::post('/daily-activity', [DailyActivityController::class, 'store'])->name('daily-activity.store');
-    Route::get('/daily-activity/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activity.edit');
-    Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
-    Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
-    Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+    // Daily Activity Routes for Admin
+    Route::middleware(['role:1'])->group(function () {
+        Route::get('/daily-activity', [App\Http\Controllers\Admin\DailyActivityController::class, 'index'])->name('daily-activity.index');
+        Route::get('/daily-activity/create', [App\Http\Controllers\Admin\DailyActivityController::class, 'create'])->name('daily-activity.create');
+        Route::post('/daily-activity', [App\Http\Controllers\Admin\DailyActivityController::class, 'store'])->name('daily-activity.store');
+        Route::get('/daily-activity/{dailyActivity}/edit', [App\Http\Controllers\Admin\DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+        Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Admin\DailyActivityController::class, 'update'])->name('daily-activity.update');
+        Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Admin\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+        Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Admin\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+    });
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

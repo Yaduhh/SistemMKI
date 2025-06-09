@@ -30,6 +30,7 @@ class DailyActivity extends Model
      */
     protected $casts = [
         'komentar' => 'array',
+        'dokumentasi' => 'array',
         'deleted_status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -41,5 +42,26 @@ class DailyActivity extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Accessor untuk mendapatkan semua gambar dokumentasi
+    public function getDokumentasiImagesAttribute()
+    {
+        if (!$this->dokumentasi) {
+            return [];
+        }
+        return collect($this->dokumentasi)->map(function ($path) {
+            return asset($path);
+        })->toArray();
+    }
+
+    // Mutator untuk menyimpan gambar dokumentasi
+    public function setDokumentasiAttribute($value)
+    {
+        if (is_array($value)) {
+            $this->attributes['dokumentasi'] = json_encode($value);
+        } else {
+            $this->attributes['dokumentasi'] = $value;
+        }
     }
 }
