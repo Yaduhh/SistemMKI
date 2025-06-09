@@ -8,19 +8,27 @@
             </x-button>
         </div>
     </x-slot>
-    <div class="py-4 max-w-7xl mx-auto">
+    <div class="py-4 mx-auto w-full">
         <form action="{{ route('admin.penawaran.store') }}" method="POST" class="space-y-8" x-data="penawaranForm()">
             @csrf
+            <!-- Sales -->
+            <flux:select name="id_user" :label="__('Sales')" required>
+                <option value="" disabled>{{ __('Pilih Pengguna') }}</option>
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </flux:select>
+            
             <!-- Section Data Penawaran -->
             <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <flux:select name="id_client" label="Client" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
-                        <option value="">Pilih Client</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}">{{ $client->nama }}</option>
-                        @endforeach
-                    </flux:select>
+                    <!-- Client -->
+                    <flux:input name="client" :label="__('Client')" type="text" required autocomplete="off"
+                        :placeholder="__('Masukkan nama client')" value="{{ old('client') }}" />
+                        
                     <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="judul_penawaran" label="Judul Penawaran" type="text" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
@@ -37,7 +45,7 @@
                 }">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="section.label"></h2>
-                        <button type="button" @click="removeSection(sIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none" x-show="sections.length > 1">
+                        <button type="button" @click="removeSection(sIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none flex items-center gap-2" x-show="sections.length > 1">
                             <x-icon name="trash" class="w-5 h-5" /> Hapus Section
                         </button>
                     </div>
@@ -49,7 +57,7 @@
                                     <th class="px-2 py-2 font-bold">Item</th>
                                     <th class="px-2 py-2 font-bold">Type</th>
                                     <th class="px-2 py-2 font-bold">Dimensi</th>
-                                    <th class="px-2 py-2 font-bold">Tebal/Panjang</th>
+                                    <th class="px-2 py-2 font-bold">Panjang</th>
                                     <th class="px-2 py-2 font-bold">Warna</th>
                                     <th class="px-2 py-2 font-bold">Qty Area</th>
                                     <th class="px-2 py-2 font-bold">Satuan Area</th>
@@ -65,29 +73,29 @@
                                     <tr :class="i % 2 === 0 ? 'bg-gray-50 dark:bg-zinc-800' : 'bg-white dark:bg-zinc-900'" class="transition hover:bg-blue-50 dark:hover:bg-zinc-700">
                                         <td class="px-2 py-2 text-center" x-text="i+1"></td>
                                         <td class="px-2 py-2">
-                                            <select :name="'json_produk['+section.kategori+']['+i+'][item]'" x-model="row.item" class="w-44 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400" @change="autofillProduk(section, row)">
-                                                <option value="">Pilih</option>
+                                            <select :name="'json_produk['+section.kategori+']['+i+'][item]'" x-model="row.item" class="w-44 py-2 px-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400" @change="autofillProduk(section, row)">
+                                                <option value="">Pilih Produk</option>
                                                 <template x-for="p in section.master">
                                                     <option :value="p.code" x-text="p.code + (p.lebar ? ' - ' + p.lebar + 'x' + (p.tebal ?? '') + 'x' + (p.panjang ?? '') : '') + (p.warna ? ' - ' + p.warna : '')"></option>
                                                 </template>
                                             </select>
                                         </td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][type]'" x-model="row.type" class="w-24 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][dimensi]'" x-model="row.dimensi" class="w-24 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][tebal_panjang]'" x-model="row.tebal_panjang" class="w-16 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][warna]'" x-model="row.warna" class="w-20 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][qty_area]'" x-model="row.qty_area" class="w-16 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][type]'" x-model="row.type" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][dimensi]'" x-model="row.dimensi" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][tebal_panjang]'" x-model="row.tebal_panjang" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][warna]'" x-model="row.warna" class="w-20 rounded-xl px-2 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][qty_area]'" x-model="row.qty_area" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
                                         <td class="px-2 py-2">
-                                            <select :name="'json_produk['+section.kategori+']['+i+'][satuan_area]'" x-model="row.satuan_area" class="w-16 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
+                                            <select :name="'json_produk['+section.kategori+']['+i+'][satuan_area]'" x-model="row.satuan_area" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
                                                 <option value="m2">m2</option>
                                                 <option value="m">m</option>
                                                 <option value="kg">kg</option>
                                             </select>
                                         </td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][qty]'" x-model="row.qty" class="w-16 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][satuan]'" x-model="row.satuan" class="w-16 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][harga]'" x-model="row.harga" type="number" class="w-24 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][total_harga]'" x-model="row.total_harga" type="number" class="w-28 rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][qty]'" x-model="row.qty" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][satuan]'" x-model="row.satuan" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][harga]'" x-model="row.harga" type="number" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
+                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][total_harga]'" x-model="row.total_harga" type="number" class="w-28 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
                                         <td class="px-2 py-2 text-center">
                                             <button type="button" @click="removeProduk(sIdx, i)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none">
                                                 <x-icon name="trash" class="w-5 h-5" />
@@ -98,27 +106,27 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-2 flex gap-2">
-                        <button type="button" @click="addProduk(sIdx)" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <div class="mt-4 flex gap-2">
+                        <button type="button" @click="addProduk(sIdx)" class="px-4 py-2 bg-blue-950 text-blue-400 rounded-2xl hover:bg-blue-950">
                             + Tambah Baris Produk
                         </button>
                     </div>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block text-xs font-semibold mb-1">Subtotal</label>
-                            <input type="number" :value="sectionSubtotal(section)" class="w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly>
+                            <input type="number" :value="sectionSubtotal(section)" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1">Diskon (%)</label>
-                            <input type="number" min="0" max="100" x-model="section.diskon" :name="'json_produk['+section.kategori+'][diskon]'" class="w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
+                            <input type="number" min="0" max="100" x-model="section.diskon" :name="'json_produk['+section.kategori+'][diskon]'" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1">PPN (%)</label>
-                            <input type="number" min="0" max="100" x-model="section.ppn" :name="'json_produk['+section.kategori+'][ppn]'" class="w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
+                            <input type="number" min="0" max="100" x-model="section.ppn" :name="'json_produk['+section.kategori+'][ppn]'" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1">Grand Total</label>
-                            <input type="number" :value="sectionGrandTotal(section)" class="w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold" readonly>
+                            <input type="number" :value="sectionGrandTotal(section)" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold" readonly>
                         </div>
                     </div>
                 </div>
@@ -128,7 +136,7 @@
                     <div class="flex flex-col md:flex-row gap-2 items-start md:items-center">
                         <label class="font-semibold text-sm">Tambah Section Produk:</label>
                         <template x-for="opt in sectionOptions.filter(opt => !sections.map(s => s.kategori).includes(opt.kategori))" :key="opt.kategori">
-                            <button type="button" @click="addSection(opt.kategori)" class="px-4 py-2 rounded border font-semibold transition bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 hover:bg-blue-50 dark:hover:bg-zinc-800 text-xs md:text-sm" :class="{
+                            <button type="button" @click="addSection(opt.kategori)" class="px-4 py-2 flex gap-4 items-center rounded-2xl border font-semibold transition bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 hover:bg-blue-50 dark:hover:bg-zinc-800 text-xs md:text-sm" :class="{
                                 'border-blue-400 text-blue-700': opt.kategori === 'flooring',
                                 'border-green-400 text-green-700': opt.kategori === 'facade',
                                 'border-yellow-400 text-yellow-700': opt.kategori === 'wallpanel',
@@ -211,7 +219,7 @@ function penawaranForm() {
             const produk = section.master.find(p => p.code === row.item);
             if (produk) {
                 row.type = produk.code ?? '';
-                row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal + 'x' + produk.panjang : '';
+                row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
                 row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
                 row.warna = produk.warna ?? '';
                 row.satuan = produk.satuan ?? '';

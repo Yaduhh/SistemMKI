@@ -24,8 +24,8 @@ class PenawaranController extends Controller
 
     public function create()
     {
+        $users = User::where('status_deleted', 0)->get();
         $clients = Client::active()->notDeleted()->get();
-        $users = User::all();
         $deckings = Decking::active()->get();
         $ceilings = Ceiling::active()->get();
         $wallpanels = Wallpanel::active()->get();
