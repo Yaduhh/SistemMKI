@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data x-bind:class="$flux.appearance">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -24,7 +24,7 @@
         <flux:brand href="{{ route('sales.dashboard') }}" logo="{{ asset('storage/logo-dark.png') }}" name="{{ config('app.name', 'Laravel') }}" class="max-lg:hidden! hidden dark:flex" />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            <flux:navbar.item icon="home" href="{{ route('sales.dashboard') }}" current>Dashboard</flux:navbar.item>
+            <flux:navbar.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navbar.item>
             <flux:navbar.item icon="document-text" href="#">Penawaran</flux:navbar.item>
             <flux:navbar.item icon="calendar" href="#">Jadwal</flux:navbar.item>
             <flux:navbar.item icon="chart-bar" href="#">Laporan</flux:navbar.item>
@@ -45,7 +45,7 @@
 
         <flux:navbar class="me-4">
             <flux:navbar.item icon="magnifying-glass" href="#" label="Cari" />
-            <flux:navbar.item class="max-lg:hidden" icon="cog-6-tooth" href="{{ route('settings.profile') }}" label="Pengaturan" />
+            <flux:navbar.item class="max-lg:hidden" icon="cog-6-tooth" href="{{ route('sales.setting.index') }}" label="Pengaturan" />
             <flux:navbar.item class="max-lg:hidden" icon="information-circle" href="#" label="Bantuan" />
         </flux:navbar>
 
@@ -73,7 +73,7 @@
                 <flux:menu.separator />
 
                 <flux:menu.radio.group>
-                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Pengaturan') }}</flux:menu.item>
+                    <flux:menu.item :href="route('sales.setting.index')" icon="cog" wire:navigate>{{ __('Pengaturan') }}</flux:menu.item>
                 </flux:menu.radio.group>
 
                 <flux:menu.separator />
@@ -96,7 +96,7 @@
         </a>
         
         <flux:navlist variant="outline">
-            <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" current>Dashboard</flux:navlist.item>
+            <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
             <flux:navlist.item icon="calendar" href="#">Jadwal</flux:navlist.item>
             <flux:navlist.item icon="chart-bar" href="#">Laporan</flux:navlist.item>
@@ -109,14 +109,14 @@
 
             <!-- Daily Activity -->
             <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
-                <flux:navlist.item icon="calendar" :href="route('sales.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+                <flux:navlist.item icon="calendar" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:spacer />
 
         <flux:navlist variant="outline">
-            <flux:navlist.item icon="cog-6-tooth" href="{{ route('settings.profile') }}">Pengaturan</flux:navlist.item>
+            <flux:navlist.item icon="cog-6-tooth" href="{{ route('sales.setting.index') }}" :current="request()->routeIs('sales.setting.*')">Pengaturan</flux:navlist.item>
             <flux:navlist.item icon="information-circle" href="#">Bantuan</flux:navlist.item>
         </flux:navlist>
     </flux:sidebar>

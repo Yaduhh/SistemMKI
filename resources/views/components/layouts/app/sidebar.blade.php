@@ -102,7 +102,11 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @if(auth()->user()->role === 1)
+                            <flux:menu.item :href="route('admin.setting.index')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @else
+                            <flux:menu.item :href="route('sales.setting.index')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @endif
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />
@@ -152,7 +156,11 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @if(auth()->user()->role === 1)
+                            <flux:menu.item :href="route('admin.setting.index')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @else
+                            <flux:menu.item :href="route('sales.setting.index')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        @endif
                     </flux:menu.radio.group>
 
                     <flux:menu.separator />

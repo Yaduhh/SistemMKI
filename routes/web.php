@@ -40,6 +40,9 @@ Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(fu
     Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'update'])->name('daily-activity.update');
     Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
     Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Sales\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+
+    // Settings Route - using view with sales layout
+    Route::view('/setting', 'sales.setting.index')->name('setting.index');
 });
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
