@@ -5,7 +5,7 @@
 
         <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
             <!-- Event Mendatang -->
-            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-zinc-900/30">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -31,7 +31,7 @@
             </div>
 
             <!-- Jumlah Klien -->
-            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
+            <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-zinc-900/30">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -59,74 +59,123 @@
 
         <!-- Social Media & Website Links -->
         <div class="mt-8">
-            <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Media Sosial & Website</h2>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="flex items-center mb-6">
+                <div class="flex-shrink-0">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-900/30">
+                        <svg class="h-8 w-8 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">Media Sosial & Website</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Akses cepat ke platform digital kami</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <!-- Instagram -->
-                <a href="https://instagram.com/mki_indonesia" target="_blank" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    <div class="absolute inset-0 bg-black opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
-                    <div class="relative flex items-center">
+                <a href="https://instagram.com/wpcmegakomposit" target="_blank" 
+                   class="group relative bg-white dark:bg-zinc-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-pink-300 dark:hover:border-pink-600 hover:shadow-sm transition-all duration-200">
+                    <div class="flex items-center space-x-3">
                         <div class="flex-shrink-0">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-white bg-opacity-20 backdrop-blur-sm">
-                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 group-hover:from-pink-600 group-hover:to-purple-700 transition-all duration-200">
+                                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold text-white">Instagram</h3>
-                            <p class="text-xs text-white text-opacity-80">@mki_indonesia</p>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors duration-200">Instagram</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">@wpcmegakomposit</p>
                         </div>
-                    </div>
-                    <div class="absolute bottom-2 right-2">
-                        <svg class="h-4 w-4 text-white text-opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
+                        <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
                     </div>
                 </a>
 
                 <!-- TikTok -->
-                <a href="https://tiktok.com/@mki_indonesia" target="_blank" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                    <div class="relative flex items-center">
+                <a href="https://tiktok.com/@wpc_mki" target="_blank" 
+                   class="group relative bg-white dark:bg-zinc-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-sm transition-all duration-200">
+                    <div class="flex items-center space-x-3">
                         <div class="flex-shrink-0">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-white bg-opacity-20 backdrop-blur-sm">
-                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-900 group-hover:bg-zinc-900/30 transition-all duration-200">
+                                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-.88-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold text-white">TikTok</h3>
-                            <p class="text-xs text-white text-opacity-80">@mki_indonesia</p>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors duration-200">TikTok</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">@wpc_mki</p>
                         </div>
-                    </div>
-                    <div class="absolute bottom-2 right-2">
-                        <svg class="h-4 w-4 text-white text-opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
+                        <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
                     </div>
                 </a>
 
                 <!-- Website -->
-                <a href="https://mki-indonesia.com" target="_blank" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                    <div class="relative flex items-center">
+                <a href="https://megakomposit.com" target="_blank" 
+                   class="group relative bg-white dark:bg-zinc-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-600/30 hover:shadow-sm transition-all duration-200">
+                    <div class="flex items-center space-x-3">
                         <div class="flex-shrink-0">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-white bg-opacity-20 backdrop-blur-sm">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 0l-3-3m3 3l3-3"></path>
-                                </svg>
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-700/30 group-hover:from-blue-700/30 group-hover:to-blue-800/30 transition-all duration-200 overflow-hidden">
+                                <img src="{{ asset('assets/images/logomkiOnly.png') }}" alt="MKI Logo" class="h-6 w-6 object-contain">
                             </div>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-semibold text-white">Website</h3>
-                            <p class="text-xs text-white text-opacity-80">mki-indonesia.com</p>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-1">Mega Komposit</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">megakomposit.com</p>
+                        </div>
+                        <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
                         </div>
                     </div>
-                    <div class="absolute bottom-2 right-2">
-                        <svg class="h-4 w-4 text-white text-opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
+                </a>
+                <a href="https://mekoflooring.id" target="_blank" 
+                   class="group relative bg-white dark:bg-zinc-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-600/30 hover:shadow-sm transition-all duration-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-700/30 group-hover:from-blue-700/30 group-hover:to-blue-800/30 transition-all duration-200 overflow-hidden">
+                                <img src="{{ asset('assets/images/logoMekoFlooring.png') }}" alt="MKI Logo" class="h-6 w-6 object-contain">
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-1">Meko Flooring</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">mekoflooring.id</p>
+                        </div>
+                        <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://megadoor.id" target="_blank" 
+                   class="col-span-2 group relative bg-white dark:bg-zinc-900/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-600/30 hover:shadow-sm transition-all duration-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-700/30 group-hover:from-blue-700/30 group-hover:to-blue-800/30 transition-all duration-200 overflow-hidden">
+                                <img src="{{ asset('assets/images/logoWithoutText.png') }}" alt="MKI Logo" class="h-6 w-6 object-contain">
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-1">Mega Door</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">megadoor.id</p>
+                        </div>
+                        <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -137,7 +186,7 @@
             <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Menu Event</h2>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Event Mendatang -->
-                <a href="{{ route('sales.events.upcoming') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-shadow duration-200">
+                <a href="{{ route('sales.events.upcoming') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900/30 p-6 hover:shadow-lg transition-shadow duration-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200">
@@ -154,7 +203,7 @@
                 </a>
 
                 <!-- Event Saya Mendatang -->
-                <a href="{{ route('sales.events.my-upcoming') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-shadow duration-200">
+                <a href="{{ route('sales.events.my-upcoming') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900/30 p-6 hover:shadow-lg transition-shadow duration-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900 group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors duration-200">
@@ -171,10 +220,10 @@
                 </a>
 
                 <!-- Event Terlalu -->
-                <a href="{{ route('sales.events.past') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-shadow duration-200">
+                <a href="{{ route('sales.events.past') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900/30 p-6 hover:shadow-lg transition-shadow duration-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-900 group-hover:bg-gray-200 dark:group-hover:bg-gray-800 transition-colors duration-200">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-900 group-hover:bg-gray-200 dark:group-hover:bg-zinc-900/30 transition-colors duration-200">
                                 <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -188,7 +237,7 @@
                 </a>
 
                 <!-- Dashboard Event -->
-                <a href="{{ route('sales.events.dashboard') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-shadow duration-200">
+                <a href="{{ route('sales.events.dashboard') }}" class="group relative rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900/30 p-6 hover:shadow-lg transition-shadow duration-200">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900 group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors duration-200">
@@ -233,7 +282,7 @@
             @if($recentActivities->count() > 0)
                 <div class="space-y-4">
                     @foreach($recentActivities as $activity)
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200 group">
+                        <div class="bg-white dark:bg-zinc-900/30 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200 group">
                             <div class="flex flex-col sm:flex-row items-start space-x-4">
                                 <!-- Activity Icon -->
                                 <div class="w-full flex flex-row justify-between items-center">
