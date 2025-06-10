@@ -19,22 +19,26 @@
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+        <a href="{{ route('sales.dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <x-app-logo />
+        </a>
+        <flux:spacer />
 
-        <flux:brand href="{{ route('sales.dashboard') }}" logo="{{ asset('storage/logo.png') }}" name="{{ config('app.name', 'Laravel') }}" class="max-lg:hidden dark:hidden" />
-        <flux:brand href="{{ route('sales.dashboard') }}" logo="{{ asset('storage/logo-dark.png') }}" name="{{ config('app.name', 'Laravel') }}" class="max-lg:hidden! hidden dark:flex" />
-
-        <flux:navbar class="-mb-px max-lg:hidden">
+        <flux:navbar class="-mb-px max-lg:hidden space-x-4">
             <flux:navbar.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navbar.item>
+            <flux:navbar.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Client</flux:navbar.item>
             <flux:navbar.item icon="document-text" href="#">Penawaran</flux:navbar.item>
             <flux:navbar.item icon="calendar" href="#">Jadwal</flux:navbar.item>
             <flux:navbar.item icon="chart-bar" href="#">Laporan</flux:navbar.item>
+            <flux:navbar.item icon="calendar-days" :href="route('sales.events.dashboard')" :current="request()->routeIs('sales.events.dashboard')" wire:navigate>{{ __('Event') }}</flux:navlist.item>
+
 
             <flux:separator vertical variant="subtle" class="my-2"/>
 
             <flux:dropdown class="max-lg:hidden">
                 <flux:navbar.item icon:trailing="chevron-down">Menu</flux:navbar.item>
                 <flux:navmenu>
-                    <flux:navmenu.item href="#">Profil Klien</flux:navmenu.item>
+                    <flux:navmenu.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navmenu.item>
                     <flux:navmenu.item href="#">Riwayat Penjualan</flux:navmenu.item>
                     <flux:navmenu.item href="#">Target Penjualan</flux:navmenu.item>
                 </flux:navmenu>
@@ -42,12 +46,6 @@
         </flux:navbar>
 
         <flux:spacer />
-
-        <flux:navbar class="me-4">
-            <flux:navbar.item icon="magnifying-glass" href="#" label="Cari" />
-            <flux:navbar.item class="max-lg:hidden" icon="cog-6-tooth" href="{{ route('sales.setting.index') }}" label="Pengaturan" />
-            <flux:navbar.item class="max-lg:hidden" icon="information-circle" href="#" label="Bantuan" />
-        </flux:navbar>
 
         <flux:dropdown position="top" align="start">
             <flux:profile avatar="{{ auth()->user()->profile ? asset('storage/' . auth()->user()->profile) : null }}" />
@@ -88,21 +86,22 @@
         </flux:dropdown>
     </flux:header>
 
-    <flux:sidebar stashable sticky class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border rtl:border-r-0 rtl:border-l border-zinc-200 dark:border-zinc-700">
+    <flux:sidebar stashable sticky class="hidden-scrollbar lg:hidden bg-zinc-50 dark:bg-zinc-900 border rtl:border-r-0 rtl:border-l border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-        <a href="{{ route('sales.dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+        <a href="{{ route('sales.dashboard') }}" class="me-5 lg:hidden flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
             <x-app-logo />
         </a>
         
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navlist.item>
+            <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Client</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
             <flux:navlist.item icon="calendar" href="#">Jadwal</flux:navlist.item>
             <flux:navlist.item icon="chart-bar" href="#">Laporan</flux:navlist.item>
 
             <flux:navlist.group expandable heading="Menu" class="max-lg:hidden">
-                <flux:navlist.item href="#">Profil Klien</flux:navlist.item>
+                <flux:navlist.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navlist.item>
                 <flux:navlist.item href="#">Riwayat Penjualan</flux:navlist.item>
                 <flux:navlist.item href="#">Target Penjualan</flux:navlist.item>
             </flux:navlist.group>
@@ -110,6 +109,12 @@
             <!-- Daily Activity -->
             <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
                 <flux:navlist.item icon="calendar" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Manajemen Event')" class="grid mt-10">
+                <flux:navlist.item icon="calendar-days" :href="route('sales.events.dashboard')" :current="request()->routeIs('sales.events.dashboard')" wire:navigate>{{ __('Semua Event') }}</flux:navlist.item>
+                <flux:navlist.item icon="clock" :href="route('sales.events.my-upcoming')" :current="request()->routeIs('sales.events.my-upcoming')" wire:navigate>{{ __('Event Saya Mendatang') }}</flux:navlist.item>
+                <flux:navlist.item icon="check-circle" :href="route('sales.events.past')" :current="request()->routeIs('sales.events.past')" wire:navigate>{{ __('Event Saya Selesai') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

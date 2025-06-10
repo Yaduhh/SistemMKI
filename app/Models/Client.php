@@ -22,6 +22,7 @@ class Client extends Model
         'description',
         'file_input',
         'status',
+        'status_deleted',
         'created_by',
     ];
 

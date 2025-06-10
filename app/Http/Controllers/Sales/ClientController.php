@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
@@ -16,7 +16,8 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Client::with('creator');
+        $query = Client::with('creator')
+            ->where('created_by', Auth::id());
 
         // Search functionality
         if ($request->filled('search')) {
@@ -31,24 +32,21 @@ class ClientController extends Controller
 
         // Status filter
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $status = $request->status;
+            if ($status === 'active') {
+                $query->where('status', true);
+            } elseif ($status === 'inactive') {
+                $query->where('status', false);
+            }
         }
 
-        // Created by filter
-        if ($request->filled('created_by')) {
-            $query->where('created_by', $request->created_by);
-        }
+        // Show only non-deleted clients by default
+        $query->where('status_deleted', false);
 
         $clients = $query->latest()->paginate(12);
+        $clients->appends($request->query());
 
-        // Get unique creators for filter
-        $creators = Client::with('creator')
-            ->get()
-            ->pluck('creator')
-            ->unique('id')
-            ->filter();
-
-        return view('admin.client.index', compact('clients', 'creators'));
+        return view('sales.client.index', compact('clients'));
     }
 
     /**
@@ -56,7 +54,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        return view('admin.client.create');
+        return view('sales.client.create');
     }
 
     /**
@@ -75,6 +73,8 @@ class ClientController extends Controller
 
         $data = $request->all();
         $data['created_by'] = Auth::id();
+        $data['status'] = $request->has('status') ? true : false;
+        $data['status_deleted'] = false;
 
         if ($request->hasFile('file_input')) {
             $data['file_input'] = $request->file('file_input')->store('clients', 'public');
@@ -86,13 +86,13 @@ class ClientController extends Controller
         ActivityLogService::log(
             'create',
             'Client',
-            "Admin menambahkan client baru: {$client->nama}",
+            "Sales menambahkan client baru: {$client->nama}",
             [],
             $client->toArray()
         );
 
         return redirect()
-            ->route('admin.client.index')
+            ->route('sales.client.index')
             ->with('success', 'Client berhasil ditambahkan.');
     }
 
@@ -101,14 +101,12 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk mengedit client ini.');
+        // Ensure the client belongs to the authenticated sales user
+        if ($client->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
-        return view('admin.client.edit', compact('client'));
+        return view('sales.client.edit', compact('client'));
     }
 
     /**
@@ -116,11 +114,9 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk mengupdate client ini.');
+        // Ensure the client belongs to the authenticated sales user
+        if ($client->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $request->validate([
@@ -132,10 +128,11 @@ class ClientController extends Controller
             'status' => 'boolean',
         ]);
 
-        // Store old data for logging
+        // Store old data for comparison
         $oldData = $client->toArray();
 
         $data = $request->all();
+        $data['status'] = $request->has('status') ? true : false;
 
         if ($request->hasFile('file_input')) {
             // Delete old file if exists
@@ -150,45 +147,43 @@ class ClientController extends Controller
         // Log activity for client update
         ActivityLogService::logUpdate(
             'Client',
-            "Admin mengupdate client: {$client->nama}",
+            "Sales mengupdate client: {$client->nama}",
             $oldData,
             $client->fresh()->toArray()
         );
 
         return redirect()
-            ->route('admin.client.index')
+            ->route('sales.client.index')
             ->with('success', 'Client berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft delete the specified resource.
      */
     public function destroy(Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk menghapus client ini.');
+        // Ensure the client belongs to the authenticated sales user
+        if ($client->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
-        // Store client data for logging before deletion
-        $clientData = $client->toArray();
-        $clientName = $client->nama;
+        // Store old data for logging
+        $oldData = $client->toArray();
 
-        $client->delete();
+        // Soft delete by setting status_deleted to true
+        $client->update(['status_deleted' => true]);
 
         // Log activity for client deletion
         ActivityLogService::log(
             'delete',
             'Client',
-            "Admin menghapus client: {$clientName}",
-            $clientData,
-            []
+            "Sales menghapus client: {$client->nama}",
+            $oldData,
+            ['status_deleted' => true]
         );
 
         return redirect()
-            ->route('admin.client.index')
+            ->route('sales.client.index')
             ->with('success', 'Client berhasil dihapus.');
     }
 } 

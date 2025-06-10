@@ -49,6 +49,15 @@
                     <flux:navlist.item icon="document" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
                 </flux:navlist.group>
 
+                <!-- Event Management -->
+                @if(auth()->user()->role === 1)
+                    <flux:navlist.group :heading="__('Manajemen Event')" class="grid mt-10">
+                        <flux:navlist.item icon="calendar-days" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.index')" wire:navigate>{{ __('Semua Event') }}</flux:navlist.item>
+                        <flux:navlist.item icon="clock" :href="route('admin.events.upcoming')" :current="request()->routeIs('admin.events.upcoming')" wire:navigate>{{ __('Event Mendatang') }}</flux:navlist.item>
+                        <flux:navlist.item icon="check-circle" :href="route('admin.events.past')" :current="request()->routeIs('admin.events.past')" wire:navigate>{{ __('Event Selesai') }}</flux:navlist.item>
+                    </flux:navlist.group>
+                @endif
+
                 <flux:navlist.group :heading="__('Akun')" class="grid mt-10">
                     <flux:navlist.item icon="user-circle" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
                 </flux:navlist.group>

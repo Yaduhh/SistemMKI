@@ -1,5 +1,5 @@
- <x-layouts.app :title="__('Edit Client')">
-    <div class="container mx-auto">
+<x-layouts.sales :title="__('Edit Client')">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="w-full mx-auto">
             <div class="bg-white dark:bg-accent-foreground rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -7,27 +7,71 @@
                 </div>
 
                 <!-- Flash Messages -->
-                <x-flash-message type="success" :message="session('success')" />
-                <x-flash-message type="error" :message="session('error')" />
+                @if(session('success'))
+                    <div class="px-6 py-4 bg-green-100 dark:bg-green-900 border-b border-green-200 dark:border-green-700">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-green-800 dark:text-green-200">{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="px-6 py-4 bg-red-100 dark:bg-red-900 border-b border-red-200 dark:border-red-700">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <span class="text-red-800 dark:text-red-200">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="p-6">
-                    <form action="{{ route('admin.client.update', $client->id) }}" method="POST" enctype="multipart/form-data"
+                    <form action="{{ route('sales.client.update', $client->id) }}" method="POST" enctype="multipart/form-data"
                         class="space-y-6">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-4">
-                            <flux:input name="nama" :label="__('Nama')" type="text" required autocomplete="off"
-                                :placeholder="__('Masukkan nama client')" :value="$client->nama" />
+                            <flux:input 
+                                name="nama" 
+                                :label="__('Nama')" 
+                                type="text" 
+                                required 
+                                autocomplete="off"
+                                :placeholder="__('Masukkan nama client')" 
+                                :value="old('nama', $client->nama)" 
+                            />
 
-                            <flux:input name="email" :label="__('Email')" type="email" required autocomplete="off"
-                                :placeholder="__('Masukkan email client')" :value="$client->email" />
+                            <flux:input 
+                                name="email" 
+                                :label="__('Email')" 
+                                type="email" 
+                                required 
+                                autocomplete="off"
+                                :placeholder="__('Masukkan email client')" 
+                                :value="old('email', $client->email)" 
+                            />
 
-                            <flux:input name="notelp" :label="__('No. Telp')" type="text" required autocomplete="off"
-                                :placeholder="__('Masukkan nomor telepon client')" :value="$client->notelp" />
+                            <flux:input 
+                                name="notelp" 
+                                :label="__('No. Telp')" 
+                                type="text" 
+                                required 
+                                autocomplete="off"
+                                :placeholder="__('Masukkan nomor telepon client')" 
+                                :value="old('notelp', $client->notelp)" 
+                            />
 
-                                <flux:textarea name="description" :label="__('Deskripsi')" required rows="4"
-                                placeholder="Masukkan description tambahan...">{{ $client->description }}</flux:textarea>
+                            <flux:textarea 
+                                name="description" 
+                                :label="__('Deskripsi')" 
+                                rows="4"
+                                :placeholder="__('Masukkan description tambahan...')"
+                            >{{ old('description', $client->description) }}</flux:textarea>
 
                             <div>
                                 <label for="file_input"
@@ -86,7 +130,7 @@
                         </div>
 
                         <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <a href="{{ route('admin.client.index') }}"
+                            <a href="{{ route('sales.client.index') }}"
                                 class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                                 Batal
                             </a>
@@ -100,4 +144,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+</x-layouts.sales> 

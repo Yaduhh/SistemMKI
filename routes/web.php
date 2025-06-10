@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SuratJalanController;
 use App\Http\Controllers\Admin\DistributorController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\AkunController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Pengajuan\PengajuanController;
 use App\Http\Controllers\Admin\DailyActivityController;
 use App\Http\Controllers\Admin\DeckingController;
@@ -29,7 +30,14 @@ Route::view('dashboard', 'dashboard')
 
 // Add new route group for sales users (role 2)
 Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(function () {
-    Route::view('dashboard', 'sales.dashboard')->name('dashboard');
+    Route::get('dashboard', [App\Http\Controllers\Sales\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Event Routes for Sales
+    Route::get('events/dashboard', [App\Http\Controllers\Sales\EventController::class, 'dashboard'])->name('events.dashboard');
+    Route::get('events/upcoming', [App\Http\Controllers\Sales\EventController::class, 'upcoming'])->name('events.upcoming');
+    Route::get('events/my-upcoming', [App\Http\Controllers\Sales\EventController::class, 'myUpcoming'])->name('events.my-upcoming');
+    Route::get('events/past', [App\Http\Controllers\Sales\EventController::class, 'past'])->name('events.past');
+    Route::get('events/{event}', [App\Http\Controllers\Sales\EventController::class, 'show'])->name('events.show');
     
     // Daily Activity Routes for Sales
     Route::get('/daily-activity', [App\Http\Controllers\Sales\DailyActivityController::class, 'index'])->name('daily-activity.index');
@@ -40,6 +48,9 @@ Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(fu
     Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'update'])->name('daily-activity.update');
     Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Sales\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
     Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Sales\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+
+    // Client Routes for Sales
+    Route::resource('client', App\Http\Controllers\Sales\ClientController::class);
 
     // Settings Route - using view with sales layout
     Route::view('/setting', 'sales.setting.index')->name('setting.index');
@@ -104,6 +115,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
         Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
         Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+
+        // Event Routes - moved here to avoid conflicts
+        Route::get('events/upcoming', [EventController::class, 'upcoming'])->name('events.upcoming');
+        Route::get('events/past', [EventController::class, 'past'])->name('events.past');
+        Route::get('events/cancelled', [EventController::class, 'cancelled'])->name('events.cancelled');
+        Route::get('events/completed', [EventController::class, 'completed'])->name('events.completed');
+        Route::get('events/deleted', [EventController::class, 'deleted'])->name('events.deleted');
+        Route::post('events/{id}/restore', [EventController::class, 'restore'])->name('events.restore');
+        Route::delete('events/{id}/force-delete', [EventController::class, 'forceDelete'])->name('events.force-delete');
+        Route::put('events/{event}/update-status', [EventController::class, 'updateStatus'])->name('events.update-status');
+        Route::resource('events', EventController::class);
     });
 });
 
@@ -124,6 +146,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
     // Akun Management Routes
     Route::resource('akun', AkunController::class);
+
+    // Settings Route - using view with admin layout
+    Route::view('/setting', 'admin.setting.index')->name('setting.index');
 });
 
 require __DIR__.'/auth.php';

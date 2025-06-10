@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Tambah Client')">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container mx-auto ">
         <div class="w-full mx-auto">
             <div
                 class="bg-white dark:bg-accent-foreground rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
