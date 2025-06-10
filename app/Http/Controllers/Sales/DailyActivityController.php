@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
+use App\Services\ImageService;
 
 class DailyActivityController extends Controller
 {
@@ -56,20 +58,25 @@ class DailyActivityController extends Controller
             'perihal' => 'required|string|max:255',
             'pihak_bersangkutan' => 'required|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'summary' => 'nullable|string|max:1000',
         ]);
 
         $dokumentasi = [];
         if ($request->hasFile('dokumentasi')) {
-            foreach ($request->file('dokumentasi') as $image) {
-                $path = $image->store('dokumentasi', 'public');
-                $dokumentasi[] = $path;
-            }
+            $dokumentasi = ImageService::compressAndStoreMultiple(
+                $request->file('dokumentasi'),
+                'dokumentasi',
+                80, // quality
+                1920, // max width
+                1080 // max height
+            );
         }
 
         $activity = DailyActivity::create([
             'perihal' => $validated['perihal'],
             'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
             'dokumentasi' => $dokumentasi,
+            'summary' => $validated['summary'],
             'created_by' => auth()->id(),
         ]);
 
@@ -131,6 +138,7 @@ class DailyActivityController extends Controller
             'pihak_bersangkutan' => 'required|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'deleted_images' => 'nullable|string',
+            'summary' => 'nullable|string|max:1000',
         ]);
 
         $dokumentasi = is_array($dailyActivity->dokumentasi) ? $dailyActivity->dokumentasi : json_decode($dailyActivity->dokumentasi, true) ?? [];
@@ -149,18 +157,23 @@ class DailyActivityController extends Controller
             }
         }
 
-        // Upload gambar baru
+        // Upload dan compress gambar baru
         if ($request->hasFile('dokumentasi')) {
-            foreach ($request->file('dokumentasi') as $image) {
-                $path = $image->store('dokumentasi', 'public');
-                $dokumentasi[] = $path;
-            }
+            $newImages = ImageService::compressAndStoreMultiple(
+                $request->file('dokumentasi'),
+                'dokumentasi',
+                80, // quality
+                1920, // max width
+                1080 // max height
+            );
+            $dokumentasi = array_merge($dokumentasi, $newImages);
         }
 
         $dailyActivity->update([
             'perihal' => $validated['perihal'],
             'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
             'dokumentasi' => $dokumentasi,
+            'summary' => $validated['summary'],
         ]);
 
         return redirect()

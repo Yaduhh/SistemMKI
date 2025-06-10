@@ -1,4 +1,4 @@
-<x-layouts.sales>
+<x-layouts.app>
     <div class="container mx-auto">
         <div class="mb-8">
             <div class="flex items-center justify-between">
@@ -6,8 +6,8 @@
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Aktivitas</h1>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Informasi Aktivitas Harian</p>
                 </div>
-                <a href="{{ route('sales.daily-activity.index') }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                <a href="{{ route('admin.daily-activity.index') }}"
+                   class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-zinc-900 dark:text-gray-200 dark:hover:bg-zinc-900">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -43,20 +43,20 @@
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
-                                {{ $dailyActivity->created_at->format('d M Y H:i') }}
+                                {{ $dailyActivity->created_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-end my-4 gap-2">
-                    <a href="{{ route('sales.daily-activity.edit', $dailyActivity) }}"
+                    <a href="{{ route('admin.daily-activity.edit', $dailyActivity) }}"
                        class="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/50 dark:text-primary-400 dark:hover:bg-primary-900">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                         Edit
                     </a>
-                    <form action="{{ route('sales.daily-activity.destroy', $dailyActivity) }}" method="POST" class="inline">
+                    <form action="{{ route('admin.daily-activity.destroy', $dailyActivity) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
@@ -80,7 +80,7 @@
                             </svg>
                             Tujuan Kegiatan
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
+                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
                             <p class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->perihal }}</p>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                             </svg>
                             Client
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
+                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
                             <p class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->pihak_bersangkutan }}</p>
                         </div>
                     </div>
@@ -103,8 +103,8 @@
                             </svg>
                             Pembahasan
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
-                            <p class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->summary }}</p>
+                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
+                            <p class="text-gray-700 dark:text-gray-300 text-justify">{{ $dailyActivity->summary }}</p>
                         </div>
                     </div>
 
@@ -150,7 +150,7 @@
             </div>
             
             @if(empty($comments))
-                <div class="flex flex-col items-center justify-center py-12 px-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col items-center justify-center py-12 px-4 bg-gray-50 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
                     <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
                         <svg class="w-8 h-8 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -173,7 +173,7 @@
                                         alt="{{ $user->name }}" 
                                         class="h-8 w-8 rounded-full object-cover">
                                 @else
-                                    <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                    <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-zinc-900 flex items-center justify-center">
                                         <span class="text-xs font-medium text-gray-600 dark:text-gray-300">
                                             {{ strtoupper(substr($comment['user_name'], 0, 1)) }}
                                         </span>
@@ -200,7 +200,7 @@
 
             <!-- Form Komentar -->
             <div class="mt-6">
-                <form action="{{ route('sales.daily-activity.comment', $dailyActivity) }}" method="POST">
+                <form action="{{ route('admin.daily-activity.comment', $dailyActivity) }}" method="POST">
                     @csrf
                     <div class="flex flex-col gap-3">
                         <div class="flex-1">

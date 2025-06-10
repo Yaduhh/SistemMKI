@@ -19,6 +19,7 @@ class DailyActivity extends Model
         'perihal',
         'pihak_bersangkutan',
         'komentar',
+        'summary',
         'deleted_status',
         'created_by'
     ];
@@ -32,9 +33,16 @@ class DailyActivity extends Model
         'komentar' => 'array',
         'dokumentasi' => 'array',
         'deleted_status' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    /**
+     * The timezone that should be used for date casting.
+     *
+     * @var string
+     */
+    protected $timezone = 'Asia/Jakarta';
 
     /**
      * Get the user that created the daily activity.

@@ -1,4 +1,4 @@
-<x-layouts.sales :title="__('Tambah Aktivitas Harian')">
+<x-layouts.app :title="__('Tambah Aktivitas Harian')">
     <div class="container mx-auto">
         <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-8">
             <div class="p-2 rounded-xl bg-emerald-800/10 text-primary dark:bg-emerald-800/20 flex items-center gap-2">
@@ -20,7 +20,7 @@
         </div>
 
         <div class="">
-            <form action="{{ route('sales.daily-activity.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('admin.daily-activity.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <div>
@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">
-                    <a href="{{ route('sales.daily-activity.index') }}">
+                    <a href="{{ route('admin.daily-activity.index') }}">
                         <flux:button variant="filled">
                             {{ __('Batal') }}
                         </flux:button>

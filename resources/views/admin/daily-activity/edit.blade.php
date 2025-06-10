@@ -1,4 +1,4 @@
-<x-layouts.sales :title="__('Edit Aktivitas Harian')">
+<x-layouts.app :title="__('Edit Aktivitas Harian')">
     <div class="container mx-auto">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-8">
@@ -23,7 +23,7 @@
 
         <!-- Form -->
         <div class="">
-            <form action="{{ route('sales.daily-activity.update', $dailyActivity->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('admin.daily-activity.update', $dailyActivity->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 

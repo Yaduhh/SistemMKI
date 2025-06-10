@@ -92,13 +92,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     
     // Daily Activity Routes for Admin
     Route::middleware(['role:1'])->group(function () {
-        Route::get('/daily-activity', [App\Http\Controllers\Admin\DailyActivityController::class, 'index'])->name('daily-activity.index');
-        Route::get('/daily-activity/create', [App\Http\Controllers\Admin\DailyActivityController::class, 'create'])->name('daily-activity.create');
-        Route::post('/daily-activity', [App\Http\Controllers\Admin\DailyActivityController::class, 'store'])->name('daily-activity.store');
-        Route::get('/daily-activity/{dailyActivity}/edit', [App\Http\Controllers\Admin\DailyActivityController::class, 'edit'])->name('daily-activity.edit');
-        Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Admin\DailyActivityController::class, 'update'])->name('daily-activity.update');
-        Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Admin\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
-        Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Admin\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+        // Daily Activity Routes for Sales
+        Route::get('/daily-activity', [DailyActivityController::class, 'index'])->name('daily-activity.index');
+        Route::get('/daily-activity/create', [DailyActivityController::class, 'create'])->name('daily-activity.create');
+        Route::post('/daily-activity', [DailyActivityController::class, 'store'])->name('daily-activity.store');
+        Route::get('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'show'])->name('daily-activity.show');
+        Route::get('/daily-activity/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+        Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
+        Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+        Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
     });
 });
 

@@ -7,12 +7,15 @@ use App\Models\DailyActivity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Services\ImageService;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class DailyActivityController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */ 
     public function index(Request $request)
     {
         $query = DailyActivity::with('creator')
@@ -34,7 +37,7 @@ class DailyActivityController extends Controller
         $activities = $query->latest()->paginate(10);
         $users = User::where('status_deleted', 0)->get();
 
-        return view('daily-activity.index', compact('activities', 'users', 'startDate', 'endDate'));
+        return view('admin.daily-activity.index', compact('activities', 'users', 'startDate', 'endDate'));
     }
 
     /**
@@ -43,7 +46,7 @@ class DailyActivityController extends Controller
     public function create()
     {
         $users = User::where('status_deleted', 0)->get();
-        return view('daily-activity.create', compact('users'));
+        return view('admin.daily-activity.create', compact('users'));
     }
 
     /**
@@ -52,35 +55,43 @@ class DailyActivityController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'dokumentasi' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'perihal' => 'required|string',
-            'pihak_bersangkutan' => 'required|string',
+            'perihal' => 'required|string|max:255',
+            'pihak_bersangkutan' => 'required|string|max:255',
+            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'summary' => 'nullable|string',
         ]);
 
-        // Handle file upload
+        $dokumentasi = [];
         if ($request->hasFile('dokumentasi')) {
-            $file = $request->file('dokumentasi');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('dokumentasi', $filename, 'public');
-            $validated['dokumentasi'] = 'storage/dokumentasi/' . $filename;
+            $dokumentasi = ImageService::compressAndStoreMultiple(
+                $request->file('dokumentasi'),
+                'dokumentasi',
+                80, // quality
+                1920, // max width
+                1080 // max height
+            );
         }
 
-        $validated['created_by'] = Auth::id();
-        $validated['deleted_status'] = false;
-
-        DailyActivity::create($validated);
+        $activity = DailyActivity::create([
+            'perihal' => $validated['perihal'],
+            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+            'dokumentasi' => $dokumentasi,
+            'summary' => $validated['summary'],
+            'created_by' => auth()->id(),
+        ]);
 
         return redirect()
-            ->route('admin.daily-activity.index')
-            ->with('success', 'Aktivitas harian berhasil ditambahkan.');
+            ->route('admin.daily-activity.show', $activity)
+            ->with('success', 'Aktivitas berhasil ditambahkan.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(DailyActivity $dailyActivity)
     {
-        //
+        $dailyActivity->load('creator');
+        return view('admin.daily-activity.show', compact('dailyActivity'));
     }
 
     /**
@@ -89,7 +100,7 @@ class DailyActivityController extends Controller
     public function edit(DailyActivity $dailyActivity)
     {
         $users = User::where('status_deleted', 0)->get();
-        return view('daily-activity.edit', compact('dailyActivity', 'users'));
+        return view('admin.daily-activity.edit', compact('dailyActivity', 'users'));
     }
 
     /**
@@ -98,7 +109,7 @@ class DailyActivityController extends Controller
     public function comment(Request $request, DailyActivity $dailyActivity)
     {
         $request->validate([
-            'message' => 'required|string|max:1000',
+            'message' => 'required|string',
         ]);
 
         $comments = json_decode($dailyActivity->komentar ?? '[]', true);
@@ -114,9 +125,7 @@ class DailyActivityController extends Controller
             'komentar' => json_encode($comments)
         ]);
 
-        return redirect()
-            ->route('admin.daily-activity.index')
-            ->with('success', 'Komentar berhasil ditambahkan.');
+        return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 
     /**
@@ -124,24 +133,52 @@ class DailyActivityController extends Controller
      */
     public function update(Request $request, DailyActivity $dailyActivity)
     {
-        // Check if user is authorized to edit
-        if ($dailyActivity->created_by !== Auth::id()) {
-            return redirect()
-                ->route('admin.daily-activity.index')
-                ->with('error', 'Anda tidak memiliki akses untuk mengedit aktivitas ini.');
-        }
-
         $validated = $request->validate([
-            'dokumentasi' => 'required|string',
-            'perihal' => 'required|string',
-            'pihak_bersangkutan' => 'required|string',
+            'perihal' => 'required|string|max:255',
+            'pihak_bersangkutan' => 'required|string|max:255',
+            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'deleted_images' => 'nullable|string',
+            'summary' => 'nullable|string',
         ]);
 
-        $dailyActivity->update($validated);
+        $dokumentasi = is_array($dailyActivity->dokumentasi) ? $dailyActivity->dokumentasi : json_decode($dailyActivity->dokumentasi, true) ?? [];
+        
+        // Hapus gambar yang dihapus
+        if ($request->filled('deleted_images')) {
+            $deletedImages = json_decode($request->deleted_images, true);
+            if (is_array($deletedImages)) {
+                foreach ($deletedImages as $image) {
+                    if (($key = array_search($image, $dokumentasi)) !== false) {
+                        Storage::disk('public')->delete($dokumentasi[$key]);
+                        unset($dokumentasi[$key]);
+                    }
+                }
+                $dokumentasi = array_values($dokumentasi); // Reindex array
+            }
+        }
+
+        // Upload dan compress gambar baru
+        if ($request->hasFile('dokumentasi')) {
+            $newImages = ImageService::compressAndStoreMultiple(
+                $request->file('dokumentasi'),
+                'dokumentasi',
+                80, // quality
+                1920, // max width
+                1080 // max height
+            );
+            $dokumentasi = array_merge($dokumentasi, $newImages);
+        }
+
+        $dailyActivity->update([
+            'perihal' => $validated['perihal'],
+            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+            'dokumentasi' => $dokumentasi,
+            'summary' => $validated['summary'],
+        ]);
 
         return redirect()
-            ->route('admin.daily-activity.index')
-            ->with('success', 'Aktivitas harian berhasil diperbarui.');
+            ->route('admin.daily-activity.show', $dailyActivity)
+            ->with('success', 'Aktivitas berhasil diperbarui.');
     }
 
     /**
@@ -149,16 +186,17 @@ class DailyActivityController extends Controller
      */
     public function destroy(DailyActivity $dailyActivity)
     {
-        // Check if user is authorized to delete
-        if ($dailyActivity->created_by !== Auth::id()) {
-            return redirect()
-                ->route('admin.daily-activity.index')
-                ->with('error', 'Anda tidak memiliki akses untuk menghapus aktivitas ini.');
+        // Hapus semua gambar dokumentasi
+        if ($dailyActivity->dokumentasi) {
+            foreach ($dailyActivity->dokumentasi as $image) {
+                Storage::disk('public')->delete($image);
+            }
         }
 
-        $dailyActivity->update(['deleted_status' => true]);
+        $dailyActivity->delete();
+
         return redirect()
             ->route('admin.daily-activity.index')
-            ->with('success', 'Aktivitas harian berhasil dihapus.');
+            ->with('success', 'Aktivitas berhasil dihapus.');
     }
 }
