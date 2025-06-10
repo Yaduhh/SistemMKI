@@ -3,7 +3,7 @@
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="p-2 rounded-xl bg-emerald-800/10 text-primary dark:bg-emerald-800/20">
+                <div class="p-2 rounded-xl bg-emerald-800/10 text-zinc dark:bg-emerald-800/20">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -31,7 +31,7 @@
 
         <!-- Filters Section -->
         <div
-            class="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
+            class="bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
             <div class="p-4 sm:p-6">
                 <form action="{{ route('sales.daily-activity.index') }}" method="GET" class="space-y-4">
                     <div class="grid grid-cols-1 gap-4">
@@ -49,10 +49,10 @@
 
                             <div class="flex w-full gap-2 mt-4">
                                 <input type="date" name="start_date" id="start_date" value="{{ $startDate }}"
-                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/30"
+                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
                                     max="{{ $endDate }}" onchange="updateEndDateMin(this.value)">
                                 <input type="date" name="end_date" id="end_date" value="{{ $endDate }}"
-                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/30"
+                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
                                     min="{{ $startDate }}" onchange="updateStartDateMax(this.value)">
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                 {{ __('Filter') }}
                             </button>
                             <a href="{{ route('sales.daily-activity.index') }}"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700/50 dark:text-gray-200 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-100 text-gray-700 hover:bg-zinc-200 dark:bg-zinc-700/50 dark:text-gray-200 dark:hover:bg-zinc-700 rounded-lg transition-all duration-200">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -85,7 +85,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             @forelse ($activities as $activity)
                 <div class="grid gap-6 grid-cols-1">
-                    <div class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-gray-800/50 border border-emerald-800">
+                    <div class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-zinc-900/50 border border-emerald-800">
                         <div class="border-b border-gray-200 p-4 dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -95,7 +95,7 @@
                                             class="h-12 w-12 rounded-full object-cover">
                                     @else
                                         <div
-                                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-medium text-zinc-600 dark:bg-zinc-600/50 dark:text-zinc-400 uppercase">
                                             {{ substr($activity->creator->name, 0, 2) }}
                                         </div>
                                     @endif
@@ -120,7 +120,7 @@
                             @if (auth()->id() === $activity->created_by)
                                 <div class="flex items-center gap-2 justify-end mt-4">
                                     <a href="{{ route('sales.daily-activity.edit', $activity) }}"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/50 dark:text-primary-400 dark:hover:bg-primary-900">
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:bg-zinc-900">
                                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,7 +154,7 @@
                             <div class="space-y-4">
                                 <div class="flex items-start gap-3">
                                     <div
-                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full">
                                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -170,7 +170,7 @@
                                 <!-- Pihak Bersangkutan -->
                                 <div class="flex items-start gap-3">
                                     <div
-                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full">
                                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -187,8 +187,8 @@
                             <div class="col-span-1 md:col-span-2">
                                 <!-- Dokumentasi -->
                                 @if($activity->dokumentasi && is_array($activity->dokumentasi))
-                                    <div class="flex items-start gap-3 rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
-                                        <div class="flex h-10 w-10 shrink-0 justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                                    <div class="flex items-start gap-3 rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                                        <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
                                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                             </svg>
@@ -218,7 +218,7 @@
                             <!-- Komentar -->
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="flex h-10 w-10 shrink-0 justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                                    class="flex h-10 w-10 shrink-0 justify-center rounded-full">
                                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -232,7 +232,7 @@
                                         </p>
                                     </div>
                                     <a href="{{ route('sales.daily-activity.show', $activity) }}"
-                                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                                        class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
                                         Lihat detail
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -247,11 +247,11 @@
                 </div>
             @empty
                 <div
-                    class="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
+                    class="bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
                     <div class="p-8">
                         <div class="flex flex-col items-center justify-center text-center">
                             <div class="rounded-full bg-emerald-800/10 dark:bg-emerald-800/20 p-3">
-                                <svg class="w-6 h-6 text-primary dark:text-primary/90" fill="none"
+                                <svg class="w-6 h-6 text-zinc dark:text-zinc/90" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -286,7 +286,7 @@
         <div class="relative h-full w-full flex items-center justify-center">
             <!-- Close button -->
             <button onclick="closeImageModal()"
-                class="absolute top-4 right-4 z-10 rounded-full bg-gray-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-gray-900/75">
+                class="absolute top-4 right-4 z-10 rounded-full bg-zinc-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-zinc-900/75">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -294,7 +294,7 @@
 
             <!-- Fullscreen button -->
             <button onclick="toggleFullscreen()"
-                class="absolute top-4 right-16 z-10 rounded-full bg-gray-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-gray-900/75">
+                class="absolute top-4 right-16 z-10 rounded-full bg-zinc-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-zinc-900/75">
                 <svg id="fullscreenIcon" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />

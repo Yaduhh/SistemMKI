@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManagerStatic as Image;
 use App\Services\ImageService;
+use App\Services\ActivityLogService;
 
 class DailyActivityController extends Controller
 {
@@ -58,7 +59,7 @@ class DailyActivityController extends Controller
             'perihal' => 'required|string|max:255',
             'pihak_bersangkutan' => 'required|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'summary' => 'nullable|string|max:1000',
+            'summary' => 'nullable|string',
         ]);
 
         $dokumentasi = [];
@@ -66,9 +67,9 @@ class DailyActivityController extends Controller
             $dokumentasi = ImageService::compressAndStoreMultiple(
                 $request->file('dokumentasi'),
                 'dokumentasi',
-                80, // quality
-                1920, // max width
-                1080 // max height
+                80,
+                1920,
+                1080
             );
         }
 
@@ -79,6 +80,13 @@ class DailyActivityController extends Controller
             'summary' => $validated['summary'],
             'created_by' => auth()->id(),
         ]);
+
+        // Log aktivitas
+        ActivityLogService::logCreate(
+            'DailyActivity',
+            "Sales membuat aktivitas baru: {$activity->perihal}",
+            $activity->toArray()
+        );
 
         return redirect()
             ->route('sales.daily-activity.show', $activity)
@@ -109,7 +117,7 @@ class DailyActivityController extends Controller
     public function comment(Request $request, DailyActivity $dailyActivity)
     {
         $request->validate([
-            'message' => 'required|string|max:1000',
+            'message' => 'required|string',
         ]);
 
         $comments = json_decode($dailyActivity->komentar ?? '[]', true);
@@ -125,6 +133,15 @@ class DailyActivityController extends Controller
             'komentar' => json_encode($comments)
         ]);
 
+        // Log aktivitas komentar
+        ActivityLogService::log(
+            'comment',
+            'DailyActivity',
+            "Sales menambahkan komentar pada aktivitas: {$dailyActivity->perihal}",
+            $dailyActivity->toArray(),
+            $dailyActivity->fresh()->toArray()
+        );
+
         return back()->with('success', 'Komentar berhasil ditambahkan.');
     }
 
@@ -138,8 +155,11 @@ class DailyActivityController extends Controller
             'pihak_bersangkutan' => 'required|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'deleted_images' => 'nullable|string',
-            'summary' => 'nullable|string|max:1000',
+            'summary' => 'nullable|string',
         ]);
+
+        // Simpan data lama untuk logging
+        $oldData = $dailyActivity->toArray();
 
         $dokumentasi = is_array($dailyActivity->dokumentasi) ? $dailyActivity->dokumentasi : json_decode($dailyActivity->dokumentasi, true) ?? [];
         
@@ -153,7 +173,7 @@ class DailyActivityController extends Controller
                         unset($dokumentasi[$key]);
                     }
                 }
-                $dokumentasi = array_values($dokumentasi); // Reindex array
+                $dokumentasi = array_values($dokumentasi);
             }
         }
 
@@ -162,9 +182,9 @@ class DailyActivityController extends Controller
             $newImages = ImageService::compressAndStoreMultiple(
                 $request->file('dokumentasi'),
                 'dokumentasi',
-                80, // quality
-                1920, // max width
-                1080 // max height
+                80,
+                1920,
+                1080
             );
             $dokumentasi = array_merge($dokumentasi, $newImages);
         }
@@ -176,6 +196,14 @@ class DailyActivityController extends Controller
             'summary' => $validated['summary'],
         ]);
 
+        // Log aktivitas
+        ActivityLogService::logUpdate(
+            'DailyActivity',
+            "Sales mengupdate aktivitas: {$dailyActivity->perihal}",
+            $oldData,
+            $dailyActivity->fresh()->toArray()
+        );
+
         return redirect()
             ->route('sales.daily-activity.show', $dailyActivity)
             ->with('success', 'Aktivitas berhasil diperbarui.');
@@ -186,14 +214,20 @@ class DailyActivityController extends Controller
      */
     public function destroy(DailyActivity $dailyActivity)
     {
-        // Hapus semua gambar dokumentasi
-        if ($dailyActivity->dokumentasi) {
-            foreach ($dailyActivity->dokumentasi as $image) {
-                Storage::disk('public')->delete($image);
-            }
-        }
+        // Simpan data untuk logging
+        $oldData = $dailyActivity->toArray();
 
-        $dailyActivity->delete();
+        // Update status deleted
+        $dailyActivity->update([
+            'deleted_status' => true
+        ]);
+
+        // Log aktivitas
+        ActivityLogService::logDelete(
+            'DailyActivity',
+            "Sales menghapus aktivitas: {$dailyActivity->perihal}",
+            $oldData
+        );
 
         return redirect()
             ->route('sales.daily-activity.index')
