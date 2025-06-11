@@ -6,6 +6,19 @@
             <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Update informasi profil dan foto Anda') }}</p>
         </div>
         
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div class="my-3 bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-md">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="my-3 bg-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-md">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form wire:submit="updateProfileInformation" class="space-y-6">
             <!-- Profile Photo -->
             <div class="space-y-4">
@@ -13,21 +26,21 @@
                 
                 <div class="flex items-center space-x-4">
                     @if($profilePreview)
-                        <img src="{{ $profilePreview }}" alt="Preview" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                        <img src="{{ $profilePreview }}" alt="Preview" class="w-20 h-20 rounded-lg object-cover border-2 border-gray-200">
                     @elseif(auth()->user()->profile)
-                        <img src="{{ Storage::url(auth()->user()->profile) }}" alt="Profile" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                        <img src="{{ Storage::url(auth()->user()->profile) }}" alt="Profile" class="w-20 h-20 rounded-lg object-cover border-2 border-gray-200">
                     @else
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+                        <div class="w-20 h-20 rounded-lg bg-gray-200 flex items-center justify-center">
                             <span class="text-2xl font-bold text-gray-500">{{ auth()->user()->initials() }}</span>
                         </div>
                     @endif
                     
                     <div>
-                        <flux:input 
-                            wire:model="profile" 
+                        <input 
                             type="file" 
+                            wire:model="profile" 
                             accept="image/*"
-                            class="text-sm"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300"
                         />
                         <flux:text class="text-xs text-gray-500 mt-1">
                             {{ __('Format: JPG, JPEG, PNG. Maksimal 2MB.') }}

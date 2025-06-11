@@ -22,6 +22,7 @@ class AccountSettings extends Component
     public string $email = '';
     public string $notelp = '';
     public $profile;
+    public $croppedProfile;
     public $profilePreview;
 
     // Password Change
@@ -49,12 +50,22 @@ class AccountSettings extends Component
      */
     public function updatedProfile()
     {
-        $this->validate([
-            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-        ]);
+        try {
+            $this->validate([
+                'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            ]);
 
-        if ($this->profile) {
-            $this->profilePreview = $this->profile->temporaryUrl();
+            if ($this->profile) {
+                // Show preview
+                $this->profilePreview = $this->profile->temporaryUrl();
+                session()->flash('success', 'Gambar berhasil dipilih. Silakan simpan untuk mengupdate profil.');
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            session()->flash('error', 'Validasi gagal: ' . implode(', ', $e->validator->errors()->all()));
+        } catch (\Exception $e) {
+            // Log error for debugging
+            \Log::error('Error in updatedProfile: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan saat memproses gambar: ' . $e->getMessage());
         }
     }
 
@@ -108,6 +119,7 @@ class AccountSettings extends Component
         );
 
         $this->profile = null;
+        $this->croppedProfile = null;
         $this->profilePreview = null;
 
         $this->dispatch('profile-updated', name: $user->name);

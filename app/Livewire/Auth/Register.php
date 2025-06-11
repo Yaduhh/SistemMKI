@@ -51,10 +51,7 @@ class Register extends Component
         // Trigger event registered
         event(new Registered($user));
 
-        // Login user setelah registrasi
-        Auth::login($user);
-
-        // Redirect ke dashboard atau halaman tujuan lainnya
+        // Redirect ke dashboard
         $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
 }

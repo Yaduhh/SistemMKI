@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\WallpanelController;
 use App\Http\Controllers\Admin\CeilingController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
@@ -131,6 +131,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Distributor Routes
+    Route::get('distributor/logs', [DistributorController::class, 'logs'])->name('distributor.logs');
     Route::resource('distributor', DistributorController::class);
 
     // Client Routes
@@ -145,7 +146,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
     // Akun Management Routes
-    Route::resource('akun', AkunController::class);
+    Route::get('akun', App\Livewire\Admin\UserIndex::class)->name('akun.index');
+    Route::get('akun/create', App\Livewire\Admin\CreateUser::class)->name('akun.create');
+    Route::get('akun/{akun}/edit', [AkunController::class, 'edit'])->name('akun.edit');
+    Route::put('akun/{akun}', [AkunController::class, 'update'])->name('akun.update');
+    Route::delete('akun/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
 
     // Settings Route - using view with admin layout
     Route::view('/setting', 'admin.setting.index')->name('setting.index');

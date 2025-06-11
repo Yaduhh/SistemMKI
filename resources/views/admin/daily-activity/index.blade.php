@@ -280,7 +280,7 @@
                 </div>
             @empty
                 <div
-                    class="bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
+                    class="lg:col-span-3 bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
                     <div class="p-8">
                         <div class="flex flex-col items-center justify-center text-center">
                             <div class="rounded-full bg-emerald-800/10 dark:bg-emerald-800/20 p-3">

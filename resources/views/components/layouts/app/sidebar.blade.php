@@ -60,6 +60,9 @@
 
                 <flux:navlist.group :heading="__('Akun')" class="grid mt-10">
                     <flux:navlist.item icon="user-circle" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
+                    @if(auth()->user()->role === 1)
+                        <flux:navlist.item icon="user-plus" :href="route('admin.akun.create')" :current="request()->routeIs('admin.akun.create')" wire:navigate>{{ __('Tambah User') }}</flux:navlist.item>
+                    @endif
                 </flux:navlist.group>
 
                 <!-- Daily Activity -->
