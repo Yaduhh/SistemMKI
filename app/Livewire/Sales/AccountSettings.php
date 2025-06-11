@@ -51,13 +51,13 @@ class AccountSettings extends Component
     public function updatedProfile()
     {
         try {
-            $this->validate([
-                'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            ]);
+        $this->validate([
+            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+        ]);
 
-            if ($this->profile) {
+        if ($this->profile) {
                 // Show preview
-                $this->profilePreview = $this->profile->temporaryUrl();
+            $this->profilePreview = $this->profile->temporaryUrl();
                 session()->flash('success', 'Gambar berhasil dipilih. Silakan simpan untuk mengupdate profil.');
             }
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -41,13 +41,13 @@ class DistributorController extends Controller
 
         $distributor = Distributor::create($data);
 
-        // Log activity
-        Log::info('Distributor created', [
+        // Log activity with cleaner format
+        Log::info("Distributor '{$distributor->nama_distributor}' created by " . auth()->user()->name, [
+            'action' => 'create',
             'user_id' => auth()->id(),
             'user_name' => auth()->user()->name,
             'distributor_id' => $distributor->id,
-            'distributor_name' => $distributor->nama_distributor,
-            'action' => 'create'
+            'distributor_name' => $distributor->nama_distributor
         ]);
 
         return redirect()->route('admin.distributor.index')
@@ -81,17 +81,18 @@ class DistributorController extends Controller
             $data['profile'] = $profilePath;
         }
 
+        $oldStatus = $distributor->status;
         $distributor->update($data);
 
-        // Log activity
-        Log::info('Distributor updated', [
+        // Log activity with cleaner format
+        Log::info("Distributor '{$distributor->nama_distributor}' updated by " . auth()->user()->name, [
+            'action' => 'update',
             'user_id' => auth()->id(),
             'user_name' => auth()->user()->name,
             'distributor_id' => $distributor->id,
             'distributor_name' => $distributor->nama_distributor,
-            'old_status' => $distributor->getOriginal('status'),
-            'new_status' => $data['status'],
-            'action' => 'update'
+            'old_status' => $oldStatus,
+            'new_status' => $data['status']
         ]);
 
         return redirect()->route('admin.distributor.index')
@@ -101,12 +102,12 @@ class DistributorController extends Controller
     public function destroy(Distributor $distributor)
     {
         // Log activity before deletion
-        Log::info('Distributor deleted', [
+        Log::info("Distributor '{$distributor->nama_distributor}' deleted by " . auth()->user()->name, [
+            'action' => 'delete',
             'user_id' => auth()->id(),
             'user_name' => auth()->user()->name,
             'distributor_id' => $distributor->id,
-            'distributor_name' => $distributor->nama_distributor,
-            'action' => 'delete'
+            'distributor_name' => $distributor->nama_distributor
         ]);
 
         $distributor->status_deleted = true;
@@ -127,6 +128,7 @@ class DistributorController extends Controller
             $lines = explode("\n", $logContent);
             
             foreach (array_reverse($lines) as $line) {
+                // Look for distributor activity logs
                 if (strpos($line, 'Distributor') !== false && 
                     (strpos($line, 'created') !== false || 
                      strpos($line, 'updated') !== false || 
@@ -136,21 +138,36 @@ class DistributorController extends Controller
                     preg_match('/\[(.*?)\]/', $line, $timestampMatch);
                     $timestamp = $timestampMatch[1] ?? '';
                     
-                    // Extract JSON data
-                    preg_match('/\{.*\}/', $line, $jsonMatch);
-                    if (isset($jsonMatch[0])) {
+                    // Extract JSON data first
+                    if (preg_match('/\{.*\}/', $line, $jsonMatch)) {
                         $jsonData = json_decode($jsonMatch[0], true);
                         if ($jsonData) {
-                            $parsedLogs[] = [
-                                'timestamp' => $timestamp,
-                                'action' => $jsonData['action'] ?? '',
-                                'user_name' => $jsonData['user_name'] ?? '',
-                                'distributor_name' => $jsonData['distributor_name'] ?? '',
-                                'distributor_id' => $jsonData['distributor_id'] ?? '',
-                                'old_status' => $jsonData['old_status'] ?? null,
-                                'new_status' => $jsonData['new_status'] ?? null,
-                                'raw_line' => $line
-                            ];
+                            // Create clean message based on action
+                            $action = $jsonData['action'] ?? '';
+                            $distributorName = $jsonData['distributor_name'] ?? '';
+                            $userName = $jsonData['user_name'] ?? '';
+                            
+                            $message = '';
+                            if ($action === 'create') {
+                                $message = "Distributor '{$distributorName}' berhasil dibuat";
+                            } elseif ($action === 'update') {
+                                $message = "Distributor '{$distributorName}' berhasil diperbarui";
+                            } elseif ($action === 'delete') {
+                                $message = "Distributor '{$distributorName}' berhasil dihapus";
+                            }
+                            
+                            if ($message) {
+                                $parsedLogs[] = [
+                                    'timestamp' => $timestamp,
+                                    'message' => $message,
+                                    'action' => $action,
+                                    'user_name' => $userName,
+                                    'distributor_name' => $distributorName,
+                                    'distributor_id' => $jsonData['distributor_id'] ?? '',
+                                    'old_status' => $jsonData['old_status'] ?? null,
+                                    'new_status' => $jsonData['new_status'] ?? null
+                                ];
+                            }
                         }
                     }
                 }

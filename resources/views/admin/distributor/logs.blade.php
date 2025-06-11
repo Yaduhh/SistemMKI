@@ -74,21 +74,29 @@
                                                 </span>
                                             </div>
                                             
-                                            <div class="space-y-2">
+                                            <!-- Main message -->
+                                            <div class="mb-3">
+                                                <p class="text-sm text-gray-900 dark:text-white font-medium">
+                                                    {{ $log['message'] }}
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Additional details -->
+                                            <div class="space-y-2 text-sm">
                                                 <div class="flex items-center space-x-2">
-                                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">User:</span>
-                                                    <span class="text-sm text-gray-900 dark:text-white font-semibold">{{ $log['user_name'] }}</span>
+                                                    <span class="text-gray-500 dark:text-gray-400">User:</span>
+                                                    <span class="text-gray-900 dark:text-white font-medium">{{ $log['user_name'] }}</span>
                                                 </div>
                                                 
                                                 <div class="flex items-center space-x-2">
-                                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Distributor:</span>
-                                                    <span class="text-sm text-gray-900 dark:text-white font-semibold">{{ $log['distributor_name'] }}</span>
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">(ID: {{ $log['distributor_id'] }})</span>
+                                                    <span class="text-gray-500 dark:text-gray-400">Distributor:</span>
+                                                    <span class="text-gray-900 dark:text-white font-medium">{{ $log['distributor_name'] }}</span>
+                                                    <span class="text-xs text-gray-400 dark:text-gray-500">(ID: {{ $log['distributor_id'] }})</span>
                                                 </div>
                                                 
                                                 @if($log['action'] === 'update' && isset($log['old_status']) && isset($log['new_status']))
                                                     <div class="flex items-center space-x-2">
-                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</span>
+                                                        <span class="text-gray-500 dark:text-gray-400">Status:</span>
                                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $log['old_status'] ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' }}">
                                                             {{ $log['old_status'] ? 'Active' : 'Inactive' }}
                                                         </span>

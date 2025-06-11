@@ -24,9 +24,15 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Redirect dashboard based on user role
+Route::get('dashboard', function () {
+    if (auth()->user()->role === 1) {
+        return redirect()->route('admin.dashboard');
+    } elseif (auth()->user()->role === 2) {
+        return redirect()->route('sales.dashboard');
+    }
+    return redirect()->route('login');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // Add new route group for sales users (role 2)
 Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(function () {
@@ -145,6 +151,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 });
 
 Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('logs', [App\Http\Controllers\Admin\DashboardController::class, 'logs'])->name('logs');
+    
     // Akun Management Routes
     Route::get('akun', App\Livewire\Admin\UserIndex::class)->name('akun.index');
     Route::get('akun/create', App\Livewire\Admin\CreateUser::class)->name('akun.create');
