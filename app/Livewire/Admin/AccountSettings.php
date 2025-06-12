@@ -50,7 +50,7 @@ class AccountSettings extends Component
     public function updatedProfile()
     {
         $this->validate([
-            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:4048'],
         ]);
 
         if ($this->profile) {
@@ -76,7 +76,7 @@ class AccountSettings extends Component
                 Rule::unique(User::class)->ignore($user->id),
             ],
             'notelp' => ['nullable', 'string', 'max:20'],
-            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:4048'],
         ]);
 
         // Log aktivitas sebelum update
