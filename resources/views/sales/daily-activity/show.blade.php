@@ -78,7 +78,7 @@
                             <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Tujuan Kegiatan
+                            Tujuan Kunjungan
                         </h3>
                         <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
                             <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->perihal }}</p>
@@ -90,10 +90,10 @@
                             <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
-                            Client
+                            Pelanggan
                         </h3>
                         <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
-                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->pihak_bersangkutan }}</p>
+                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->client ? $dailyActivity->client->nama : 'Client tidak ditemukan' }}</p>
                         </div>
                     </div>
                     <div class="space-y-2">
@@ -107,6 +107,35 @@
                             <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->summary }}</p>
                         </div>
                     </div>
+
+                    @if($dailyActivity->lokasi)
+                    <div class="space-y-2">
+                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Lokasi
+                        </h3>
+                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                            <div class="mb-4">
+                                <h4 class="font-medium text-gray-900 dark:text-white">Lokasi</h4>
+                                <div class="mt-1 text-gray-600 dark:text-gray-400">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono">{{ $dailyActivity->lokasi }}</span>
+                                        <span id="address-{{ $dailyActivity->id }}" class="text-gray-400 mt-1">Loading alamat...</span>
+                                    </div>
+                                    <a href="https://www.google.com/maps?q={{ $dailyActivity->lokasi }}" target="_blank" class="text-blue-500 hover:underline flex items-center gap-1 mt-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        </svg>
+                                        Buka di Google Maps
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     @if($dailyActivity->dokumentasi && is_array($dailyActivity->dokumentasi))
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
@@ -371,5 +400,39 @@
             'fitImagesInViewport': true
         });
     </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log("Script jalan bos 🔥");
+
+                const lokasiElements = document.querySelectorAll("[id^=address-]");
+
+                lokasiElements.forEach((addressSpan) => {
+                    const id = addressSpan.id.split("-")[1];
+                    const lokasiElement = addressSpan.previousElementSibling;
+                    if (!lokasiElement) return;
+
+                    const lokasiText = lokasiElement.textContent.trim();
+                    const [latitude, longitude] = lokasiText.split(",").map(parseFloat);
+
+                    if (isNaN(latitude) || isNaN(longitude)) {
+                        addressSpan.textContent = "Format lokasi tidak valid";
+                        return;
+                    }
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+                        headers: {
+                            'User-Agent': 'AktivitasApp/1.0 (your@email.com)'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            addressSpan.textContent = data.display_name || "Alamat tidak ditemukan";
+                        })
+                        .catch(() => {
+                            addressSpan.textContent = "Gagal memuat alamat";
+                        });
+                });
+            });
+        </script>
     @endpush
 </x-layouts.sales>

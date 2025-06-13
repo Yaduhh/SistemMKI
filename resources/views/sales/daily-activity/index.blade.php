@@ -85,7 +85,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             @forelse ($activities as $activity)
                 <div class="grid gap-6 grid-cols-1">
-                    <div class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-zinc-900/50 border border-emerald-800">
+                    <div
+                        class="overflow-hidden rounded-xl bg-white shadow-sm dark:bg-zinc-900/50 border border-emerald-800">
                         <div class="border-b border-gray-200 p-4 dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -137,8 +138,7 @@
                                             class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900">
                                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2"
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                             Hapus
@@ -153,9 +153,9 @@
                             <!-- Perihal -->
                             <div class="space-y-4">
                                 <div class="flex items-start gap-3">
-                                    <div
-                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full">
-                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -166,12 +166,12 @@
                                             {{ Str::limit($activity->perihal, 100) }}</p>
                                     </div>
                                 </div>
-    
+
                                 <!-- Pihak Bersangkutan -->
                                 <div class="flex items-start gap-3">
-                                    <div
-                                        class="flex h-10 w-10 shrink-0 justify-center rounded-full">
-                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
@@ -179,31 +179,75 @@
                                     <div>
                                         <h4 class="font-medium text-gray-900 dark:text-white">Client</h4>
                                         <p class="mt-1 text-gray-600 dark:text-gray-400">
-                                            {{ Str::limit($activity->pihak_bersangkutan, 100) }}</p>
+                                            @if ($activity->client)
+                                                {{ Str::limit($activity->client->nama, 100) }}
+                                            @else
+                                                <span class="text-gray-400 dark:text-gray-500">Client tidak
+                                                    ditemukan</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Lokasi -->
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="mb-4">
+                                        <h4 class="font-medium text-gray-900 dark:text-white">Lokasi</h4>
+                                        <div class="mt-1 text-gray-600 dark:text-gray-400">
+                                            <div class="flex flex-col">
+                                                <span class="font-mono">{{ $activity->lokasi }}</span>
+                                                <span id="address-{{ $activity->id }}"
+                                                    class="text-gray-400 mt-1">Loading alamat...</span>
+                                            </div>
+                                            <a href="https://www.google.com/maps?q={{ $activity->lokasi }}"
+                                                target="_blank"
+                                                class="text-blue-500 hover:underline flex items-center gap-1 mt-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                                    </path>
+                                                </svg>
+                                                Buka di Google Maps
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-span-1 md:col-span-2">
                                 <!-- Dokumentasi -->
-                                @if($activity->dokumentasi && is_array($activity->dokumentasi))
+                                @if ($activity->dokumentasi && is_array($activity->dokumentasi))
                                     <div class="flex items-start gap-3 rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
                                         <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
-                                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <h4 class="text-sm font-medium text-gray-900 dark:text-white">Dokumentasi</h4>
+                                            <h4 class="text-sm font-medium text-gray-900 dark:text-white">Dokumentasi
+                                            </h4>
                                             <div class="mt-2 flex gap-2">
-                                                @foreach(array_slice($activity->dokumentasi, 0, 3) as $index => $image)
+                                                @foreach (array_slice($activity->dokumentasi, 0, 3) as $index => $image)
                                                     <div class="relative">
-                                                        <img src="{{ asset('storage/' . $image) }}" 
-                                                             alt="Dokumentasi" 
-                                                             class="h-16 w-16 rounded-lg object-cover cursor-zoom-in transition-transform duration-300 hover:scale-105"
-                                                             onclick="openImageFullscreen('{{ asset('storage/' . $image) }}')">
-                                                        @if($index === 2 && count($activity->dokumentasi) > 3)
-                                                            <div class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60 text-white font-medium">
+                                                        <img src="{{ asset('storage/' . $image) }}" alt="Dokumentasi"
+                                                            class="h-16 w-16 rounded-lg object-cover cursor-zoom-in transition-transform duration-300 hover:scale-105"
+                                                            onclick="openImageModal('{{ asset('storage/' . $image) }}')">
+                                                        @if ($index === 2 && count($activity->dokumentasi) > 3)
+                                                            <div
+                                                                class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60 text-white font-medium">
                                                                 +{{ count($activity->dokumentasi) - 3 }}
                                                             </div>
                                                         @endif
@@ -217,8 +261,7 @@
 
                             <!-- Komentar -->
                             <div class="flex items-center gap-3">
-                                <div
-                                    class="flex h-10 w-10 shrink-0 justify-center rounded-full">
+                                <div class="flex h-10 w-10 shrink-0 justify-center rounded-full">
                                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -247,12 +290,12 @@
                 </div>
             @empty
                 <div
-                    class="bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
+                    class="lg:col-span-3 bg-white dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">
                     <div class="p-8">
                         <div class="flex flex-col items-center justify-center text-center">
                             <div class="rounded-full bg-emerald-800/10 dark:bg-emerald-800/20 p-3">
-                                <svg class="w-6 h-6 text-zinc dark:text-zinc/90" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-zinc dark:text-zinc/90" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -281,162 +324,77 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm">
-        <div class="relative h-full w-full flex items-center justify-center">
-            <!-- Close button -->
-            <button onclick="closeImageModal()"
-                class="absolute top-4 right-4 z-10 rounded-full bg-zinc-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-zinc-900/75">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+    <!-- Modal Gambar -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300">
+                <flux:icon name="x-mark" class="w-6 h-6" />
             </button>
-
-            <!-- Fullscreen button -->
-            <button onclick="toggleFullscreen()"
-                class="absolute top-4 right-16 z-10 rounded-full bg-zinc-900/50 p-2 text-white backdrop-blur-sm transition-colors hover:bg-zinc-900/75">
-                <svg id="fullscreenIcon" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                </svg>
-            </button>
-
-            <!-- Image container -->
-            <div id="modalImageContainer" class="relative max-w-[90vw] max-h-[90vh]">
-                <img id="modalImage" src="" alt="Dokumentasi"
-                    class="max-w-full max-h-[90vh] object-contain rounded-lg">
-            </div>
+            <img id="modalImage" src="" alt="Full size image" class="max-h-[90vh] max-w-[90vw] object-contain">
         </div>
     </div>
 
+    @push('scripts')
     <script>
-        function openImageModal(imageUrl) {
+        function openImageModal(imageSrc) {
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
-            modalImage.src = imageUrl;
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            if (modal && modalImage) {
+                modalImage.src = imageSrc;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-            exitFullscreen();
-        }
-
-        function toggleFullscreen() {
-            const container = document.getElementById('modalImageContainer');
-            const fullscreenIcon = document.getElementById('fullscreenIcon');
-
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(err => {
-                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-                fullscreenIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4H5a2 2 0 00-2 2v4m6-6h4M9 20H5a2 2 0 01-2-2v-4m6 6h4m5-16h4a2 2 0 012 2v4m-6-6h-4m5 16h4a2 2 0 002-2v-4m-6 6h-4"/>
-                `;
-            } else {
-                document.exitFullscreen();
-                fullscreenIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
-                `;
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
             }
         }
 
-        function exitFullscreen() {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-                const fullscreenIcon = document.getElementById('fullscreenIcon');
-                fullscreenIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
-                `;
-            }
-        }
-
-        // Close modal on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
+        // Close modal when clicking outside the image
+        document.getElementById('imageModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
                 closeImageModal();
             }
         });
+    </script>
+    @endpush
 
-        // Close modal when clicking outside
-        document.getElementById('imageModal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeImageModal();
-            }
-        });
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Script jalan bos 🔥");
 
-        // Handle fullscreen change
-        document.addEventListener('fullscreenchange', function() {
-            const fullscreenIcon = document.getElementById('fullscreenIcon');
-            if (!document.fullscreenElement) {
-                fullscreenIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/>
-                `;
-            }
-        });
+            const lokasiElements = document.querySelectorAll("[id^=address-]");
 
-        function updateEndDateMin(startDate) {
-            const endDateInput = document.querySelector('input[name="end_date"]');
-            endDateInput.min = startDate;
-            if (endDateInput.value < startDate) {
-                endDateInput.value = startDate;
-            }
-        }
+            lokasiElements.forEach((addressSpan) => {
+                const id = addressSpan.id.split("-")[1];
+                const lokasiElement = addressSpan.previousElementSibling;
+                if (!lokasiElement) return;
 
-        function updateStartDateMax(endDate) {
-            const startDateInput = document.querySelector('input[name="start_date"]');
-            startDateInput.max = endDate;
-            if (startDateInput.value > endDate) {
-                startDateInput.value = endDate;
-            }
-        }
+                const lokasiText = lokasiElement.textContent.trim();
+                const [latitude, longitude] = lokasiText.split(",").map(parseFloat);
 
-        function openImageFullscreen(imageUrl) {
-            const container = document.createElement('div');
-            container.style.position = 'fixed';
-            container.style.top = '0';
-            container.style.left = '0';
-            container.style.width = '100%';
-            container.style.height = '100%';
-            container.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-            container.style.zIndex = '9999';
-            container.style.display = 'flex';
-            container.style.alignItems = 'center';
-            container.style.justifyContent = 'center';
-            container.style.cursor = 'zoom-out';
-
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.style.maxWidth = '100%';
-            img.style.maxHeight = '100%';
-            img.style.objectFit = 'contain';
-
-            container.appendChild(img);
-            document.body.appendChild(container);
-            document.body.style.overflow = 'hidden';
-
-            // Close on click
-            container.addEventListener('click', function() {
-                document.body.removeChild(container);
-                document.body.style.overflow = '';
-            });
-
-            // Close on escape
-            document.addEventListener('keydown', function closeOnEscape(e) {
-                if (e.key === 'Escape') {
-                    document.body.removeChild(container);
-                    document.body.style.overflow = '';
-                    document.removeEventListener('keydown', closeOnEscape);
+                if (isNaN(latitude) || isNaN(longitude)) {
+                    addressSpan.textContent = "Format lokasi tidak valid";
+                    return;
                 }
-            });
 
-            // Request fullscreen
-            container.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+                        headers: {
+                            'User-Agent': 'AktivitasApp/1.0 (your@email.com)'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        addressSpan.textContent = data.display_name || "Alamat tidak ditemukan";
+                    })
+                    .catch(() => {
+                        addressSpan.textContent = "Gagal memuat alamat";
+                    });
             });
-        }
+        });
     </script>
 </x-layouts.sales>

@@ -11,7 +11,7 @@
                 </h1>
             </div>
             <p class="mt-2 sm:mt-0 text-gray-600 dark:text-gray-400">
-                Perbarui detail aktivitas harian Anda.
+                Edit detail aktivitas harian Anda.
             </p>
         </div>
 
@@ -23,21 +23,29 @@
 
         <!-- Form -->
         <div class="">
-            <form action="{{ route('sales.daily-activity.update', $dailyActivity->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('sales.daily-activity.update', $dailyActivity) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 
                 <!-- Perihal -->
                 <div>
-                    <flux:input
-                        type="text"
+                    <flux:select
                         name="perihal"
                         id="perihal"
                         label="Tujuan Kegiatan"
-                        placeholder="Masukkan perihal aktivitas..."
-                        :value="old('perihal', $dailyActivity->perihal)"
+                        placeholder="Pilih tujuan kegiatan..."
+                        :value="$dailyActivity->perihal"
                         :has-error="$errors->has('perihal')"
-                    />
+                    >
+                        <option value="Perkenalan" {{ $dailyActivity->perihal == 'Perkenalan' ? 'selected' : '' }}>Perkenalan</option>
+                        <option value="Presentasi" {{ $dailyActivity->perihal == 'Presentasi' ? 'selected' : '' }}>Presentasi</option>
+                        <option value="Penawaran" {{ $dailyActivity->perihal == 'Penawaran' ? 'selected' : '' }}>Penawaran</option>
+                        <option value="Negosiasi" {{ $dailyActivity->perihal == 'Negosiasi' ? 'selected' : '' }}>Negosiasi</option>
+                        <option value="Penagihan" {{ $dailyActivity->perihal == 'Penagihan' ? 'selected' : '' }}>Penagihan</option>
+                        <option value="Deal" {{ $dailyActivity->perihal == 'Deal' ? 'selected' : '' }}>Deal</option>
+                        <option value="Komplen" {{ $dailyActivity->perihal == 'Komplen' ? 'selected' : '' }}>Komplen</option>
+                        <option value="Entertaint" {{ $dailyActivity->perihal == 'Entertaint' ? 'selected' : '' }}>Entertaint</option>
+                    </flux:select>
                     @error('perihal')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -45,15 +53,18 @@
 
                 <!-- Pihak Bersangkutan -->
                 <div>
-                    <flux:input
-                        type="text"
+                    <flux:select
                         name="pihak_bersangkutan"
                         id="pihak_bersangkutan"
-                        label="Client"
-                        placeholder="Masukkan pihak yang bersangkutan..."
-                        :value="old('pihak_bersangkutan', $dailyActivity->pihak_bersangkutan)"
+                        label="Pelanggan"
+                        placeholder="Pilih client..."
+                        :value="$dailyActivity->pihak_bersangkutan"
                         :has-error="$errors->has('pihak_bersangkutan')"
-                    />
+                    >
+                        @foreach($clients as $client)
+                            <option value="{{ $client->id }}" {{ $dailyActivity->pihak_bersangkutan == $client->id ? 'selected' : '' }}>{{ $client->nama }}</option>
+                        @endforeach
+                    </flux:select>
                     @error('pihak_bersangkutan')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -67,7 +78,7 @@
                         label="Pembahasan"
                         placeholder="Masukkan summary aktivitas..."
                         rows="4"
-                    >{{ old('summary', $dailyActivity->summary) }}</flux:textarea>
+                    >{{ $dailyActivity->summary }}</flux:textarea>
                     @error('summary')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -89,13 +100,10 @@
                                   file:mr-4 file:py-2 file:px-4
                                   file:rounded-md file:border-0
                                   file:text-sm file:font-semibold
-                                  file:bg-emerald-50 file:text-emerald-700
+                                  file:bg-blue-50 file:text-emerald-700
                                   hover:file:bg-emerald-100 dark:file:bg-emerald-900 dark:file:text-emerald-300 dark:hover:file:bg-emerald-800
                                   border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600
-                                  focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent @error('dokumentasi') border-red-500 @enderror">
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Upload gambar baru untuk menambahkan ke dokumentasi yang ada. Biarkan kosong jika tidak ingin mengubah dokumentasi.
-                    </p>
+                                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('dokumentasi') border-red-500 @enderror">
                     @error('dokumentasi')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -142,38 +150,60 @@
                 </div>
                 @endif
 
-                <!-- Modal Konfirmasi Hapus -->
-                <flux:modal id="deleteImageModal" title="Konfirmasi Hapus" class="md:w-96 mx-4">
-                    <div>
-                        <p class="font-semibold text-gray-700 dark:text-gray-300">Yakin ingin menghapus gambar ini?</p>
-                        <p class="mt-2 text-gray-500 dark:text-gray-400">Gambar yang dihapus tidak akan bisa dikembalikan.</p>
-                    </div>
+                <!-- Modal Konfirmasi Hapus Gambar -->
+                <div id="deleteImageModal" class="fixed inset-0 z-50 hidden items-center h-screen justify-center bg-black/30 backdrop-blur-sm">
+                    <div class="bg-white dark:bg-zinc-900 backdrop-blur-sm rounded-lg shadow-lg p-6 w-full max-w-md">
+                        <!-- Header -->
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Konfirmasi Hapus</h2>
+                            <button type="button" onclick="closeDeleteModal()" class="text-gray-500 hover:text-red-600 text-xl font-bold">&times;</button>
+                        </div>
 
-                    <div name="footer" class="flex justify-end gap-3 mt-10">
-                        <flux:button variant="danger" id="confirmDeleteBtn">
-                            {{ __('Hapus') }}
-                        </flux:button>
+                        <!-- Body -->
+                        <p class="text-gray-700 dark:text-gray-300">Yakin ingin menghapus gambar ini?</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Gambar yang dihapus tidak akan bisa dikembalikan.</p>
+
+                        <!-- Footer -->
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-white">Batal</button>
+                            <button type="button" onclick="confirmDelete()" class="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white">Hapus</button>
+                        </div>
                     </div>
-                </flux:modal>
+                </div>
+
+
+                <!-- Lokasi -->
+                <div class="col-span-12">
+                    <flux:label for="lokasi" value="{{ __('Lokasi') }}" />
+                    <div class="mt-2">
+                        <div class="flex items-center gap-2">
+                            <flux:icon name="map-pin" class="w-5 h-5 text-gray-500" />
+                            <span class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->lokasi }}</span>
+                        </div>
+                        <div class="mt-1">
+                            <span id="address-{{ $dailyActivity->id }}" class="text-sm text-gray-500">Loading alamat...</span>
+                        </div>
+                        @if($dailyActivity->lokasi)
+                            <a href="https://www.google.com/maps?q={{ $dailyActivity->lokasi }}" target="_blank" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 mt-1 inline-flex items-center gap-1">
+                                <flux:icon name="arrow-top-right-on-square" class="w-4 h-4" />
+                                Lihat di Google Maps
+                            </a>
+                        @endif
+                        <input type="hidden" name="lokasi" value="{{ $dailyActivity->lokasi }}">
+                    </div>
+                </div>
 
                 <!-- Tombol Aksi -->
                 <div class="mt-6 flex justify-end gap-3">
-                    <flux:button
-                        type="button"
-                        variant="filled"
-                        onclick="window.history.back()"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        {{ __('Batal') }}
-                    </flux:button>
+                    <a href="{{ route('sales.daily-activity.index') }}">
+                        <flux:button variant="filled">
+                            {{ __('Batal') }}
+                        </flux:button>
+                    </a>
                     <flux:button type="submit" variant="primary">
                         <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            {{ __('Simpan Perubahan') }}
+                            <svg class="w-5 h-5 -ml-1 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {{ __('Simpan') }}
                         </div>
                     </flux:button>
                 </div>
@@ -183,123 +213,82 @@
 
     @push('scripts')
     <script>
-        // Array untuk menyimpan path gambar yang dihapus
-        let deletedImages = [];
-        let currentImageToDelete = null;
-        let currentImageIndex = null;
-
-        // Fungsi untuk menghapus gambar
-        function deleteExistingImage(imagePath, index) {
-            // Simpan data gambar yang akan dihapus
-            currentImageToDelete = imagePath;
-            currentImageIndex = index;
-            
-            // Buka modal konfirmasi
-            const modal = document.getElementById('deleteImageModal');
-            if (modal) {
-                modal.showModal();
-            }
-        }
-
-        // Event listener untuk tombol konfirmasi di modal
         document.addEventListener('DOMContentLoaded', function() {
-            const confirmBtn = document.getElementById('confirmDeleteBtn');
-            if (confirmBtn) {
-                confirmBtn.addEventListener('click', function() {
-                    if (currentImageToDelete && currentImageIndex !== null) {
-                        // Tambahkan path gambar ke array deletedImages
-                        deletedImages.push(currentImageToDelete);
-                        
-                        // Update nilai input hidden
-                        document.getElementById('deleted-images-input').value = JSON.stringify(deletedImages);
-                        
-                        // Hapus elemen gambar dari DOM
-                        const imageContainer = document.getElementById(`image-${currentImageIndex}`);
-                        if (imageContainer) {
-                            imageContainer.style.display = 'none';
-                        }
+            console.log("Script jalan bos 🔥");
 
-                        // Tutup modal
-                        const modal = document.getElementById('deleteImageModal');
-                        if (modal) {
-                            modal.hideModal();
-                        }
+            const lokasiElements = document.querySelectorAll("[id^=address-]");
 
-                        // Reset variabel
-                        currentImageToDelete = null;
-                        currentImageIndex = null;
+            lokasiElements.forEach((addressSpan) => {
+                const id = addressSpan.id.split("-")[1];
+                const lokasiElement = addressSpan.previousElementSibling;
+                if (!lokasiElement) return;
+
+                const lokasiText = lokasiElement.textContent.trim();
+                const [latitude, longitude] = lokasiText.split(",").map(parseFloat);
+
+                if (isNaN(latitude) || isNaN(longitude)) {
+                    addressSpan.textContent = "Format lokasi tidak valid";
+                    return;
+                }
+
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+                    headers: {
+                        'User-Agent': 'AktivitasApp/1.0 (your@email.com)'
                     }
-                });
-            }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        addressSpan.textContent = data.display_name || "Alamat tidak ditemukan";
+                    })
+                    .catch(() => {
+                        addressSpan.textContent = "Gagal memuat alamat";
+                    });
+            });
 
-            // Pastikan input hidden ada
-            const deletedImagesInput = document.getElementById('deleted-images-input');
-            if (!deletedImagesInput) {
-                console.error('Input untuk gambar yang dihapus tidak ditemukan');
-                return;
-            }
-
-            // Tambahkan event listener untuk input file
-            const fileInput = document.getElementById('dokumentasi');
-            if (fileInput) {
-                fileInput.addEventListener('change', function() {
-                    previewImages(this);
-                });
-            }
+            // Array untuk menyimpan path gambar yang dihapus
+            window.deletedImages = [];
+            window.currentImageToDelete = null;
+            window.currentImageIndex = null;
         });
 
-        // Fungsi untuk preview gambar baru
-        function previewImages(input) {
-            const previewContainer = document.getElementById('imagePreview');
-            if (!previewContainer) return;
-            
-            previewContainer.innerHTML = '';
-            
-            if (input.files) {
-                Array.from(input.files).forEach((file, index) => {
-                    if (!file.type.startsWith('image/')) {
-                        alert('File harus berupa gambar');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'relative group';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">
-                            <button type="button" 
-                                    onclick="removePreview(${index})" 
-                                    class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        `;
-                        previewContainer.appendChild(div);
-                    }
-                    reader.readAsDataURL(file);
-                });
+        function openDeleteModal() {
+            const modal = document.getElementById('deleteImageModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
         }
 
-        // Fungsi untuk menghapus preview gambar baru
-        function removePreview(index) {
-            const input = document.getElementById('dokumentasi');
-            if (!input) return;
-
-            const dt = new DataTransfer();
-            const { files } = input;
-
-            for (let i = 0; i < files.length; i++) {
-                if (i !== index) {
-                    dt.items.add(files[i]);
-                }
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteImageModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
             }
+            // Reset variabel
+            window.currentImageToDelete = null;
+            window.currentImageIndex = null;
+        }
 
-            input.files = dt.files;
-            previewImages(input);
+        window.deleteExistingImage = function(imagePath, index) {
+            window.currentImageToDelete = imagePath;
+            window.currentImageIndex = index;
+            openDeleteModal();
+        }
+
+        function confirmDelete() {
+            if (window.currentImageToDelete && window.currentImageIndex !== null) {
+                window.deletedImages.push(window.currentImageToDelete);
+                document.getElementById('deleted-images-input').value = JSON.stringify(window.deletedImages);
+
+                const imageContainer = document.getElementById(`image-${window.currentImageIndex}`);
+                if (imageContainer) {
+                    imageContainer.style.display = 'none';
+                }
+
+                closeDeleteModal();
+            }
         }
     </script>
     @endpush
-</x-layouts.sales> 
+</x-layouts.sales>

@@ -20,6 +20,7 @@ class DailyActivity extends Model
         'pihak_bersangkutan',
         'komentar',
         'summary',
+        'lokasi',
         'deleted_status',
         'created_by'
     ];
@@ -50,6 +51,14 @@ class DailyActivity extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    
+    /**
+     * Get the client related to this daily activity.
+     */
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'pihak_bersangkutan');
     }
 
     // Accessor untuk mendapatkan semua gambar dokumentasi

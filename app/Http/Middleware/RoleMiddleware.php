@@ -23,6 +23,15 @@ class RoleMiddleware
             return $next($request);
         }
 
-        return redirect()->route('dashboard'); // Redirect jika role tidak sesuai
+        // Jika request adalah API, return JSON response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'message' => 'Unauthorized. Insufficient permissions.',
+                'error' => 'Forbidden'
+            ], 403);
+        }
+
+        // Jika request adalah web, redirect
+        return redirect()->route('dashboard');
     }
 }

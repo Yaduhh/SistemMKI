@@ -26,12 +26,10 @@
 
         <flux:navbar class="-mb-px max-lg:hidden space-x-4">
             <flux:navbar.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navbar.item>
-            <flux:navbar.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Client</flux:navbar.item>
+            <flux:navbar.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navbar.item>
             <flux:navbar.item icon="document-text" href="#">Penawaran</flux:navbar.item>
-            <flux:navbar.item icon="calendar" href="#">Jadwal</flux:navbar.item>
-            <flux:navbar.item icon="chart-bar" href="#">Laporan</flux:navbar.item>
+            <flux:navbar.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navbar.item>
             <flux:navbar.item icon="calendar-days" :href="route('sales.events.dashboard')" :current="request()->routeIs('sales.events.dashboard')" wire:navigate>{{ __('Event') }}</flux:navlist.item>
-
 
             <flux:separator vertical variant="subtle" class="my-2"/>
 
@@ -102,11 +100,9 @@
         
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navlist.item>
-            <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Client</flux:navlist.item>
+            <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
-            <flux:navlist.item icon="calendar" href="#">Jadwal</flux:navlist.item>
-            <flux:navlist.item icon="chart-bar" href="#">Laporan</flux:navlist.item>
-
+            <flux:navlist.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navlist.item>
             <flux:navlist.group expandable heading="Menu" class="max-lg:hidden">
                 <flux:navlist.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navlist.item>
                 <flux:navlist.item href="#">Riwayat Penjualan</flux:navlist.item>
@@ -115,7 +111,7 @@
 
             <!-- Daily Activity -->
             <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
-                <flux:navlist.item icon="calendar" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+                <flux:navlist.item icon="map-pin" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Manajemen Event')" class="grid mt-10">
