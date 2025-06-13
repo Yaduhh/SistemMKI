@@ -19,7 +19,9 @@ class Client extends Model
         'nama',
         'email',
         'notelp',
-        'description',
+        'nama_perusahaan',
+        'alamat',
+        'description_json',
         'file_input',
         'status',
         'status_deleted',
@@ -34,6 +36,7 @@ class Client extends Model
     protected $casts = [
         'status' => 'boolean',
         'status_deleted' => 'boolean',
+        'description_json' => 'json',
     ];
 
     /**
@@ -58,5 +61,36 @@ class Client extends Model
     public function scopeNotDeleted($query)
     {
         return $query->where('status_deleted', false);
+    }
+
+    /**
+     * Get the description attribute.
+     */
+    public function getDescriptionAttribute()
+    {
+        if (!$this->description_json) {
+            return [];
+        }
+        
+        // Jika description_json sudah dalam bentuk array, langsung return
+        if (is_array($this->description_json)) {
+            return $this->description_json['items'] ?? [];
+        }
+        
+        // Jika description_json dalam bentuk string, decode dulu
+        $data = json_decode($this->description_json, true);
+        return $data['items'] ?? [];
+    }
+
+    /**
+     * Set the description attribute.
+     */
+    public function setDescriptionAttribute($value)
+    {
+        if (is_array($value)) {
+            $this->attributes['description_json'] = json_encode(['items' => $value]);
+        } else {
+            $this->attributes['description_json'] = json_encode(['items' => [$value]]);
+        }
     }
 } 

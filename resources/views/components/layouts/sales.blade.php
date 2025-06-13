@@ -30,6 +30,7 @@
             <flux:navbar.item icon="document-text" href="#">Penawaran</flux:navbar.item>
             <flux:navbar.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navbar.item>
             <flux:navbar.item icon="calendar-days" :href="route('sales.events.dashboard')" :current="request()->routeIs('sales.events.dashboard')" wire:navigate>{{ __('Event') }}</flux:navlist.item>
+            <flux:navbar.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navbar.item>
 
             <flux:separator vertical variant="subtle" class="my-2"/>
 
@@ -103,6 +104,7 @@
             <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
             <flux:navlist.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navlist.item>
+            <flux:navlist.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navlist.item>
             <flux:navlist.group expandable heading="Menu" class="max-lg:hidden">
                 <flux:navlist.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navlist.item>
                 <flux:navlist.item href="#">Riwayat Penjualan</flux:navlist.item>

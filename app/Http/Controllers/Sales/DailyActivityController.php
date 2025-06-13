@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sales;
 use App\Http\Controllers\Controller;
 use App\Models\DailyActivity;
 use App\Models\User;
+use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -85,6 +86,30 @@ class DailyActivityController extends Controller
             'created_by' => auth()->id(),
         ]);
 
+        // Create or update attendance record
+        $today = now()->format('Y-m-d');
+        $userId = auth()->id();
+        
+        // Count today's activities for this user
+        $todayActivitiesCount = DailyActivity::where('created_by', $userId)
+            ->whereDate('created_at', $today)
+            ->where('deleted_status', false)
+            ->count();
+
+        // Create or update attendance record
+        $absensi = Absensi::updateOrCreate(
+            [
+                'id_user' => $userId,
+                'tgl_absen' => $today,
+            ],
+            [
+                'status_absen' => $todayActivitiesCount >= 3 ? 1 : 0, // 1 for Hadir, 0 for Alpha
+                'count' => $todayActivitiesCount,
+                'id_daily_activity' => $activity->id,
+                'deleted_status' => false
+            ]
+        );
+
         // Log aktivitas
         ActivityLogService::logCreate(
             'DailyActivity',
@@ -92,9 +117,16 @@ class DailyActivityController extends Controller
             $activity->toArray()
         );
 
+        $message = 'Aktivitas berhasil ditambahkan.';
+        if ($todayActivitiesCount >= 3) {
+            $message .= ' Absensi Anda telah berhasil (Hadir).';
+        } else {
+            $message .= ' Anda perlu menambahkan ' . (3 - $todayActivitiesCount) . ' aktivitas lagi untuk menyelesaikan absensi.';
+        }
+
         return redirect()
             ->route('sales.daily-activity.show', $activity)
-            ->with('success', 'Aktivitas berhasil ditambahkan.');
+            ->with('success', $message);
     }
 
     /**

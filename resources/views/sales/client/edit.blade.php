@@ -59,19 +59,66 @@
                             <flux:input 
                                 name="notelp" 
                                 :label="__('No. Telp')" 
-                                type="text" 
+                                type="number" 
                                 required 
                                 autocomplete="off"
                                 :placeholder="__('Masukkan nomor telepon client')" 
                                 :value="old('notelp', $client->notelp)" 
                             />
 
+                            <flux:input 
+                                name="nama_perusahaan" 
+                                :label="__('Nama Perusahaan')" 
+                                type="text" 
+                                autocomplete="off"
+                                :placeholder="__('Masukkan nama perusahaan')" 
+                                :value="old('nama_perusahaan', $client->nama_perusahaan)" 
+                            />
+
                             <flux:textarea 
-                                name="description" 
-                                :label="__('Deskripsi')" 
-                                rows="4"
-                                :placeholder="__('Masukkan description tambahan...')"
-                            >{{ old('description', $client->description) }}</flux:textarea>
+                                name="alamat" 
+                                :label="__('Alamat')" 
+                                rows="3"
+                                :placeholder="__('Masukkan alamat lengkap...')"
+                            >{{ old('alamat', $client->alamat) }}</flux:textarea>
+
+                            <!-- Description List -->
+                            <div class="space-y-4">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Proyek
+                                </label>
+                                <div id="descriptionList" class="space-y-3">
+                                    @foreach($client->description as $index => $desc)
+                                    <div class="description-item flex items-start gap-2">
+                                        <div class="flex-grow">
+                                            <input type="text" 
+                                                name="descriptions[]" 
+                                                class="block w-full rounded-xl py-3 px-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-700 dark:text-white sm:text-sm"
+                                                placeholder="Masukkan proyek..."
+                                                value="{{ old('descriptions.'.$index, $desc) }}"
+                                                required
+                                            >
+                                        </div>
+                                        <button type="button" 
+                                            class="remove-description p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                            onclick="removeDescription(this)"
+                                            style="{{ count($client->description) > 1 ? '' : 'display: none;' }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" 
+                                    onclick="addDescription()"
+                                    class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Tambah Proyek
+                                </button>
+                            </div>
 
                             <div>
                                 <label for="file_input"
@@ -144,4 +191,53 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function addDescription() {
+            const list = document.getElementById('descriptionList');
+            const items = list.getElementsByClassName('description-item');
+            
+            // Show remove buttons if there's more than one item
+            if (items.length > 0) {
+                items[0].querySelector('.remove-description').style.display = 'block';
+            }
+
+            const newItem = document.createElement('div');
+            newItem.className = 'description-item flex items-center gap-2';
+            newItem.innerHTML = `
+                <div class="flex-grow">
+                    <input type="text" 
+                        name="descriptions[]" 
+                        class="block w-full rounded-xl py-3 px-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-zinc-700 dark:text-white sm:text-sm"
+                        placeholder="Masukkan deskripsi..."
+                        required
+                    >
+                </div>
+                <button type="button" 
+                    class="remove-description p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    onclick="removeDescription(this)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            `;
+            list.appendChild(newItem);
+        }
+
+        function removeDescription(button) {
+            const list = document.getElementById('descriptionList');
+            const items = list.getElementsByClassName('description-item');
+            
+            if (items.length > 1) {
+                button.closest('.description-item').remove();
+                
+                // Hide remove button if only one item left
+                if (items.length === 2) {
+                    items[0].querySelector('.remove-description').style.display = 'none';
+                }
+            }
+        }
+    </script>
+    @endpush
 </x-layouts.sales> 

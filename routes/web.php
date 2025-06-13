@@ -60,6 +60,9 @@ Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(fu
 
     // Settings Route - using view with sales layout
     Route::view('/setting', 'sales.setting.index')->name('setting.index');
+
+    // Absensi Route
+    Route::get('/absensi', [App\Http\Controllers\Sales\AbsensiController::class, 'index'])->name('absensi.index');
 });
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {

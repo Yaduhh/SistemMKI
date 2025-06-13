@@ -66,7 +66,10 @@ class ClientController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'notelp' => 'required|string|max:20',
-            'description' => 'nullable|string',
+            'nama_perusahaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'descriptions' => 'required|array|min:1',
+            'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
         ]);
@@ -75,6 +78,9 @@ class ClientController extends Controller
         $data['created_by'] = Auth::id();
         $data['status'] = $request->has('status') ? true : false;
         $data['status_deleted'] = false;
+
+        // Convert descriptions array to JSON
+        $data['description_json'] = json_encode(['items' => $request->descriptions]);
 
         if ($request->hasFile('file_input')) {
             $data['file_input'] = $request->file('file_input')->store('clients', 'public');
@@ -123,7 +129,10 @@ class ClientController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'notelp' => 'required|string|max:20',
-            'description' => 'nullable|string',
+            'nama_perusahaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'descriptions' => 'required|array|min:1',
+            'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
         ]);
@@ -133,6 +142,9 @@ class ClientController extends Controller
 
         $data = $request->all();
         $data['status'] = $request->has('status') ? true : false;
+
+        // Convert descriptions array to JSON
+        $data['description_json'] = json_encode(['items' => $request->descriptions]);
 
         if ($request->hasFile('file_input')) {
             // Delete old file if exists
