@@ -45,60 +45,38 @@ class AbsensiController extends Controller
         // Get monthly attendance history
         $query = Absensi::with('user')
             ->where('deleted_status', false)
-            ->where('id_user', auth()->id());
-
-        // Filter by date range
-        if ($request->filled('start_date')) {
-            $query->whereDate('tgl_absen', '>=', $startDate);
-        }
-        if ($request->filled('end_date')) {
-            $query->whereDate('tgl_absen', '<=', $endDate);
-        }
+            ->where('id_user', auth()->id())
+            ->whereDate('tgl_absen', '>=', $startDate)
+            ->whereDate('tgl_absen', '<=', $endDate);
 
         // Calculate totals for the filtered date range
         $totalHadir = Absensi::where('deleted_status', false)
             ->where('id_user', auth()->id())
             ->where('status_absen', 1)
-            ->when($request->filled('start_date'), function($q) use ($startDate) {
-                return $q->whereDate('tgl_absen', '>=', $startDate);
-            })
-            ->when($request->filled('end_date'), function($q) use ($endDate) {
-                return $q->whereDate('tgl_absen', '<=', $endDate);
-            })
+            ->whereDate('tgl_absen', '>=', $startDate)
+            ->whereDate('tgl_absen', '<=', $endDate)
             ->count();
 
         $totalIzin = Absensi::where('deleted_status', false)
             ->where('id_user', auth()->id())
             ->where('status_absen', 2)
-            ->when($request->filled('start_date'), function($q) use ($startDate) {
-                return $q->whereDate('tgl_absen', '>=', $startDate);
-            })
-            ->when($request->filled('end_date'), function($q) use ($endDate) {
-                return $q->whereDate('tgl_absen', '<=', $endDate);
-            })
+            ->whereDate('tgl_absen', '>=', $startDate)
+            ->whereDate('tgl_absen', '<=', $endDate)
             ->count();
 
         $totalSakit = Absensi::where('deleted_status', false)
             ->where('id_user', auth()->id())
             ->where('status_absen', 3)
-            ->when($request->filled('start_date'), function($q) use ($startDate) {
-                return $q->whereDate('tgl_absen', '>=', $startDate);
-            })
-            ->when($request->filled('end_date'), function($q) use ($endDate) {
-                return $q->whereDate('tgl_absen', '<=', $endDate);
-            })
+            ->whereDate('tgl_absen', '>=', $startDate)
+            ->whereDate('tgl_absen', '<=', $endDate)
             ->count();
 
         $totalAlpha = Absensi::where('deleted_status', false)
             ->where('id_user', auth()->id())
             ->where('status_absen', 0)
             ->where('tgl_absen', '<', $today) // Exclude today's records
-            ->when($request->filled('start_date'), function($q) use ($startDate) {
-                return $q->whereDate('tgl_absen', '>=', $startDate);
-            })
-            ->when($request->filled('end_date'), function($q) use ($endDate) {
-                return $q->whereDate('tgl_absen', '<=', $endDate);
-            })
+            ->whereDate('tgl_absen', '>=', $startDate)
+            ->whereDate('tgl_absen', '<=', $endDate)
             ->count();
 
         $absensi = $query->orderBy('tgl_absen', 'desc')

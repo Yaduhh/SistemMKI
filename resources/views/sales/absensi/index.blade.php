@@ -16,7 +16,7 @@
             <x-flash-message type="error" :message="session('error')" />
 
             <!-- Attendance Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
@@ -77,31 +77,33 @@
             <!-- Search and Filter Section -->
             <div class="mb-6 bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <form method="GET" action="{{ route('sales.absensi.index') }}" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Date Range -->
-                        <div class="space-y-2">
-                            <label for="start_date" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    {{ __('Filter Tanggal') }}
-                                </div>
-                            </label>
+                    <!-- Date Range -->
+                    <div class="space-y-2">
+                        <label for="start_date" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {{ __('Filter Tanggal') }}
+                            </div>
+                        </label>
+                    </div>
 
-                              <div class="flex w-full gap-2 mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="col-span-2">
+                            <div class="flex w-full gap-4">
                                 <input type="date" name="start_date" id="start_date" value="{{ $startDate }}"
-                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
+                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
                                     max="{{ $endDate }}" onchange="updateEndDateMin(this.value)">
                                 <input type="date" name="end_date" id="end_date" value="{{ $endDate }}"
-                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
+                                    class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
                                     min="{{ $startDate }}" onchange="updateStartDateMax(this.value)">
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex items-end gap-2">
+                        <div class="flex items-end gap-4">
                             <button type="submit"
                                 class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-800 text-white hover:bg-emerald-800/90 dark:bg-emerald-800/90 dark:hover:bg-emerald-800 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -171,28 +171,6 @@
                     </div>
                 </div>
 
-
-                <!-- Lokasi -->
-                <div class="col-span-12">
-                    <flux:label for="lokasi" value="{{ __('Lokasi') }}" />
-                    <div class="mt-2">
-                        <div class="flex items-center gap-2">
-                            <flux:icon name="map-pin" class="w-5 h-5 text-gray-500" />
-                            <span class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->lokasi }}</span>
-                        </div>
-                        <div class="mt-1">
-                            <span id="address-{{ $dailyActivity->id }}" class="text-sm text-gray-500">Loading alamat...</span>
-                        </div>
-                        @if($dailyActivity->lokasi)
-                            <a href="https://www.google.com/maps?q={{ $dailyActivity->lokasi }}" target="_blank" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 mt-1 inline-flex items-center gap-1">
-                                <flux:icon name="arrow-top-right-on-square" class="w-4 h-4" />
-                                Lihat di Google Maps
-                            </a>
-                        @endif
-                        <input type="hidden" name="lokasi" value="{{ $dailyActivity->lokasi }}">
-                    </div>
-                </div>
-
                 <!-- Tombol Aksi -->
                 <div class="mt-6 flex justify-end gap-3">
                     <a href="{{ route('sales.daily-activity.index') }}">
