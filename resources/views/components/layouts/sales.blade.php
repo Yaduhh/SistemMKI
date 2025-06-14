@@ -33,15 +33,6 @@
             <flux:navbar.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navbar.item>
 
             <flux:separator vertical variant="subtle" class="my-2"/>
-
-            <flux:dropdown class="max-lg:hidden">
-                <flux:navbar.item icon:trailing="chevron-down">Menu</flux:navbar.item>
-                <flux:navmenu>
-                    <flux:navmenu.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navmenu.item>
-                    <flux:navmenu.item href="#">Riwayat Penjualan</flux:navmenu.item>
-                    <flux:navmenu.item href="#">Target Penjualan</flux:navmenu.item>
-                </flux:navmenu>
-            </flux:dropdown>
         </flux:navbar>
 
         <flux:spacer />

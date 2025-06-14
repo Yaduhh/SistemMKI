@@ -90,13 +90,13 @@
                                 </div>
                             </label>
 
-                            <div class="flex w-full gap-2 mt-4">
-                                <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                              <div class="flex w-full gap-2 mt-4">
+                                <input type="date" name="start_date" id="start_date" value="{{ $startDate }}"
                                     class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
-                                    max="{{ request('end_date') }}" onchange="updateEndDateMin(this.value)">
-                                <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}"
+                                    max="{{ $endDate }}" onchange="updateEndDateMin(this.value)">
+                                <input type="date" name="end_date" id="end_date" value="{{ $endDate }}"
                                     class="w-full md:w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-700/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-zinc focus:ring-2 focus:ring-zinc/20 dark:focus:ring-zinc/30"
-                                    min="{{ request('start_date') }}" onchange="updateStartDateMax(this.value)">
+                                    min="{{ $startDate }}" onchange="updateStartDateMax(this.value)">
                             </div>
                         </div>
 
@@ -237,30 +237,21 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Tidak ada absensi</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Mulai tambahkan absensi baru.</p>
-                    <div class="mt-6">
-                        <a href="{{ route('sales.absensi.create') }}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-500 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Tambah Absensi
-                        </a>
-                    </div>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Absensi akan otomatis tercatat saat Anda menambahkan aktivitas harian.</p>
                 </div>
             @endif
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        function updateEndDateMin(value) {
-            document.getElementById('end_date').min = value;
-        }
-
-        function updateStartDateMax(value) {
-            document.getElementById('start_date').max = value;
-        }
-    </script>
-    @endpush
 </x-layouts.sales>
+
+@push('scripts')
+<script>
+    function updateEndDateMin(value) {
+        document.getElementById('end_date').min = value;
+    }
+
+    function updateStartDateMax(value) {
+        document.getElementById('start_date').max = value;
+    }
+</script>
+@endpush
