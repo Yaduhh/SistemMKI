@@ -158,7 +158,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="p-6">
+                <div class="p-6 flex flex-col h-full">
                     @if($recentDistributors->count() > 0)
                         <div class="space-y-4">
                             @foreach($recentDistributors as $distributor)
@@ -188,7 +188,7 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center py-8">
+                        <div class="flex flex-col items-center h-full justify-center text-center -mt-10">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>

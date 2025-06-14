@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DailyActivity;
 use App\Models\User;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +19,7 @@ class DailyActivityController extends Controller
      */ 
     public function index(Request $request)
     {
-        $query = DailyActivity::with('creator')
+        $query = DailyActivity::with(['creator', 'client'])
             ->where('deleted_status', false);
 
         // Filter by user
@@ -46,7 +47,10 @@ class DailyActivityController extends Controller
     public function create()
     {
         $users = User::where('status_deleted', 0)->get();
-        return view('admin.daily-activity.create', compact('users'));
+        $clients = Client::where('status_deleted', false)
+                        ->orderBy('nama')
+                        ->get();
+        return view('admin.daily-activity.create', compact('users', 'clients'));
     }
 
     /**
@@ -56,7 +60,7 @@ class DailyActivityController extends Controller
     {
         $validated = $request->validate([
             'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|string|max:255',
+            'pihak_bersangkutan' => 'required|exists:clients,id',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4048',
             'summary' => 'nullable|string',
         ]);
@@ -77,13 +81,14 @@ class DailyActivityController extends Controller
             'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
             'dokumentasi' => $dokumentasi,
             'summary' => $validated['summary'],
+            'lokasi' => $request->lokasi,
             'created_by' => auth()->id(),
         ]);
 
         // Log aktivitas
         ActivityLogService::logCreate(
             'DailyActivity',
-            "Membuat aktivitas baru: {$activity->perihal}",
+            "Admin membuat aktivitas baru: {$activity->perihal}",
             $activity->toArray()
         );
 
@@ -97,7 +102,7 @@ class DailyActivityController extends Controller
      */
     public function show(DailyActivity $dailyActivity)
     {
-        $dailyActivity->load('creator');
+        $dailyActivity->load(['creator', 'client']);
         return view('admin.daily-activity.show', compact('dailyActivity'));
     }
 
@@ -107,7 +112,10 @@ class DailyActivityController extends Controller
     public function edit(DailyActivity $dailyActivity)
     {
         $users = User::where('status_deleted', 0)->get();
-        return view('admin.daily-activity.edit', compact('dailyActivity', 'users'));
+        $clients = Client::where('status_deleted', false)
+                        ->orderBy('nama')
+                        ->get();
+        return view('admin.daily-activity.edit', compact('dailyActivity', 'users', 'clients'));
     }
 
     /**
@@ -142,7 +150,7 @@ class DailyActivityController extends Controller
     {
         $validated = $request->validate([
             'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|string|max:255',
+            'pihak_bersangkutan' => 'required|exists:clients,id',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4048',
             'deleted_images' => 'nullable|string',
             'summary' => 'nullable|string',
@@ -151,6 +159,7 @@ class DailyActivityController extends Controller
         // Simpan data lama untuk logging
         $oldData = $dailyActivity->toArray();
 
+        // Handle dokumentasi
         $dokumentasi = is_array($dailyActivity->dokumentasi) ? $dailyActivity->dokumentasi : json_decode($dailyActivity->dokumentasi, true) ?? [];
         
         // Hapus gambar yang dihapus
@@ -166,8 +175,7 @@ class DailyActivityController extends Controller
                 $dokumentasi = array_values($dokumentasi);
             }
         }
-
-        // Upload dan compress gambar baru
+        
         if ($request->hasFile('dokumentasi')) {
             $newImages = ImageService::compressAndStoreMultiple(
                 $request->file('dokumentasi'),
@@ -189,7 +197,7 @@ class DailyActivityController extends Controller
         // Log aktivitas
         ActivityLogService::logUpdate(
             'DailyActivity',
-            "Mengupdate aktivitas: {$dailyActivity->perihal}",
+            "Admin mengupdate aktivitas: {$dailyActivity->perihal}",
             $oldData,
             $dailyActivity->fresh()->toArray()
         );
@@ -215,7 +223,7 @@ class DailyActivityController extends Controller
         // Log aktivitas
         ActivityLogService::logDelete(
             'DailyActivity',
-            "Menghapus aktivitas: {$dailyActivity->perihal}",
+            "Admin menghapus aktivitas: {$dailyActivity->perihal}",
             $oldData
         );
 

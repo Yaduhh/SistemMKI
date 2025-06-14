@@ -94,7 +94,6 @@
             <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navlist.item>
             <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
-            <flux:navlist.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navlist.item>
             <flux:navlist.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navlist.item>
             <flux:navlist.group expandable heading="Menu" class="max-lg:hidden">
                 <flux:navlist.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navlist.item>
@@ -104,7 +103,7 @@
 
             <!-- Daily Activity -->
             <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
-                <flux:navlist.item icon="map-pin" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+                <flux:navlist.item icon="map-pin" :href="route('sales.daily-activity.index')" :current="request()->routeIs('sales.daily-activity.*')" wire:navigate>{{ __('Kunjungan') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Manajemen Event')" class="grid mt-10">

@@ -3,11 +3,11 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Aktivitas</h1>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Informasi Aktivitas Harian</p>
+                    <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Detail Kunjungan {{ $dailyActivity->creator->name }}</h1>
+                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Informasi Kunjungan</p>
                 </div>
                 <a href="{{ route('admin.daily-activity.index') }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-zinc-900 dark:text-gray-200 dark:hover:bg-zinc-900">
+                   class="inline-flex items-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-700">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -21,7 +21,7 @@
         <x-flash-message type="error" :message="session('error')" />
 
         <div class="mb-8 overflow-hidden rounded-xl">
-            <div class="border-b border-gray-200 dark:border-gray-700">
+            <div class="border-b border-zinc-200 dark:border-zinc-700">
                 <div class="flex items-start justify-between">
                     <div class="flex items-start gap-4">
                         @if($dailyActivity->creator->profile)
@@ -29,28 +29,28 @@
                                  alt="{{ $dailyActivity->creator->name }}"
                                  class="h-12 w-12 rounded-full object-cover">
                         @else
-                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-600 dark:bg-primary-900/50 dark:text-primary-400">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-medium text-zinc-600 dark:bg-zinc-900/50 dark:text-zinc-400">
                                 {{ substr($dailyActivity->creator->name, 0, 2) }}
                             </div>
                         @endif
                         <div>
                             <div class="flex items-center gap-2">
-                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">
                                     {{ $dailyActivity->creator->name }}
                                 </h2>
                             </div>
-                            <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+                            <p class="mt-1 flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
-                                {{ $dailyActivity->created_at->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
+                                {{ $dailyActivity->created_at->format('d M Y H:i') }}
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-end my-4 gap-2">
                     <a href="{{ route('admin.daily-activity.edit', $dailyActivity) }}"
-                       class="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-100 dark:bg-primary-900/50 dark:text-primary-400 dark:hover:bg-primary-900">
+                       class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-50 px-3 py-1.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:bg-zinc-900">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -74,39 +74,68 @@
             <div class="pt-4">
                 <div class="space-y-6">
                     <div class="space-y-2">
-                        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
-                            <svg class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Tujuan Kegiatan
+                            Tujuan Kunjungan
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
-                            <p class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->perihal }}</p>
+                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->perihal }}</p>
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
-                            <svg class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
-                            Client
+                            Pelanggan
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
-                            <p class="text-gray-700 dark:text-gray-300">{{ $dailyActivity->pihak_bersangkutan }}</p>
+                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->client ? $dailyActivity->client->nama : 'Client tidak ditemukan' }}</p>
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
-                            <svg class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                             Pembahasan
                         </h3>
-                        <div class="rounded-lg bg-gray-50 p-4 dark:bg-zinc-900/50">
-                            <p class="text-gray-700 dark:text-gray-300 text-justify">{{ $dailyActivity->summary }}</p>
+                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50 text-justify">
+                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->summary }}</p>
                         </div>
                     </div>
+
+                    @if($dailyActivity->lokasi)
+                    <div class="space-y-2">
+                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Lokasi
+                        </h3>
+                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                            <div class="mb-4">
+                                <h4 class="font-medium text-gray-900 dark:text-white">Lokasi</h4>
+                                <div class="mt-1 text-gray-600 dark:text-gray-400">
+                                    <div class="flex flex-col">
+                                        <span class="font-mono">{{ $dailyActivity->lokasi }}</span>
+                                        <span id="address-{{ $dailyActivity->id }}" class="text-gray-400 mt-1">Loading alamat...</span>
+                                    </div>
+                                    <a href="https://www.google.com/maps?q={{ $dailyActivity->lokasi }}" target="_blank" class="text-zinc-500 hover:underline flex items-center gap-1 mt-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        </svg>
+                                        Buka di Google Maps
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     @if($dailyActivity->dokumentasi && is_array($dailyActivity->dokumentasi))
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
@@ -140,24 +169,24 @@
             @endphp
 
             <div class="flex items-center gap-2 mb-6">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Komentar</h3>
+                <h3 class="text-lg font-medium text-zinc-900 dark:text-zinc-100">Komentar</h3>
                 @if(count($comments) > 0)
-                    <span class="text-sm text-gray-500 dark:text-gray-400">({{ count($comments) }})</span>
+                    <span class="text-sm text-zinc-500 dark:text-zinc-400">({{ count($comments) }})</span>
                 @endif
             </div>
             
             @if(empty($comments))
-                <div class="flex flex-col items-center justify-center py-12 px-4 bg-gray-50 dark:bg-zinc-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col items-center justify-center py-12 px-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
                     <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
                         <svg class="w-8 h-8 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
                     </div>
-                    <h4 class="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">Belum ada komentar</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">Jadilah yang pertama untuk memberikan komentar pada aktivitas ini</p>
+                    <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Belum ada komentar</h4>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 text-center max-w-sm">Jadilah yang pertama untuk memberikan komentar pada aktivitas ini</p>
                 </div>
             @else
                 <div class="space-y-4">
@@ -173,23 +202,23 @@
                                         alt="{{ $user->name }}" 
                                         class="h-8 w-8 rounded-full object-cover">
                                 @else
-                                    <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-zinc-900 flex items-center justify-center">
-                                        <span class="text-xs font-medium text-gray-600 dark:text-gray-300">
+                                    <div class="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                                             {{ strtoupper(substr($comment['user_name'], 0, 1)) }}
                                         </span>
                                     </div>
                                 @endif
                             </div>
-                            <div class="flex-1 min-w-0 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            <div class="flex-1 min-w-0 border-b border-zinc-200 dark:border-zinc-700 pb-2">
                                 <div class="flex justify-between items-baseline gap-2">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                         {{ $comment['user_name'] }}
                                     </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">
                                         {{ $timestamp->format('d M Y H:i') }}
                                     </p>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
                                     {{ $comment['message'] }}
                                 </p>
                             </div>
@@ -232,10 +261,10 @@
         </div>
     </div>
 
-    <div id="imageModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div id="imageModal" class="fixed inset-0 z-50 hidden bg-white" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" onclick="closeImageModal()"></div>
 
-        <div class="relative h-full flex items-center justify-center">
+        <div class="relative h-full flex items-center bg-red-400 justify-center">
             <button type="button"
                     onclick="closeImageModal()"
                     class="absolute top-4 right-4 z-10 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm transition-colors hover:bg-white/20">
@@ -371,5 +400,39 @@
             'fitImagesInViewport': true
         });
     </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log("Script jalan bos 🔥");
+
+                const lokasiElements = document.querySelectorAll("[id^=address-]");
+
+                lokasiElements.forEach((addressSpan) => {
+                    const id = addressSpan.id.split("-")[1];
+                    const lokasiElement = addressSpan.previousElementSibling;
+                    if (!lokasiElement) return;
+
+                    const lokasiText = lokasiElement.textContent.trim();
+                    const [latitude, longitude] = lokasiText.split(",").map(parseFloat);
+
+                    if (isNaN(latitude) || isNaN(longitude)) {
+                        addressSpan.textContent = "Format lokasi tidak valid";
+                        return;
+                    }
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+                        headers: {
+                            'User-Agent': 'AktivitasApp/1.0 (your@email.com)'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            addressSpan.textContent = data.display_name || "Alamat tidak ditemukan";
+                        })
+                        .catch(() => {
+                            addressSpan.textContent = "Gagal memuat alamat";
+                        });
+                });
+            });
+        </script>
     @endpush
-</x-layouts.sales>
+</x-layouts.app>

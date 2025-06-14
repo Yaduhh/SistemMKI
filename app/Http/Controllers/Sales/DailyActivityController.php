@@ -20,12 +20,8 @@ class DailyActivityController extends Controller
     public function index(Request $request)
     {
         $query = DailyActivity::with(['creator', 'client'])
-            ->where('deleted_status', false);
-
-        // Filter by user
-        if ($request->filled('user')) {
-            $query->where('created_by', $request->user);
-        }
+            ->where('deleted_status', false)
+            ->where('created_by', auth()->id()); // Hanya ambil data milik user yang login
 
         // Set default date to today if no date is selected
         $startDate = $request->filled('start_date') ? $request->start_date : now()->format('Y-m-d');
@@ -35,7 +31,7 @@ class DailyActivityController extends Controller
         $query->whereDate('created_at', '>=', $startDate)
               ->whereDate('created_at', '<=', $endDate);
 
-        $activities = $query->latest()->paginate(10);
+        $activities = $query->latest()->paginate(5);
         $users = User::where('status_deleted', 0)->get();
 
         return view('sales.daily-activity.index', compact('activities', 'users', 'startDate', 'endDate'));
@@ -234,7 +230,6 @@ class DailyActivityController extends Controller
             'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
             'dokumentasi' => $dokumentasi,
             'summary' => $validated['summary'],
-            'lokasi' => $request->lokasi,
         ]);
 
         // Log aktivitas
