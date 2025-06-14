@@ -58,6 +58,19 @@ class ClientController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Client $client)
+    {
+        // Ensure the client belongs to the authenticated sales user
+        if ($client->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('sales.client.show', compact('client'));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

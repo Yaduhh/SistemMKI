@@ -258,6 +258,27 @@ class DailyActivityController extends Controller
             'deleted_status' => true
         ]);
 
+        // Hitung ulang jumlah aktivitas hari ini yang tidak dihapus
+        $today = date('Y-m-d', strtotime($dailyActivity->created_at));
+        $userId = $dailyActivity->created_by;
+        
+        $todayActivitiesCount = DailyActivity::where('created_by', $userId)
+            ->whereDate('created_at', $today)
+            ->where('deleted_status', false)
+            ->count();
+        
+        // Update record absensi
+        $absensi = Absensi::where('id_user', $userId)
+            ->whereDate('tgl_absen', $today)
+            ->first();
+        
+        if ($absensi) {
+            $absensi->update([
+                'status_absen' => $todayActivitiesCount >= 3 ? 1 : 0,
+                'count' => $todayActivitiesCount
+            ]);
+        }
+
         // Log aktivitas
         ActivityLogService::logDelete(
             'DailyActivity',

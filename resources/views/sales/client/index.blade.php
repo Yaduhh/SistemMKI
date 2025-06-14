@@ -1,4 +1,4 @@
-<x-layouts.sales :title="__('Daftar Client')">
+<x-layouts.sales :title="__('Daftar Pelanggan Saya')">
     @php
         function formatWhatsAppNumber($phoneNumber) {
             // Remove all non-numeric characters
@@ -30,15 +30,15 @@
             <div class="mb-8">
                 <div class="flex flex-col">
                     <div class="mb-4">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Daftar Client Saya</h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Kelola semua client yang telah Anda tambahkan</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Daftar Pelanggan Saya</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Kelola semua pelanggan yang telah Anda tambahkan</p>
                     </div>
                     <a href="{{ route('sales.client.create') }}"
                         class="inline-flex w-fit items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-900 border border-transparent rounded-lg font-semibold text-sm text-white dark:text-emerald-400 hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                        Tambah Client
+                        Tambah Pelanggan
                     </a>
                 </div>
             </div>
@@ -55,9 +55,9 @@
                         <div>
                             <flux:input 
                                 name="search" 
-                                :label="__('Cari Client')" 
+                                :label="__('Cari Pelanggan')" 
                                 type="text" 
-                                :placeholder="__('Cari client')"
+                                :placeholder="__('Cari pelanggan')"
                                 :value="request('search')"
                             />
                         </div>
@@ -99,7 +99,7 @@
             @if(request('search') || request('status'))
                 <div class="mb-4">
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Menampilkan {{ $clients->total() }} client
+                        Menampilkan {{ $clients->total() }} pelanggan
                         @if(request('search'))
                             untuk pencarian "{{ request('search') }}"
                         @endif
@@ -229,6 +229,14 @@
 
                                     <!-- Right Side: Action Buttons -->
                                     <div class="flex items-center space-x-2">
+                                        <a href="{{ route('sales.client.show', $client) }}"
+                                            class="inline-flex items-center p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
+                                            title="Lihat Detail">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
                                         <a href="{{ route('sales.client.edit', $client) }}"
                                             class="inline-flex items-center p-2 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-colors duration-200"
                                             title="Edit Client">

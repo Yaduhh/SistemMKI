@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage as FacadesStorage;
 use App\Services\ActivityLogService;
 
 class ClientController extends Controller
@@ -25,7 +27,8 @@ class ClientController extends Controller
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('notelp', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                  ->orWhere('nama_perusahaan', 'like', "%{$search}%")
+                  ->orWhere('description_json', 'like', "%{$search}%");
             });
         }
 
@@ -68,13 +71,21 @@ class ClientController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'notelp' => 'required|string|max:20',
-            'description' => 'nullable|string',
+            'nama_perusahaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'descriptions' => 'required|array|min:1',
+            'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
         ]);
 
         $data = $request->all();
         $data['created_by'] = Auth::id();
+        $data['status'] = $request->has('status') ? true : false;
+        $data['status_deleted'] = false;
+
+        // Convert descriptions array to JSON
+        $data['description_json'] = json_encode(['items' => $request->descriptions]);
 
         if ($request->hasFile('file_input')) {
             $data['file_input'] = $request->file('file_input')->store('clients', 'public');
@@ -86,7 +97,7 @@ class ClientController extends Controller
         ActivityLogService::log(
             'create',
             'Client',
-            "Admin menambahkan client baru: {$client->nama}",
+            "Sales menambahkan client baru: {$client->nama}",
             [],
             $client->toArray()
         );
@@ -97,17 +108,18 @@ class ClientController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Client $client)
+    {
+        return view('admin.client.show', compact('client'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk mengedit client ini.');
-        }
-
         return view('admin.client.edit', compact('client'));
     }
 
@@ -116,26 +128,27 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk mengupdate client ini.');
-        }
 
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'notelp' => 'required|string|max:20',
-            'description' => 'nullable|string',
+            'nama_perusahaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'descriptions' => 'required|array|min:1',
+            'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
         ]);
 
-        // Store old data for logging
+        // Store old data for comparison
         $oldData = $client->toArray();
 
         $data = $request->all();
+        $data['status'] = $request->has('status') ? true : false;
+
+        // Convert descriptions array to JSON
+        $data['description_json'] = json_encode(['items' => $request->descriptions]);
 
         if ($request->hasFile('file_input')) {
             // Delete old file if exists
@@ -150,7 +163,7 @@ class ClientController extends Controller
         // Log activity for client update
         ActivityLogService::logUpdate(
             'Client',
-            "Admin mengupdate client: {$client->nama}",
+            "Sales mengupdate client: {$client->nama}",
             $oldData,
             $client->fresh()->toArray()
         );
@@ -161,34 +174,40 @@ class ClientController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft delete the specified resource.
      */
     public function destroy(Client $client)
     {
-        // Check if the current user is the creator of this client
-        if ($client->created_by !== auth()->id()) {
-            return redirect()
-                ->route('admin.client.index')
-                ->with('error', 'Anda tidak memiliki izin untuk menghapus client ini.');
-        }
 
-        // Store client data for logging before deletion
-        $clientData = $client->toArray();
-        $clientName = $client->nama;
+        // Store old data for logging
+        $oldData = $client->toArray();
 
-        $client->delete();
+        // Soft delete by setting status_deleted to true
+        $client->update(['status_deleted' => true]);
 
         // Log activity for client deletion
         ActivityLogService::log(
             'delete',
             'Client',
-            "Admin menghapus client: {$clientName}",
-            $clientData,
-            []
+            "Sales menghapus client: {$client->nama}",
+            $oldData,
+            ['status_deleted' => true]
         );
 
         return redirect()
             ->route('admin.client.index')
             ->with('success', 'Client berhasil dihapus.');
     }
-} 
+
+    /**
+     * Download client file.
+     */
+    public function download(Client $client)
+    {
+        if (!$client->file_path || !Storage::exists($client->file_path)) {
+            return redirect()->back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return Storage::download($client->file_path);
+    }
+}

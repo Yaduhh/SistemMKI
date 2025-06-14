@@ -29,6 +29,9 @@ class AccountSettings extends Component
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public bool $showCurrentPassword = false;
+    public bool $showPassword = false;
+    public bool $showPasswordConfirmation = false;
 
     // Account Status
     public bool $status = true;
@@ -151,7 +154,11 @@ class AccountSettings extends Component
         ]);
 
         $this->reset(['current_password', 'password', 'password_confirmation']);
+        $this->showCurrentPassword = false;
+        $this->showPassword = false;
+        $this->showPasswordConfirmation = false;
 
+        session()->flash('password_success', 'Password berhasil diubah!');
         $this->dispatch('password-updated');
     }
 
@@ -200,4 +207,4 @@ class AccountSettings extends Component
     {
         return view('livewire.sales.account-settings');
     }
-} 
+}

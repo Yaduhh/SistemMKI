@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SyaratController;
 use App\Http\Controllers\Admin\SuratJalanController;
 use App\Http\Controllers\Admin\DistributorController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ArsipFileController;
 use App\Http\Controllers\Admin\AkunController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Pengajuan\PengajuanController;
@@ -144,7 +145,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('distributor', DistributorController::class);
 
     // Client Routes
+    Route::get('client/{client}/download', [ClientController::class, 'download'])->name('client.download');
     Route::resource('client', ClientController::class);
+    
+    // Arsip File Routes
+    Route::resource('arsip-file', ArsipFileController::class);
     Route::resource('decking', DeckingController::class);
     Route::resource('facade', FacadeController::class);
     Route::resource('flooring', FlooringController::class);
@@ -164,6 +169,9 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(fu
     Route::get('akun/{akun}/edit', [AkunController::class, 'edit'])->name('akun.edit');
     Route::put('akun/{akun}', [AkunController::class, 'update'])->name('akun.update');
     Route::delete('akun/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
+
+    // Absensi Routes
+    Route::resource('absensi', App\Http\Controllers\Admin\AbsensiController::class);
 
     // Settings Route - using view with admin layout
     Route::view('/setting', 'admin.setting.index')->name('setting.index');

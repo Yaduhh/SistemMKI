@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Admin Dashboard')">
     <div class="w-full space-y-8">
         <!-- Header Section -->
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Admin</h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -16,7 +16,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             <!-- Client Stats -->
             <div class="bg-white dark:bg-zinc-900/30 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">

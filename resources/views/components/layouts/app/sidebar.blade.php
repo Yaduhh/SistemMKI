@@ -18,6 +18,8 @@
                 
                 <flux:navlist.group :heading="__('Manajemen Proyek')" class="grid mt-10">
                     <flux:navlist.item icon="clipboard-document-list" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Semua Proyek') }}</flux:navlist.item>
+                    <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+                    <flux:navlist.item icon="check-circle" :href="route('admin.absensi.index')" :current="request()->routeIs('admin.absensi.*')" wire:navigate>{{ __('Absensi') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Produk & Aksesoris')" class="grid mt-10">
@@ -63,11 +65,6 @@
                     @if(auth()->user()->role === 1)
                         <flux:navlist.item icon="user-plus" :href="route('admin.akun.create')" :current="request()->routeIs('admin.akun.create')" wire:navigate>{{ __('Tambah User') }}</flux:navlist.item>
                     @endif
-                </flux:navlist.group>
-
-                <!-- Daily Activity -->
-                <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
-                    <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

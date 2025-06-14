@@ -48,6 +48,14 @@ class Client extends Model
     }
 
     /**
+     * Get the arsip files for the client.
+     */
+    public function arsipFiles()
+    {
+        return $this->hasMany(ArsipFile::class, 'id_client');
+    }
+
+    /**
      * Scope a query to only include active clients.
      */
     public function scopeActive($query)
@@ -93,4 +101,4 @@ class Client extends Model
             $this->attributes['description_json'] = json_encode(['items' => [$value]]);
         }
     }
-} 
+}

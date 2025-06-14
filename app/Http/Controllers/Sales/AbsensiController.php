@@ -28,7 +28,7 @@ class AbsensiController extends Controller
                 'tgl_absen' => $today,
             ],
             [
-                'status_absen' => 0, // Default to Alpha
+                'status_absen' => 0,
                 'deleted_status' => false,
             ]
         );

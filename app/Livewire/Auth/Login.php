@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -32,11 +34,41 @@ class Login extends Component
 
         $this->ensureIsNotRateLimited();
 
+        // Check if user exists
+        $user = User::where('email', $this->email)->first();
+        
+        if (!$user) {
+            RateLimiter::hit($this->throttleKey());
+            
+            throw ValidationException::withMessages([
+                'email' => 'Akun tidak ditemukan.',
+            ]);
+        }
+        
+        // Check if account is active
+        if ($user->status == 0) {
+            RateLimiter::hit($this->throttleKey());
+            
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda tidak aktif, silahkan hubungi administrator.',
+            ]);
+        }
+        
+        // Check password
+        if (!Hash::check($this->password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            
+            throw ValidationException::withMessages([
+                'password' => 'Kata sandi salah.',
+            ]);
+        }
+        
+        // Attempt login
         if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Terjadi kesalahan saat login.',
             ]);
         }
 
