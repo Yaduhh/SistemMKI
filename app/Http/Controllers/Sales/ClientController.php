@@ -65,7 +65,9 @@ class ClientController extends Controller
     {
         // Ensure the client belongs to the authenticated sales user
         if ($client->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+            $currentUserId = Auth::id();
+            $clientCreatedBy = $client->created_by;
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
         }
 
         return view('sales.client.show', compact('client'));
@@ -123,7 +125,9 @@ class ClientController extends Controller
     {
         // Ensure the client belongs to the authenticated sales user
         if ($client->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+            $currentUserId = Auth::id();
+            $clientCreatedBy = $client->created_by;
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
         }
 
         return view('sales.client.edit', compact('client'));
@@ -136,7 +140,9 @@ class ClientController extends Controller
     {
         // Ensure the client belongs to the authenticated sales user
         if ($client->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+            $currentUserId = Auth::id();
+            $clientCreatedBy = $client->created_by;
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
         }
 
         $request->validate([
@@ -190,7 +196,9 @@ class ClientController extends Controller
     {
         // Ensure the client belongs to the authenticated sales user
         if ($client->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+            $currentUserId = Auth::id();
+            $clientCreatedBy = $client->created_by;
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
         }
 
         // Store old data for logging
@@ -212,4 +220,4 @@ class ClientController extends Controller
             ->route('sales.client.index')
             ->with('success', 'Client berhasil dihapus.');
     }
-} 
+}
