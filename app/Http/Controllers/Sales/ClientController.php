@@ -64,10 +64,15 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         // Ensure the client belongs to the authenticated sales user
-        if ($client->created_by !== Auth::id()) {
-            $currentUserId = Auth::id();
-            $clientCreatedBy = $client->created_by;
-            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
+        $currentUserId = Auth::id();
+        $clientCreatedBy = $client->created_by;
+        
+        // Debug information
+        $currentUserType = gettype($currentUserId);
+        $clientCreatedByType = gettype($clientCreatedBy);
+        
+        if ((int)$client->created_by !== (int)Auth::id()) {
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId} ({$currentUserType}), Client Created By: {$clientCreatedBy} ({$clientCreatedByType})");
         }
 
         return view('sales.client.show', compact('client'));
@@ -124,10 +129,15 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         // Ensure the client belongs to the authenticated sales user
-        if ($client->created_by !== Auth::id()) {
-            $currentUserId = Auth::id();
-            $clientCreatedBy = $client->created_by;
-            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
+        $currentUserId = Auth::id();
+        $clientCreatedBy = $client->created_by;
+        
+        // Debug information
+        $currentUserType = gettype($currentUserId);
+        $clientCreatedByType = gettype($clientCreatedBy);
+        
+        if ((int)$client->created_by !== (int)Auth::id()) {
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId} ({$currentUserType}), Client Created By: {$clientCreatedBy} ({$clientCreatedByType})");
         }
 
         return view('sales.client.edit', compact('client'));
@@ -139,10 +149,15 @@ class ClientController extends Controller
     public function update(Request $request, Client $client)
     {
         // Ensure the client belongs to the authenticated sales user
-        if ($client->created_by !== Auth::id()) {
-            $currentUserId = Auth::id();
-            $clientCreatedBy = $client->created_by;
-            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
+        $currentUserId = Auth::id();
+        $clientCreatedBy = $client->created_by;
+        
+        // Debug information
+        $currentUserType = gettype($currentUserId);
+        $clientCreatedByType = gettype($clientCreatedBy);
+        
+        if ((int)$client->created_by !== (int)Auth::id()) {
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId} ({$currentUserType}), Client Created By: {$clientCreatedBy} ({$clientCreatedByType})");
         }
 
         $request->validate([
@@ -195,10 +210,15 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         // Ensure the client belongs to the authenticated sales user
-        if ($client->created_by !== Auth::id()) {
-            $currentUserId = Auth::id();
-            $clientCreatedBy = $client->created_by;
-            abort(403, "Unauthorized action. Current User ID: {$currentUserId}, Client Created By: {$clientCreatedBy}");
+        $currentUserId = Auth::id();
+        $clientCreatedBy = $client->created_by;
+        
+        // Debug information
+        $currentUserType = gettype($currentUserId);
+        $clientCreatedByType = gettype($clientCreatedBy);
+        
+        if ((int)$client->created_by !== (int)Auth::id()) {
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId} ({$currentUserType}), Client Created By: {$clientCreatedBy} ({$clientCreatedByType})");
         }
 
         // Store old data for logging
