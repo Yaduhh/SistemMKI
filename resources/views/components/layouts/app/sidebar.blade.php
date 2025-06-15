@@ -18,7 +18,7 @@
                 
                 <flux:navlist.group :heading="__('Manajemen Proyek')" class="mt-10">
                     <flux:navlist.item icon="clipboard-document-list" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Semua Proyek') }}</flux:navlist.item>
-                    <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
+                    <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Kunjungan Harian') }}</flux:navlist.item>
                     <flux:navlist.item icon="check-circle" :href="route('admin.absensi.index')" :current="request()->routeIs('admin.absensi.*')" wire:navigate>{{ __('Absensi') }}</flux:navlist.item>
                 </flux:navlist.group>
 
