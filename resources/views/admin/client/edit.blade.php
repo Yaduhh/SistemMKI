@@ -1,9 +1,9 @@
-<x-layouts.app :title="__('Edit Client')">
+<x-layouts.app :title="__('Edit Pelanggan')">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="w-full mx-auto">
             <div class="bg-white dark:bg-accent-foreground rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Client</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Pelanggan</h3>
                 </div>
 
                 <!-- Flash Messages -->

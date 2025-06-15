@@ -34,7 +34,7 @@ class SuratJalanController extends Controller
     // Display list of Surat Jalan
     public function index()
     {
-        $suratJalans = SuratJalan::all();
+        $suratJalans = SuratJalan::where('deleted_status', false)->get();
         return view('admin.surat_jalan.index', compact('suratJalans'));
     }
 

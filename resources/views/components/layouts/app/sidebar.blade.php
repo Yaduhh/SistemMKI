@@ -13,7 +13,7 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
                 
                 <flux:navlist.group :heading="__('Manajemen Proyek')" class="mt-10">
@@ -28,7 +28,7 @@
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
                     
                     
-                    <flux:navlist.group heading="Semua Produk WPC" expandable>
+                    <flux:navlist.group heading="Semua Produk WPC" expandable :expanded="false">
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.decking.index')" :current="request()->routeIs('admin.decking.*')" wire:navigate>{{ __('Decking') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.facade.index')" :current="request()->routeIs('admin.facade.*')" wire:navigate>{{ __('Facade') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.flooring.index')" :current="request()->routeIs('admin.flooring.*')" wire:navigate>{{ __('Flooring') }}</flux:navlist.item>
@@ -150,7 +150,7 @@
                                     </span>
                                 </span>
 
-                                <div class="flex-1 text-start text-sm leading-tight">
+                                <div class="flex text-start text-sm leading-tight flex-col">
                                     <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
                                     <span class="truncate text-xs">{{ auth()->user()->email }}</span>
                                 </div>

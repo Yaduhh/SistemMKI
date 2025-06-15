@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Aktivitas Harian')">
+<x-layouts.app :title="__('Kunjungan Harian')">
     <div class="flex flex-col gap-6">
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -10,9 +10,9 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ __('Aktivitas Harian') }}</h1>
+                    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ __('Kunjungan Harian') }}</h1>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('Kelola dan pantau aktivitas harian') }}</p>
+                        {{ __('Kelola dan pantau kunjungan harian') }}</p>
                 </div>
             </div>
 
@@ -21,7 +21,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                {{ __('Tambah Aktivitas') }}
+                {{ __('Tambah Kunjungan') }}
             </a>
         </div>
 
@@ -158,7 +158,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus aktivitas ini?')"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')"
                                             class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900">
                                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -325,16 +325,16 @@
                                 </svg>
                             </div>
                             <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-                                {{ __('Tidak ada aktivitas') }}</h3>
+                                {{ __('Tidak ada kunjungan') }}</h3>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('Belum ada aktivitas yang ditambahkan.') }}</p>
+                                {{ __('Belum ada kunjungan yang ditambahkan.') }}</p>
                             <a href="{{ route('admin.daily-activity.create') }}"
                                 class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-800 text-white hover:bg-emerald-800/90 dark:bg-emerald-800/90 dark:hover:bg-emerald-800 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4" />
                                 </svg>
-                                {{ __('Tambah Aktivitas') }}
+                                {{ __('Tambah Kunjungan') }}
                             </a>
                         </div>
                     </div>

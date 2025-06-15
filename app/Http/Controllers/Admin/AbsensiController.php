@@ -18,7 +18,7 @@ class AbsensiController extends Controller
     public function index(Request $request)
     {
         // Get all active users
-        $users = User::where('status_deleted', 0)->get();
+        $users = User::where('status_deleted', 0)->where('role', 2)->get();
         
         // Set default date to today if no date is selected
         $startDate = $request->filled('filter_date') ? $request->filter_date : now()->format('Y-m-d');

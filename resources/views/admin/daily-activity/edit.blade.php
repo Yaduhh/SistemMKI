@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Edit Aktivitas Harian')">
+<x-layouts.app :title="__('Edit Kunjungan Harian')">
     <div class="container mx-auto">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-8">
@@ -7,11 +7,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
                 <h1 class="text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
-                    {{ __('Edit Aktivitas Harian') }}
+                    {{ __('Edit Kunjungan Harian') }}
                 </h1>
             </div>
             <p class="mt-2 sm:mt-0 text-gray-600 dark:text-gray-400">
-                Edit detail aktivitas harian Anda.
+                Edit detail kunjungan harian Anda.
             </p>
         </div>
 
@@ -76,7 +76,7 @@
                         name="summary"
                         id="summary"
                         label="Pembahasan"
-                        placeholder="Masukkan summary aktivitas..."
+                        placeholder="Masukkan pembahasan kunjungan..."
                         rows="4"
                     >{{ $dailyActivity->summary }}</flux:textarea>
                     @error('summary')
