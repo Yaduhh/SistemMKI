@@ -27,7 +27,6 @@
         <flux:navbar class="-mb-px max-lg:hidden space-x-4">
             <flux:navbar.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navbar.item>
             <flux:navbar.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navbar.item>
-            <flux:navbar.item icon="document-text" href="#">Penawaran</flux:navbar.item>
             <flux:navbar.item icon="map-pin" href="{{ route('sales.daily-activity.index') }}" :current="request()->routeIs('sales.daily-activity.*')">Kunjungan</flux:navbar.item>
             <flux:navbar.item icon="calendar-days" :href="route('sales.events.dashboard')" :current="request()->routeIs('sales.events.dashboard')" wire:navigate>{{ __('Event') }}</flux:navlist.item>
             <flux:navbar.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navbar.item>
@@ -38,24 +37,14 @@
         <flux:spacer />
 
         <flux:dropdown position="top" align="start">
-            <flux:profile circle
-                avatar="{{ auth()->user()->profile ? asset('storage/' . auth()->user()->profile) : null }}"
-            />
+            <flux:profile avatar:name="{{ auth()->user()->name }}" />
             <flux:menu>
                 <flux:menu.radio.group>
                     <div class="p-0 text-sm font-normal">
                         <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                            @if(auth()->user()->profile)
-                                <img src="{{ asset('storage/' . auth()->user()->profile) }}" 
-                                     alt="Profile" 
-                                     class="h-8 w-8 rounded-lg object-cover">
-                            @else
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
-                            @endif
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                {{ auth()->user()->initials() }}
+                            </span>
 
                             <div class="grid flex-1 text-start text-sm leading-tight">
                                 <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
@@ -93,7 +82,6 @@
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="{{ route('sales.dashboard') }}" :current="request()->routeIs('sales.dashboard')">Dashboard</flux:navlist.item>
             <flux:navlist.item icon="users" href="{{ route('sales.client.index') }}" :current="request()->routeIs('sales.client.*')">Pelanggan</flux:navlist.item>
-            <flux:navlist.item icon="document-text" href="#">Penawaran</flux:navlist.item>
             <flux:navlist.item icon="clipboard-document-check" href="{{ route('sales.absensi.index') }}" :current="request()->routeIs('sales.absensi.index')">Absensi</flux:navlist.item>
             <flux:navlist.group expandable heading="Menu" class="max-lg:hidden">
                 <flux:navlist.item href="{{ route('sales.client.index') }}">Profil Klien</flux:navlist.item>

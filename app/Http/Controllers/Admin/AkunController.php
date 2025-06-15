@@ -38,7 +38,7 @@ class AkunController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'role' => ['required', 'integer', 'in:1,2'],
+            'role' => ['required', 'integer', 'in:1,2,3,4'],
         ]);
 
         $data = $request->all();
@@ -74,7 +74,7 @@ class AkunController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $akun->id],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'role' => ['required', 'integer', 'in:1,2'],
+            'role' => ['required', 'integer', 'in:1,2,3,4'],
         ]);
 
         $data = $request->except('password');

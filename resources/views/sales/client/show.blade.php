@@ -130,6 +130,21 @@
                                     </div>
                                 @endif
 
+                                <!-- Visit Count with Link -->
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total Kunjungan') }}</p>
+                                        <a href="{{ route('sales.daily-activity.index', ['client' => $client->id]) }}" class="text-lg font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                            {{ $client->dailyActivities()->where('deleted_status', false)->count() }} Kunjungan
+                                        </a>
+                                    </div>
+                                </div>
+
                                 @if($client->notelp)
                                     <div class="flex items-center">
                                         <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
@@ -390,6 +405,51 @@
                             <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Terakhir Update') }}</span>
                             <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $client->updated_at->format('d/m/Y H:i') }}</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Activities Section -->
+            <div class="mt-0 lg:col-span-2">
+                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Riwayat Kunjungan</h3>
+                    </div>
+                    <div class="p-6">
+                        @php
+                            $activities = $client->dailyActivities()->where('deleted_status', false)->latest()->get();
+                        @endphp
+
+                        @if($activities->count() > 0)
+                            <div class="space-y-4">
+                                @foreach($activities as $activity)
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-700/50 rounded-lg">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-white">{{ $activity->perihal }}</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $activity->created_at->format('d M Y H:i') }}</p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ route('sales.daily-activity.show', $activity->id) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                            Lihat Detail
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Belum ada kunjungan</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Client ini belum memiliki riwayat kunjungan.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

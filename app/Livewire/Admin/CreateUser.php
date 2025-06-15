@@ -9,6 +9,7 @@ use Illuminate\Validation\Rules;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Illuminate\Support\Facades\Session;
+use App\Services\ActivityLogService;
 
 class CreateUser extends Component
 {
@@ -50,7 +51,7 @@ class CreateUser extends Component
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
             'notelp' => ['nullable', 'string', 'max:20'],
-            'role' => ['required', 'integer', 'in:1,2'],
+            'role' => ['required', 'integer', 'in:1,2,3,4'],
             'status' => ['required', 'boolean'],
             'profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
@@ -68,6 +69,13 @@ class CreateUser extends Component
 
         // Buat user baru
         $user = User::create($validated);
+
+        // Log aktivitas pembuatan user
+        ActivityLogService::logCreate(
+            'User',
+            "Admin membuat user baru: {$user->name}",
+            $user->toArray()
+        );
 
         // Set success message
         Session::flash('success', 'User berhasil dibuat!');

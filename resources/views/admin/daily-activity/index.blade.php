@@ -57,6 +57,30 @@
                             </div>
                         </div>
 
+                        <!-- User Filter -->
+                        <div class="space-y-2">
+                            <label for="user" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    {{ __('Filter User') }}
+                                </div>
+                            </label>
+
+                            <div class="mt-4">
+                                <select name="user" id="user" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-900/30 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
+                                    <option value="" class="bg-zinc-100 dark:bg-zinc-900/50">{{ __('Pilih User') }}</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ request('user') == $user->id ? 'selected' : '' }} class="bg-zinc-100 dark:bg-zinc-800">
+                                            {{ $user->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Action Buttons -->
                         <div class="flex items-end gap-2">
                             <button type="submit"

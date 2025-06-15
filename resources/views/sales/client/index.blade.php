@@ -137,6 +137,7 @@
                             <!-- Card Body -->
                             <div class="px-6 py-4 space-y-2">
                                 <!-- Email -->
+                                @if($client->email)
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -145,7 +146,7 @@
                                         {{ $client->email }}
                                     </a>
                                 </div>
-
+                                @endif
                                 <!-- Phone -->
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,6 +182,14 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                     <span class="text-sm text-gray-600 dark:text-gray-400">Dibuat: {{ $client->created_at->format('d/m/Y') }}</span>
+                                </div>
+
+                                <!-- Visit Count -->
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Total Kunjungan: {{ $client->dailyActivities()->where('deleted_status', false)->count() }}</span>
                                 </div>
 
                                 <!-- Description (if exists) -->

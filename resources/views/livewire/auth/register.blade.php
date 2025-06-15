@@ -32,7 +32,6 @@
             :label="__('Role')"
             required
         >
-            <option value="1">{{ __('Admin') }}</option>
             <option value="2">{{ __('Sales') }}</option>
         </flux:select>
 

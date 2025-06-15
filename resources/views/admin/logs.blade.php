@@ -3,7 +3,7 @@
         <div class="mx-auto">
             <!-- Header Section -->
             <div class="mb-8">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Log Aktivitas Sistem</h1>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -11,7 +11,7 @@
                         </p>
                     </div>
                     <a href="{{ route('admin.dashboard') }}"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        class="w-fit max-sm:mt-2 inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -38,7 +38,7 @@
                     </div>
                 </div>
 
-                <div class="p-8">
+                <div class="p-2 lg:p-8">
                     @if($allLogs->count() > 0)
                         <div class="space-y-4">
                             @foreach($allLogs as $log)

@@ -16,13 +16,13 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
                 
-                <flux:navlist.group :heading="__('Manajemen Proyek')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Manajemen Proyek')" class="mt-10">
                     <flux:navlist.item icon="clipboard-document-list" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Semua Proyek') }}</flux:navlist.item>
                     <flux:navlist.item icon="calendar" :href="route('admin.daily-activity.index')" :current="request()->routeIs('admin.daily-activity.*')" wire:navigate>{{ __('Aktivitas Harian') }}</flux:navlist.item>
                     <flux:navlist.item icon="check-circle" :href="route('admin.absensi.index')" :current="request()->routeIs('admin.absensi.*')" wire:navigate>{{ __('Absensi') }}</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Produk & Aksesoris')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Produk & Aksesoris')" class="mt-10">
                     <flux:navlist.item icon="cube" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Produk') }}</flux:navlist.item>
                     <flux:navlist.item icon="wrench-screwdriver" :href="route('admin.aksesoris.index')" :current="request()->routeIs('admin.aksesoris.*')" wire:navigate>{{ __('Aksesoris') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
@@ -37,30 +37,30 @@
                     </flux:navlist.group>
                 </flux:navlist.group>
                 
-                <flux:navlist.group :heading="__('Client & Distribusi')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Pelanggan & Distributor')" class="mt-10">
                     <flux:navlist.item icon="truck" :href="route('admin.distributor.index')" :current="request()->routeIs('admin.distributor.index')" wire:navigate>{{ __('Distributor') }}</flux:navlist.item>
-                    <flux:navlist.item icon="users" :href="route('admin.client.index')" :current="request()->routeIs('admin.client.index')" wire:navigate>{{ __('Client') }}</flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('admin.client.index')" :current="request()->routeIs('admin.client.index')" wire:navigate>{{ __('Pelanggan') }}</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Data Penawaran')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Data Penawaran')" class="mt-10">
                     <flux:navlist.item icon="document-duplicate" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Pengajuan') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-chart-bar" :href="route('admin.penawaran.index')" :current="request()->routeIs('admin.penawaran.*')" wire:navigate>{{ __('Penawaran') }}</flux:navlist.item>
                 </flux:navlist.group>
 
-                <flux:navlist.group :heading="__('Data Surat Jalan')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
                     <flux:navlist.item icon="document" :href="route('admin.surat_jalan.index')" :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <!-- Event Management -->
                 @if(auth()->user()->role === 1)
-                    <flux:navlist.group :heading="__('Manajemen Event')" class="grid mt-10">
+                    <flux:navlist.group :heading="__('Manajemen Event')" class="mt-10">
                         <flux:navlist.item icon="calendar-days" :href="route('admin.events.index')" :current="request()->routeIs('admin.events.index')" wire:navigate>{{ __('Semua Event') }}</flux:navlist.item>
                         <flux:navlist.item icon="clock" :href="route('admin.events.upcoming')" :current="request()->routeIs('admin.events.upcoming')" wire:navigate>{{ __('Event Mendatang') }}</flux:navlist.item>
                         <flux:navlist.item icon="check-circle" :href="route('admin.events.past')" :current="request()->routeIs('admin.events.past')" wire:navigate>{{ __('Event Selesai') }}</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
 
-                <flux:navlist.group :heading="__('Akun')" class="grid mt-10">
+                <flux:navlist.group :heading="__('Akun')" class="mt-10">
                     <flux:navlist.item icon="user-circle" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
                     @if(auth()->user()->role === 1)
                         <flux:navlist.item icon="user-plus" :href="route('admin.akun.create')" :current="request()->routeIs('admin.akun.create')" wire:navigate>{{ __('Tambah User') }}</flux:navlist.item>
@@ -96,7 +96,7 @@
                                     </span>
                                 </span>
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
+                                <div class="flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
                                     <span class="truncate text-xs">{{ auth()->user()->email }}</span>
                                 </div>
@@ -150,7 +150,7 @@
                                     </span>
                                 </span>
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
+                                <div class="flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
                                     <span class="truncate text-xs">{{ auth()->user()->email }}</span>
                                 </div>

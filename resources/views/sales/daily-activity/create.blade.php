@@ -24,28 +24,6 @@
                 @csrf
 
                 <div>
-                    <label for="dokumentasi" class="block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        Dokumentasi
-                    </label>
-                    <p class="text-gray-500 text-xs mb-2">(bisa lebih dari satu, format: gambar)</p>
-                    <input type="file" name="dokumentasi[]" id="dokumentasi" multiple accept="image/*"
-                           class="block w-full text-sm text-gray-900 dark:text-gray-100
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-md file:border-0
-                                  file:text-sm file:font-semibold
-                                  file:bg-blue-50 file:text-emerald-700
-                                  hover:file:bg-emerald-100 dark:file:bg-emerald-900 dark:file:text-emerald-300 dark:hover:file:bg-emerald-800
-                                  border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600
-                                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('dokumentasi') border-red-500 @enderror">
-                    @error('dokumentasi')
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                    @error('dokumentasi.*')
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
                     <flux:select
                         name="perihal"
                         id="perihal"
@@ -96,6 +74,42 @@
                         :has-error="$errors->has('summary')"
                     />
                     @error('summary')
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="dokumentasi" class="block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                        Dokumentasi
+                    </label>
+                    <p class="text-gray-500 text-xs mb-2">(bisa lebih dari satu, format: gambar)</p>
+                    
+                    <div class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600 dark:text-gray-400">
+                                <label for="dokumentasi" class="relative cursor-pointer bg-white dark:bg-zinc-900/30 rounded-md font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500">
+                                    <span>Upload file</span>
+                                    <input type="file" name="dokumentasi[]" id="dokumentasi" multiple accept="image/*" class="sr-only" onchange="previewImages(this)">
+                                </label>
+                                <p class="pl-1">atau drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                PNG, JPG, GIF sampai 10MB
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="image-preview" class="mt-4 space-y-2">
+                        <!-- Preview images will be shown here -->
+                    </div>
+
+                    @error('dokumentasi')
+                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                    @error('dokumentasi.*')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
@@ -345,6 +359,89 @@
             // Mulai proses mendapatkan lokasi
             forceLocationPrompt();
         });
+
+        // Update the previewImages function
+        function previewImages(input) {
+            const previewContainer = document.getElementById('image-preview');
+            previewContainer.innerHTML = ''; // Clear existing previews
+
+            if (input.files) {
+                Array.from(input.files).forEach((file, index) => {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-zinc-900/30 rounded-lg';
+                    
+                    previewDiv.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">${file.name}</span>
+                        </div>
+                        <button type="button" onclick="removeImage(${index})" class="text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    `;
+                    
+                    previewContainer.appendChild(previewDiv);
+                });
+            }
+        }
+
+        function removeImage(index) {
+            const input = document.getElementById('dokumentasi');
+            const dt = new DataTransfer();
+            const { files } = input;
+            
+            for (let i = 0; i < files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(files[i]);
+                }
+            }
+            
+            input.files = dt.files;
+            previewImages(input);
+        }
+
+        // Add drag and drop functionality
+        const dropZone = document.querySelector('.border-dashed');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-emerald-500');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-emerald-500');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            const input = document.getElementById('dokumentasi');
+            
+            input.files = files;
+            previewImages(input);
+        }
     </script>
     @endpush
 </x-layouts.sales>

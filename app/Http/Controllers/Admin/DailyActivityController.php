@@ -36,7 +36,11 @@ class DailyActivityController extends Controller
               ->whereDate('created_at', '<=', $endDate);
 
         $activities = $query->latest()->paginate(10);
-        $users = User::where('status_deleted', 0)->get();
+        
+        // Get all active users and order by name
+        $users = User::where('status_deleted', 0)
+                    ->orderBy('name')
+                    ->get();
 
         return view('admin.daily-activity.index', compact('activities', 'users', 'startDate', 'endDate'));
     }

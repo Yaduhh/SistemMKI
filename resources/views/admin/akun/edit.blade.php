@@ -74,6 +74,8 @@
                     >
                         <option value="1" {{ old('role', $akun->role) == 1 ? 'selected' : '' }}>Admin</option>
                         <option value="2" {{ old('role', $akun->role) == 2 ? 'selected' : '' }}>User</option>
+                        <option value="3" {{ old('role', $akun->role) == 3 ? 'selected' : '' }}>Finance</option>
+                        <option value="4" {{ old('role', $akun->role) == 4 ? 'selected' : '' }}>Digital Marketing</option>
                     </flux:select>
 
 

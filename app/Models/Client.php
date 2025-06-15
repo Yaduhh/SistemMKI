@@ -56,6 +56,14 @@ class Client extends Model
     }
 
     /**
+     * Get the daily activities for the client.
+     */
+    public function dailyActivities()
+    {
+        return $this->hasMany(DailyActivity::class, 'pihak_bersangkutan');
+    }
+
+    /**
      * Scope a query to only include active clients.
      */
     public function scopeActive($query)

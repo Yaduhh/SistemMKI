@@ -71,12 +71,16 @@ class UserIndex extends Component
         $totalUsers = User::where('status_deleted', false)->count();
         $adminCount = User::where('status_deleted', false)->where('role', 1)->count();
         $salesCount = User::where('status_deleted', false)->where('role', 2)->count();
+        $financeCount = User::where('status_deleted', false)->where('role', 3)->count();
+        $digitalMarketingCount = User::where('status_deleted', false)->where('role', 4)->count();
 
         return view('livewire.admin.user-index', [
             'users' => $users,
             'totalUsers' => $totalUsers,
             'adminCount' => $adminCount,
             'salesCount' => $salesCount,
+            'financeCount' => $financeCount,
+            'digitalMarketingCount' => $digitalMarketingCount,
         ])->layout('components.layouts.app');
     }
 } 

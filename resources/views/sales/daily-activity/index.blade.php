@@ -1,4 +1,4 @@
-<x-layouts.sales :title="__('Aktivitas Harian')">
+<x-layouts.sales :title="__('Kunjungan Harian')">
     <div class="flex flex-col gap-6">
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -10,9 +10,9 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ __('Aktivitas Harian') }}</h1>
+                    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ __('Kunjungan Harian') }}</h1>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('Kelola dan pantau aktivitas harian Anda') }}</p>
+                        {{ __('Kelola dan pantau Kunjungan Harian Anda') }}</p>
                 </div>
             </div>
 
@@ -177,12 +177,12 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 class="font-medium text-gray-900 dark:text-white">Client</h4>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">Pelanggan</h4>
                                         <p class="mt-1 text-gray-600 dark:text-gray-400">
                                             @if ($activity->client)
                                                 {{ Str::limit($activity->client->nama, 100) }}
                                             @else
-                                                <span class="text-gray-400 dark:text-gray-500">Client tidak
+                                                <span class="text-gray-400 dark:text-gray-500">Pelanggan tidak
                                                     ditemukan</span>
                                             @endif
                                         </p>

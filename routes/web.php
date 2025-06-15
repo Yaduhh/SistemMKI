@@ -27,13 +27,20 @@ Route::get('/', function () {
 
 // Redirect dashboard based on user role
 Route::get('dashboard', function () {
-    if (auth()->user()->role === 1) {
-        return redirect()->route('admin.dashboard');
-    } elseif (auth()->user()->role === 2) {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    $user = auth()->user();
+    if ($user->role === 2) {
         return redirect()->route('sales.dashboard');
+    } elseif ($user->role === 3) {
+        return redirect()->route('finance.dashboard');
+    } elseif ($user->role === 1 || $user->role === 4) {
+        return redirect()->route('admin.dashboard');
     }
     return redirect()->route('login');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 // Add new route group for sales users (role 2)
 Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(function () {
@@ -79,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
-Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:1,3'])->prefix('admin')->group(function () {
     Route::get('produk', [ProdukController::class, 'index'])->name('admin.produk.index');
     Route::get('produk/create', [ProdukController::class, 'create'])->name('admin.produk.create');
     Route::post('produk', [ProdukController::class, 'store'])->name('admin.produk.store');
@@ -88,7 +95,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
     Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
 });
 
-Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:1,3'])->prefix('admin')->group(function () {
     Route::get('aksesoris', [AksesorisController::class, 'index'])->name('admin.aksesoris.index');
     Route::get('aksesoris/create', [AksesorisController::class, 'create'])->name('admin.aksesoris.create');
     Route::post('aksesoris', [AksesorisController::class, 'store'])->name('admin.aksesoris.store');
@@ -97,7 +104,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
     Route::delete('aksesoris/{id}', [AksesorisController::class, 'destroy'])->name('admin.aksesoris.destroy');
 });
 
-Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:1,3'])->prefix('admin')->group(function () {
     Route::get('syarat-ketentuan', [SyaratController::class, 'index'])->name('admin.syarat_ketentuan.index');
     Route::get('syarat-ketentuan/create', [SyaratController::class, 'create'])->name('admin.syarat_ketentuan.create');
     Route::post('syarat-ketentuan', [SyaratController::class, 'store'])->name('admin.syarat_ketentuan.store');
@@ -106,59 +113,7 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->group(function () {
     Route::delete('syarat-ketentuan/{id}', [SyaratController::class, 'destroy'])->name('admin.syarat_ketentuan.destroy');
 });
 
-// ROUTE FOR ADMIN & SALES
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::resource('pengajuan', PengajuanController::class);
-    Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
-    Route::put('pengajuan/{pengajuan}/reject', [PengajuanController::class, 'reject'])->name('pengajuan.reject');
-    Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
-    Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
-    
-    // Daily Activity Routes for Admin
-    Route::middleware(['role:1'])->group(function () {
-        // Daily Activity Routes for Sales
-        Route::get('/daily-activity', [DailyActivityController::class, 'index'])->name('daily-activity.index');
-        Route::get('/daily-activity/create', [DailyActivityController::class, 'create'])->name('daily-activity.create');
-        Route::post('/daily-activity', [DailyActivityController::class, 'store'])->name('daily-activity.store');
-        Route::get('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'show'])->name('daily-activity.show');
-        Route::get('/daily-activity/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activity.edit');
-        Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
-        Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
-        Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
-
-        // Event Routes - moved here to avoid conflicts
-        Route::get('events/upcoming', [EventController::class, 'upcoming'])->name('events.upcoming');
-        Route::get('events/past', [EventController::class, 'past'])->name('events.past');
-        Route::get('events/cancelled', [EventController::class, 'cancelled'])->name('events.cancelled');
-        Route::get('events/completed', [EventController::class, 'completed'])->name('events.completed');
-        Route::get('events/deleted', [EventController::class, 'deleted'])->name('events.deleted');
-        Route::post('events/{id}/restore', [EventController::class, 'restore'])->name('events.restore');
-        Route::delete('events/{id}/force-delete', [EventController::class, 'forceDelete'])->name('events.force-delete');
-        Route::put('events/{event}/update-status', [EventController::class, 'updateStatus'])->name('events.update-status');
-        Route::resource('events', EventController::class);
-    });
-});
-
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // Distributor Routes
-    Route::get('distributor/logs', [DistributorController::class, 'logs'])->name('distributor.logs');
-    Route::resource('distributor', DistributorController::class);
-
-    // Client Routes
-    Route::get('client/{client}/download', [ClientController::class, 'download'])->name('client.download');
-    Route::resource('client', ClientController::class);
-    
-    // Arsip File Routes
-    Route::resource('arsip-file', ArsipFileController::class);
-    Route::resource('decking', DeckingController::class);
-    Route::resource('facade', FacadeController::class);
-    Route::resource('flooring', FlooringController::class);
-    Route::resource('wallpanel', WallpanelController::class);
-    Route::resource('ceiling', CeilingController::class);
-    Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
-});
-
-Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
     Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('logs', [App\Http\Controllers\Admin\DashboardController::class, 'logs'])->name('logs');
@@ -175,6 +130,79 @@ Route::middleware(['auth', 'role:1'])->prefix('admin')->name('admin.')->group(fu
 
     // Settings Route - using view with admin layout
     Route::view('/setting', 'admin.setting.index')->name('setting.index');
+
+        // Distributor Routes
+    Route::get('distributor/logs', [DistributorController::class, 'logs'])->name('distributor.logs');
+    Route::resource('distributor', DistributorController::class);
+
+    // Client Routes
+    Route::get('client/{client}/download', [ClientController::class, 'download'])->name('client.download');
+    Route::resource('client', ClientController::class);
+    
+    // Arsip File Routes
+    Route::resource('arsip-file', ArsipFileController::class);
+    Route::resource('decking', DeckingController::class);
+    Route::resource('facade', FacadeController::class);
+    Route::resource('flooring', FlooringController::class);
+    Route::resource('wallpanel', WallpanelController::class);
+    Route::resource('ceiling', CeilingController::class);
+    Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
+
+    Route::resource('pengajuan', PengajuanController::class);
+    Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
+    Route::put('pengajuan/{pengajuan}/reject', [PengajuanController::class, 'reject'])->name('pengajuan.reject');
+    Route::get('admin/pengajuan/cetak/{id}', [PengajuanController::class, 'cetak'])->name('pengajuan.cetak');
+    Route::get('admin/surat-jalan/cetak/{id}', [SuratJalanController::class, 'cetak'])->name('surat_jalan.cetak');
+    
+     // Daily Activity Routes for Sales
+    Route::get('/daily-activity', [DailyActivityController::class, 'index'])->name('daily-activity.index');
+    Route::get('/daily-activity/create', [DailyActivityController::class, 'create'])->name('daily-activity.create');
+    Route::post('/daily-activity', [DailyActivityController::class, 'store'])->name('daily-activity.store');
+    Route::get('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'show'])->name('daily-activity.show');
+    Route::get('/daily-activity/{dailyActivity}/edit', [DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+    Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
+    Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+    Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+// Event Routes - moved here to avoid conflicts
+    Route::get('events/upcoming', [EventController::class, 'upcoming'])->name('events.upcoming');
+    Route::get('events/past', [EventController::class, 'past'])->name('events.past');
+    Route::get('events/cancelled', [EventController::class, 'cancelled'])->name('events.cancelled');
+    Route::get('events/completed', [EventController::class, 'completed'])->name('events.completed');
+    Route::get('events/deleted', [EventController::class, 'deleted'])->name('events.deleted');
+    Route::post('events/{id}/restore', [EventController::class, 'restore'])->name('events.restore');
+    Route::delete('events/{id}/force-delete', [EventController::class, 'forceDelete'])->name('events.force-delete');
+    Route::put('events/{event}/update-status', [EventController::class, 'updateStatus'])->name('events.update-status');
+    Route::resource('events', EventController::class);
+});
+
+// Finance routes for role 3
+Route::middleware(['auth', 'role:3'])->prefix('finance')->name('finance.')->group(function () {
+    // Finance Dashboard
+    Route::get('dashboard', [App\Http\Controllers\Finance\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('logs', [App\Http\Controllers\Finance\DashboardController::class, 'logs'])->name('logs');
+
+    // Client Routes
+    Route::get('client/{client}/download', [App\Http\Controllers\Finance\ClientController::class, 'download'])->name('client.download');
+    Route::resource('client', App\Http\Controllers\Finance\ClientController::class);
+
+     // Daily Activity Routes for Finance
+    Route::get('/daily-activity', [App\Http\Controllers\Finance\DailyActivityController::class, 'index'])->name('daily-activity.index');
+    Route::get('/daily-activity/create', [App\Http\Controllers\Finance\DailyActivityController::class, 'create'])->name('daily-activity.create');
+    Route::post('/daily-activity', [App\Http\Controllers\Finance\DailyActivityController::class, 'store'])->name('daily-activity.store');
+    Route::get('/daily-activity/{dailyActivity}', [App\Http\Controllers\Finance\DailyActivityController::class, 'show'])->name('daily-activity.show');
+    Route::get('/daily-activity/{dailyActivity}/edit', [App\Http\Controllers\Finance\DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+    Route::put('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'update'])->name('daily-activity.update');
+    Route::delete('/daily-activity/{dailyActivity}', [DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+    Route::post('/daily-activity/{dailyActivity}/comment', [DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+    Route::resource('arsip-file', ArsipFileController::class);
+
+    // Event Finance
+    // Event Routes for Sales
+    Route::get('events/dashboard', [App\Http\Controllers\Finance\EventController::class, 'dashboard'])->name('events.dashboard');
+    Route::get('events/upcoming', [App\Http\Controllers\Finance\EventController::class, 'upcoming'])->name('events.upcoming');
+    Route::get('events/my-upcoming', [App\Http\Controllers\Finance\EventController::class, 'myUpcoming'])->name('events.my-upcoming');
+    Route::get('events/past', [App\Http\Controllers\Finance\EventController::class, 'past'])->name('events.past');
+    Route::get('events/{event}', [App\Http\Controllers\Finance\EventController::class, 'show'])->name('events.show');
 });
 
 require __DIR__.'/auth.php';

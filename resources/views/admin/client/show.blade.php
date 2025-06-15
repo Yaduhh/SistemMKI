@@ -30,8 +30,8 @@
         <div class="mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Detail Klien') }}</h1>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('Informasi lengkap tentang klien') }}
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Detail Pelanggan') }}</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('Informasi lengkap tentang pelanggan') }}
                     </p>
                 </div>
                 <div class="flex items-center space-x-3 mt-4 lg:mt-0">
@@ -130,6 +130,19 @@
                                         </div>
                                     </div>
                                 @endif
+
+                                <!-- Visit Count -->
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total') }}</p>
+                                        <p class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{{ $client->dailyActivities()->where('deleted_status', false)->count() }} Kunjungan</p>
+                                    </div>
+                                </div>
 
                                 @if ($client->notelp)
                                     <div class="flex items-center">
@@ -506,38 +519,84 @@
             </div>
         </div>
 
-        <!-- Modal Arsip File -->
-        <flux:modal name="arsip-file-modal" class="md:w-96">
-            <div class="space-y-6">
-                <div>
-                    <flux:heading size="lg">Tambah Arsip </flux:heading>
-                    <flux:subheading>Tambahkan file arsip untuk client ini</flux:subheading>
+        <!-- Daily Activities Section -->
+        <div class="mt-6">
+            <div class="bg-white dark:bg-zinc-900/30 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Riwayat Kunjungan</h3>
                 </div>
+                <div class="p-6">
+                    @php
+                        $activities = $client->dailyActivities()->where('deleted_status', false)->latest()->get();
+                    @endphp
 
-                <form action="{{ route('admin.arsip-file.store') }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-4">
-                    @csrf
-                    <input type="hidden" name="id_client" value="{{ $client->id }}">
-
-                    <flux:field>
-                        <flux:label>Nama Arsip</flux:label>
-                        <flux:input name="nama" placeholder="Masukkan nama arsip" required />
-                    </flux:field>
-
-                    <flux:field>
-                        <flux:label>File</flux:label>
-                        <flux:input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.rar"
-                            required />
-                    </flux:field>
-
-                    <div class="flex space-x-2">
-                        <flux:modal.close>
-                            <flux:button variant="ghost">Batal</flux:button>
-                        </flux:modal.close>
-                        <flux:button type="submit" variant="primary">Simpan Arsip</flux:button>
-                    </div>
-                </form>
+                    @if($activities->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($activities as $activity)
+                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-700/50 rounded-lg">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-white">{{ $activity->perihal }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $activity->created_at->format('d M Y H:i') }}</p>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('admin.daily-activity.show', $activity->id) }}" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                        Lihat Detail
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Belum ada kunjungan</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Client ini belum memiliki riwayat kunjungan.</p>
+                        </div>
+                    @endif
+                </div>
             </div>
-        </flux:modal>
+        </div>
     </div>
+
+    <!-- Modal Arsip File -->
+    <flux:modal name="arsip-file-modal" class="w-full max-w-2xl">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Tambah Arsip </flux:heading>
+                <flux:subheading>Tambahkan file arsip untuk client ini</flux:subheading>
+            </div>
+
+            <form action="{{ route('admin.arsip-file.store') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-4">
+                @csrf
+                <input type="hidden" name="id_client" value="{{ $client->id }}">
+
+                <flux:field>
+                    <flux:label>Nama Arsip</flux:label>
+                    <flux:input name="nama" placeholder="Masukkan nama arsip" required />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>File</flux:label>
+                    <flux:input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip,.rar"
+                        required />
+                </flux:field>
+
+                <div class="flex space-x-2 justify-end">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Batal</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" variant="primary">Simpan Arsip</flux:button>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
+</div>
 </x-layouts.app>

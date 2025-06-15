@@ -18,7 +18,7 @@ export default defineConfig({
         https: false,
         cors: true,
         hmr: {
-            host: "192.168.1.4",
+            host: "192.168.40.34",
         },
     },
 });

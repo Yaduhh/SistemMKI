@@ -17,7 +17,8 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         $query = Client::with('creator')
-            ->where('created_by', Auth::id());
+            ->where('created_by', Auth::id())
+            ->where('status_deleted', false);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -77,7 +78,7 @@ class ClientController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'notelp' => 'required|string|max:20',
             'nama_perusahaan' => 'nullable|string|max:255',
             'alamat' => 'nullable|string',
@@ -140,7 +141,7 @@ class ClientController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'notelp' => 'required|string|max:20',
             'nama_perusahaan' => 'nullable|string|max:255',
             'alamat' => 'nullable|string',

@@ -18,7 +18,8 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Client::with('creator');
+        $query = Client::with('creator')
+            ->where('status_deleted', false);
 
         // Search functionality
         if ($request->filled('search')) {

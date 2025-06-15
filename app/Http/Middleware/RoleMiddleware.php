@@ -18,8 +18,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role)
     {
+        // Split roles if multiple roles are provided
+        $allowedRoles = array_map('intval', explode(',', $role));
+        
         // Cek apakah pengguna terautentikasi dan memiliki role sesuai
-        if (Auth::check() && Auth::user()->role == (int)$role) {
+        if (Auth::check() && in_array(Auth::user()->role, $allowedRoles)) {
             return $next($request);
         }
 

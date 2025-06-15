@@ -101,7 +101,7 @@
                     <flux:input
                         wire:model="notelp"
                         :label="__('Nomor Telepon')"
-                        type="tel"
+                        type="number"
                         :placeholder="__('08123456789')"
                     />
 
@@ -113,6 +113,8 @@
                         <option value="">Pilih Role</option>
                         <option value="1">Admin</option>
                         <option value="2">Sales</option>
+                        <option value="3">Finance</option>
+                        <option value="4">Digital Marketing</option>
                     </flux:select>
                 </div>
 

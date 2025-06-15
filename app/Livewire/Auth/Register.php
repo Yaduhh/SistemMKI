@@ -18,7 +18,7 @@ class Register extends Component
     public string $password = '';
     public string $password_confirmation = '';
     public string $notelp = ''; // Kolom untuk nomor telepon
-    public int $role = 1; // Default role, bisa 1 untuk user atau 2 untuk admin
+    public int $role = 2; // Default role, bisa 1 untuk user atau 2 untuk admin
     public bool $status = true; // Default status aktif
 
     /**
