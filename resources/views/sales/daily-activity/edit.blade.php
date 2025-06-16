@@ -45,6 +45,10 @@
                         <option value="Deal" {{ $dailyActivity->perihal == 'Deal' ? 'selected' : '' }}>Deal</option>
                         <option value="Komplen" {{ $dailyActivity->perihal == 'Komplen' ? 'selected' : '' }}>Komplen</option>
                         <option value="Entertaint" {{ $dailyActivity->perihal == 'Entertaint' ? 'selected' : '' }}>Entertaint</option>
+                        <option value="Supervisi" {{ $dailyActivity->perihal == 'Supervisi' ? 'selected' : '' }}>Supervisi</option>
+                        <option value="Maintenance" {{ $dailyActivity->perihal == 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                        <option value="Kunjungan Rutin" {{ $dailyActivity->perihal == 'Kunjungan Rutin' ? 'selected' : '' }}>Kunjungan Rutin</option>
+                        <option value="Meeting" {{ $dailyActivity->perihal == 'Meeting' ? 'selected' : '' }}>Meeting</option>
                     </flux:select>
                     @error('perihal')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

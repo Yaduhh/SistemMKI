@@ -39,6 +39,10 @@
                         <option value="Deal">Deal</option>
                         <option value="Komplen">Komplen</option>
                         <option value="Entertaint">Entertaint</option>
+                        <option value="Supervisi">Supervisi</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Kunjungan Rutin">Kunjungan Rutin</option>
+                        <option value="Meeting">Meeting</option>
                     </flux:select>
                     @error('perihal')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
