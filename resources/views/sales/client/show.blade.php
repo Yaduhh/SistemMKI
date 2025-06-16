@@ -299,8 +299,8 @@
 
                         <!-- Arsip File Section -->
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center">
+                            <div class="flex flex-col md:flex-row lg:items-center justify-between mb-4">
+                                <div class="flex items-center max-sm:mb-4">
                                     <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
                                         <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -312,7 +312,7 @@
                                     </div>
                                 </div>
                                 <button type="button" onclick="document.getElementById('arsip-file-modal').classList.remove('hidden')"
-                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    class="inline-flex max-sm:w-fit items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
@@ -327,7 +327,7 @@
                             @if($arsipFiles->count() > 0)
                                 <div class="space-y-3">
                                     @foreach($arsipFiles as $arsip)
-                                        <div class="flex flex-col md:flex-row items-end lg:items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl">
+                                        <div class="flex flex-col md:flex-row lg:items-end lg:items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl">
                                             <div class="flex items-center space-x-3">
                                                 <div class="flex-shrink-0">
                                                     @php
