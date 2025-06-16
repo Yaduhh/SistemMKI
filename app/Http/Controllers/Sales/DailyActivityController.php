@@ -58,7 +58,7 @@ class DailyActivityController extends Controller
         $validated = $request->validate([
             'perihal' => 'required|string|max:255',
             'pihak_bersangkutan' => 'required|exists:clients,id',
-            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4048',
+            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10048',
             'summary' => 'nullable|string',
         ]);
 
