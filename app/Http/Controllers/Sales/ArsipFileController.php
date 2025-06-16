@@ -51,9 +51,17 @@ class ArsipFileController extends Controller
      */
     public function destroy(ArsipFile $arsipFile)
     {
-        // Ensure the arsip file belongs to the authenticated sales user's client
-        if ($arsipFile->client->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+
+        // Ensure the client belongs to the authenticated sales user
+        $currentUserId = Auth::id();
+        $fileCreatedBy = $arsipFile->created_by;
+        
+        // Debug information
+        $currentUserType = gettype($currentUserId);
+        $fileCreatedByType = gettype($fileCreatedBy);
+        
+        if ((int)$arsipFile->created_by !== (int)Auth::id()) {
+            abort(403, "Unauthorized action. Current User ID: {$currentUserId} ({$currentUserType}), File Created By: {$fileCreatedBy} ({$fileCreatedByType})");
         }
 
         // Store old data for logging
