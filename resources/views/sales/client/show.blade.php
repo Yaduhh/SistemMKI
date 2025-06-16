@@ -226,52 +226,59 @@
                         </div>
 
                         <!-- Description Section -->
-                        @if($client->description)
-                            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                                <div class="flex items-start">
-                                    <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('Deskripsi') }}</p>
-                                        <div class="text-gray-900 dark:text-white leading-relaxed">
-                                            @php
-                                                $description = $client->description;
-                                                if (is_string($description)) {
-                                                    $decodedDescription = json_decode($description, true);
-                                                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedDescription)) {
-                                                        $description = $decodedDescription;
-                                                    }
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('Deskripsi') }}</p>
+                                    <div class="text-gray-900 dark:text-white leading-relaxed">
+                                        @php
+                                            $description = $client->description;
+                                            if (is_string($description)) {
+                                                $decodedDescription = json_decode($description, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($decodedDescription)) {
+                                                    $description = $decodedDescription;
                                                 }
-                                                
-                                                if (is_array($description)) {
-                                                    echo '<ul class="list-disc list-inside space-y-1">';
-                                                    foreach ($description as $item) {
-                                                        echo '<li>' . htmlspecialchars($item) . '</li>';
-                                                    }
-                                                    echo '</ul>';
-                                                } else {
-                                                    echo '<p>' . nl2br(htmlspecialchars($description)) . '</p>';
+                                            }
+                                            
+                                            if (is_array($description) && isset($description['items'])) {
+                                                echo '<ul class="list-disc list-inside space-y-1">';
+                                                foreach ($description['items'] as $item) {
+                                                    echo '<li>' . e($item) . '</li>';
                                                 }
-                                            @endphp
-                                        </div>
+                                                echo '</ul>';
+                                            } else if (is_string($description)) {
+                                                echo e($description);
+                                            } else {
+                                                echo '<p class="text-gray-500 dark:text-gray-400">Tidak ada deskripsi</p>';
+                                            }
+                                        @endphp
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        </div>
 
                         <!-- File Attachment Section -->
-                        @if($client->file_input)
-                            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                                <div class="flex items-start">
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('File Lampiran') }}</p>
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('File Lampiran') }}</p>
+                                    @if($client->file_input)
                                         <div class="flex items-center space-x-3">
-                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                            </svg>
+                                            @if(in_array(pathinfo($client->file_input, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png']))
+                                                <img src="{{ Storage::url($client->file_input) }}" 
+                                                     alt="Current File" 
+                                                     class="h-32 w-32 object-cover rounded-lg">
+                                            @endif
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ str($client->file_input)->limit(30) }}</p>
                                                 <a href="{{ Storage::url($client->file_input) }}" target="_blank"
@@ -283,18 +290,34 @@
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tidak ada file yang diupload') }}</p>
+                                    @endif
                                 </div>
                             </div>
-                        @endif
+                        </div>
 
                         <!-- Arsip File Section -->
-                        <div class="mt-6 overflow-hidden">
-                            <div class="flex items-center justify-between mb-6">
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('File Proyek') }}</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Daftar file arsip untuk pelanggan ini') }}</p>
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('File Proyek') }}</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Daftar file arsip untuk pelanggan ini') }}</p>
+                                    </div>
                                 </div>
+                                <button type="button" onclick="document.getElementById('arsip-file-modal').classList.remove('hidden')"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    {{ __('Tambah File') }}
+                                </button>
                             </div>
 
                             @php
@@ -317,17 +340,15 @@
                                                             default => 'text-gray-500'
                                                         };
                                                     @endphp
-                                                    <svg class="w-8 h-8 {{ $iconClass }}" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
-                                                    </svg>
+                                                    <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                                        <svg class="w-5 h-5 {{ $iconClass }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                    </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">{{ $arsip->nama }}</h4>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                        {{ __('Dibuat oleh') }} {{ $arsip->creator->name ?? 'Unknown' }} • 
-                                                        {{ $arsip->created_at->diffForHumans() }} • 
-                                                        {{ strtoupper($extension) }}
-                                                    </p>
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $arsip->nama }}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $arsip->created_at->format('d M Y H:i') }}</p>
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-2 max-sm:mt-4">
@@ -338,16 +359,27 @@
                                                     </svg>
                                                     {{ __('Download') }}
                                                 </a>
+                                                <form action="{{ route('sales.arsip-file.destroy', $arsip) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus file ini?')"
+                                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-xl text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                        {{ __('Hapus') }}
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
                             @else
                                 <div class="text-center py-8">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('Belum ada file apapun') }}</h3>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('Belum ada file arsip') }}</p>
                                 </div>
                             @endif
                         </div>
@@ -455,4 +487,60 @@
             </div>
         </div>
     </div>
-</x-layouts.sales> 
+</x-layouts.sales>
+
+<!-- Modal Arsip File -->
+<div id="arsip-file-modal" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden" x-data="{ open: false }">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Tambah File Arsip') }}</h3>
+                    <button type="button" onclick="document.getElementById('arsip-file-modal').classList.add('hidden')"
+                        class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form action="{{ route('sales.arsip-file.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="id_client" value="{{ $client->id }}">
+
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Nama File') }}</label>
+                        <input type="text" name="nama" id="nama" required placeholder="Masukkan nama file"
+                            class="mt-1 py-2 px-3 block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('File') }}</label>
+                        <input type="file" name="file" id="file" required
+                            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+                                   file:mr-4 file:py-2 file:px-4
+                                   file:rounded-md file:border-0
+                                   file:text-sm file:font-semibold
+                                   file:bg-indigo-50 file:text-indigo-700
+                                   dark:file:bg-indigo-900 dark:file:text-indigo-300
+                                   hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG, ZIP, RAR. Maksimal 10MB
+                        </p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="document.getElementById('arsip-file-modal').classList.add('hidden')"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-zinc-800 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            {{ __('Batal') }}
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            {{ __('Simpan') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

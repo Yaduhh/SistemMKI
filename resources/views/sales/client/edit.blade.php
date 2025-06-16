@@ -49,8 +49,7 @@
                             <flux:input 
                                 name="email" 
                                 :label="__('Email')" 
-                                type="email" 
-                                required 
+                                type="email"
                                 autocomplete="off"
                                 :placeholder="__('Masukkan email client')" 
                                 :value="old('email', $client->email)" 

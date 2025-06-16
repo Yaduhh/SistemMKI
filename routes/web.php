@@ -71,6 +71,10 @@ Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(fu
 
     // Absensi Route
     Route::get('/absensi', [App\Http\Controllers\Sales\AbsensiController::class, 'index'])->name('absensi.index');
+
+    // Arsip File Routes
+    Route::post('/arsip-file', [App\Http\Controllers\Sales\ArsipFileController::class, 'store'])->name('arsip-file.store');
+    Route::delete('/arsip-file/{arsipFile}', [App\Http\Controllers\Sales\ArsipFileController::class, 'destroy'])->name('arsip-file.destroy');
 });
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
