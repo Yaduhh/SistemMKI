@@ -151,6 +151,8 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
     Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
+    Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');
+    Route::get('penawaran/cetak/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetak'])->name('penawaran.cetak');
 
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');

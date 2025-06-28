@@ -2,10 +2,19 @@
     <x-slot name="header">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-xl font-bold">Detail Penawaran</h1>
-            <x-button as="a" href="{{ route('admin.penawaran.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white">
-                <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
-                Kembali
-            </x-button>
+            <div class="flex gap-2">
+                <x-button href="{{ route('admin.penawaran.cetak', $penawaran) }}" 
+                         class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Cetak PDF
+                </x-button>
+                <x-button as="a" href="{{ route('admin.penawaran.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white">
+                    <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
+                    Kembali
+                </x-button>
+            </div>
         </div>
     </x-slot>
     <div class="py-4 max-w-5xl mx-auto">
@@ -17,10 +26,15 @@
                 <div class="mb-1"><b>Judul:</b> {{ $penawaran->judul_penawaran }}</div>
             </div>
             <div>
-                <div class="mb-1"><b>Diskon:</b> {{ $penawaran->diskon }}%</div>
-                <div class="mb-1"><b>PPN:</b> {{ $penawaran->ppn }}%</div>
-                <div class="mb-1"><b>Total:</b> Rp {{ number_format($penawaran->total,0,',','.') }}</div>
-                <div class="mb-1"><b>Grand Total:</b> <span class="font-bold text-green-700">Rp {{ number_format($penawaran->grand_total,0,',','.') }}</span></div>
+                <div class="mb-1"><b>Diskon:</b> {{ $penawaran->diskon ?? 0 }}%</div>
+                <div class="mb-1"><b>Diskon Satu:</b> {{ $penawaran->diskon_satu ?? 0 }}%</div>
+                <div class="mb-1"><b>Diskon Dua:</b> {{ $penawaran->diskon_dua ?? 0 }}%</div>
+                <div class="mb-1"><b>Total Diskon:</b> Rp {{ number_format($penawaran->total_diskon ?? 0, 0, ',', '.') }}</div>
+                <div class="mb-1"><b>Total Diskon Satu:</b> Rp {{ number_format($penawaran->total_diskon_1 ?? 0, 0, ',', '.') }}</div>
+                <div class="mb-1"><b>Total Diskon Dua:</b> Rp {{ number_format($penawaran->total_diskon_2 ?? 0, 0, ',', '.') }}</div>
+                <div class="mb-1"><b>PPN:</b> {{ $penawaran->ppn ?? 0 }}%</div>
+                <div class="mb-1"><b>Total:</b> Rp {{ number_format($penawaran->total ?? 0,0,',','.') }}</div>
+                <div class="mb-1"><b>Grand Total:</b> <span class="font-bold text-green-700">Rp {{ number_format($penawaran->grand_total ?? 0,0,',','.') }}</span></div>
             </div>
         </div>
         <div class="mb-4">
