@@ -94,13 +94,22 @@
                             </svg>
                             Kembali
                         </a>
-                        @if($penawaran->status == 1)
+                        @if($penawaran->status == 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
                         <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
                            class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-blue-700 dark:hover:bg-blue-600 focus:bg-blue-700 dark:focus:bg-blue-600 active:bg-blue-900 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                             </svg>
                             Buat Pemasangan
+                        </a>
+                        @endif
+                        @if($penawaran->status == 1)
+                        <a href="{{ route('admin.rancangan-anggaran-biaya.create', ['penawaran_id' => $penawaran->id]) }}"
+                           class="inline-flex items-center px-4 py-2 bg-emerald-700 dark:bg-emerald-700 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-emerald-800 dark:hover:bg-emerald-800 focus:bg-emerald-800 dark:focus:bg-emerald-800 active:bg-emerald-900 dark:active:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 ml-2">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Buat RAB
                         </a>
                         @endif
                     </div>

@@ -25,7 +25,7 @@
                         <label for="syarat" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Syarat Pemasangan</label>
                         <textarea id="syarat" name="syarat" rows="8" 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 font-mono text-sm"
-                            placeholder="Masukkan syarat pemasangan...
+                            placeholder="Masukkan syarat pemasangan..."
                             required>{{ old('syarat') }}</textarea>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Gunakan Enter untuk membuat baris baru</p>
                         @error('syarat')

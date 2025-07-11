@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\FlooringController;
 use App\Http\Controllers\Admin\WallpanelController;
 use App\Http\Controllers\Admin\CeilingController;
 use App\Http\Controllers\Admin\SyaratPemasanganController;
+use App\Http\Controllers\Admin\RancanganAnggaranBiayaController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -186,6 +187,10 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('pemasangan', App\Http\Controllers\Admin\PemasanganController::class);
     Route::patch('pemasangan/{pemasangan}/update-status', [App\Http\Controllers\Admin\PemasanganController::class, 'updateStatus'])->name('pemasangan.update-status');
 });
+
+Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, [
+    'as' => 'admin'
+]);
 
 // Finance routes for role 3
 Route::middleware(['auth', 'role:3'])->prefix('finance')->name('finance.')->group(function () {

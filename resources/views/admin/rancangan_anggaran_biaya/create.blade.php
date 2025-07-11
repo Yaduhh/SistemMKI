@@ -1,0 +1,143 @@
+<x-layouts.app :title="__('Buat Rancangan Anggaran Biaya (RAB)')">
+    <div class="container mx-auto">
+        <div class="w-full mx-auto">
+            <h1 class="text-2xl font-bold mb-4">RAB {{ $penawaran->nomor_penawaran ?? '-' }}</h1>
+            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
+                <div>
+                    <span class="font-medium">Nomor Penawaran:</span> {{ $penawaran->nomor_penawaran ?? '-' }}<br>
+                    <span class="font-medium">Nomor Pemasangan:</span> {{ $pemasangan->nomor_pemasangan ?? '-' }}
+                </div>
+            </div>
+            <script>
+                window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung'));
+                window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment'));
+                window.oldAkomodasi = @json(old('json_pengeluaran_akomodasi'));
+                window.oldLainnya = @json(old('json_pengeluaran_lainnya'));
+                window.oldTukang = @json(old('json_pengeluaran_tukang'));
+                window.oldKerjaTambah = @json(old('json_kerja_tambah'));
+            </script>
+            <form action="{{ route('admin.rancangan-anggaran-biaya.store') }}" method="POST">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <flux:input name="proyek" label="Proyek" placeholder="Nama Proyek" type="text"
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    </div>
+                    <div>
+                        <flux:input name="pekerjaan" label="Pekerjaan" placeholder="Nama Pekerjaan" type="text"
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    </div>
+                    <div>
+                        <flux:input name="kontraktor" label="Kontraktor" placeholder="Nama Kontraktor" type="text"
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    </div>
+                    <div>
+                        <flux:input name="lokasi" label="Lokasi" placeholder="Lokasi Proyek" type="text"
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h2 class="text-lg font-semibold mb-2">Pengeluaran Material Utama</h2>
+                    <x-rab.material-utama-table :produk="$produkPenawaran" />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-sky-600 dark:bg-sky-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-sky-600 dark:bg-sky-600/30 mt-2"></div>
+                        </div>
+                        <h2 class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600/30 py-2 uppercase">Pengeluaran Material Pendukung</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-sky-600 dark:bg-sky-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-sky-600 dark:bg-sky-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.material-pendukung-table />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600/30 mt-2"></div>
+                        </div>
+                        <h2 class="text-lg font-semibold w-full text-center bg-teal-600 dark:bg-teal-600/30 py-2 uppercase">Pengeluaran Entertaiment</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.entertaiment-table />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600/30 mt-2"></div>
+                        </div>
+                        <h2
+                            class="text-lg font-semibold w-full text-center bg-yellow-600 dark:bg-yellow-600/30 py-2 uppercase">
+                            Pengeluaran Akomodasi</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.akomodasi-table />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600/30 mt-2"></div>
+                        </div>
+                        <h2
+                            class="text-lg font-semibold w-full text-center bg-pink-600 dark:bg-pink-600/30 py-2 uppercase">
+                            Pengeluaran Lainnya</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.lainnya-table />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600/30 mt-2"></div>
+                        </div>
+                        <h2
+                            class="text-lg font-semibold w-full text-center bg-purple-600 dark:bg-purple-600/30 py-2 uppercase">
+                            Pengeluaran Tukang</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.tukang-table />
+                </div>
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4 mb-6">
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600/30 mt-2"></div>
+                        </div>
+                        <h2
+                            class="text-lg font-semibold w-full text-center bg-orange-600 dark:bg-orange-600/30 py-2 uppercase">
+                            Kerja Tambah</h2>
+                        <div class="w-full">
+                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600/30"></div>
+                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600/30 mt-2"></div>
+                        </div>
+                    </div>
+                    <x-rab.kerja-tambah-table />
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button type="submit"
+                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</x-layouts.app>

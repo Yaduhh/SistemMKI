@@ -134,19 +134,18 @@
                                     </div>
                                     <div class="truncate">{{ $pemasangan->sales->name ?? '-' }}</div>
                                 </div>
-                                <div class="w-px h-8 bg-gray-200 dark:bg-zinc-800"></div>
-                                <div class="flex-1 text-center flex flex-col items-center gap-1">
-                                    <div class="flex flex-row items-center gap-2">
-                                        <svg class="w-4 h-4 text-yellow-400 mb-0.5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 21c4.97 0 9-3.58 9-8 0-2.21-1.79-4-4-4H7c-2.21 0-4 1.79-4 4 0 4.42 4.03 8 9 8zm0-10V3m0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                        </svg>
-                                        <div class="font-semibold">Total</div>
-                                    </div>
-                                    <div class="text-gray-900 dark:text-white font-bold">Rp
-                                        {{ number_format((float) ($pemasangan->total ?? 0), 0, ',', '.') }}</div>
+                            </div>
+                            <div class="flex-1 text-center flex flex-col items-center gap-1 bg-zinc-100 dark:bg-zinc-900/40 py-2 border-b border-gray-100 dark:border-zinc-800">
+                                <div class="flex flex-row items-center gap-2">
+                                    <svg class="w-4 h-4 text-yellow-400 mb-0.5" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 21c4.97 0 9-3.58 9-8 0-2.21-1.79-4-4-4H7c-2.21 0-4 1.79-4 4 0 4.42 4.03 8 9 8zm0-10V3m0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                                    </svg>
+                                    <div class="font-semibold">Total</div>
                                 </div>
+                                <div class="text-gray-900 dark:text-white font-bold">Rp
+                                    {{ number_format((float) ($pemasangan->total ?? 0), 0, ',', '.') }}</div>
                             </div>
                             <!-- Tombol detail -->
                             <div class="p-6 flex flex-col flex-1 justify-end">
