@@ -60,6 +60,16 @@
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
+                                
+                                <div>
+                                    <label for="nama_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Produk</label>
+                                    <input id="nama_produk" name="nama_produk" type="text" 
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                           value="{{ old('nama_produk') }}" placeholder="Enter product name">
+                                    @error('nama_produk')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
                                 <div>
                                     <label for="lebar" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lebar</label>
@@ -109,13 +119,34 @@
                                 </div>
 
                                 <div>
-                                    <label for="luas_m2" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Area (m²)</label>
-                                    <input id="luas_m2" name="luas_m2" type="number" step="0.01" 
-                                           class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg bg-gray-100 dark:bg-zinc-700 text-gray-900 dark:text-white" 
-                                           value="{{ old('luas_m2') }}" x-model="luas_m2" readonly>
-                                    @error('luas_m2')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
+                                    <flux:input 
+                                        name="luas_m2" 
+                                        :label="__('Area (m²)')" 
+                                        type="number" 
+                                        step="0.01"
+                                        required 
+                                        autocomplete="off"
+                                        :placeholder="__('Enter area in m²')"
+                                        :value="old('luas_m2')"
+                                        x-model.number="luas_m2"
+                                        readonly
+                                    />
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-show="luas_btg > 0">
+                                        Jumlah batang per m²: <span x-text="luas_m2.toFixed(2)"></span> btg
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <flux:input 
+                                        name="harga" 
+                                        :label="__('Harga')" 
+                                        type="number" 
+                                        step="0.01"
+                                        required 
+                                        autocomplete="off"
+                                        :placeholder="__('Enter price')"
+                                        :value="old('harga')"
+                                    />
                                 </div>
 
                                 <div class="md:col-span-2">

@@ -15,8 +15,9 @@ class FacadeController extends Controller
      */
     public function index()
     {
-        $facades = Facade::active()->with('creator')->latest()->get();
-        return view('admin.facade.index', compact('facades'));
+        $facades = Facade::active()->with('creator')->latest()->where('status_aksesoris', 0)->get();
+        $aksesorisFacades = Facade::active()->with('creator')->latest()->where('status_aksesoris', 1)->get();
+        return view('admin.facade.index', compact('facades', 'aksesorisFacades'));
     }
 
     /**
@@ -33,16 +34,19 @@ class FacadeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:facade',
+            'code' => 'required|string|max:255',
+            'nama_produk' => 'nullable|string|max:255',
             'lebar' => 'required|numeric|min:0',
             'tebal' => 'required|numeric|min:0',
             'panjang' => 'required|numeric|min:0',
             'luas_btg' => 'required|numeric|min:0',
             'luas_m2' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
         ]);
 
         $validated['created_by'] = Auth::id();
         $validated['status_deleted'] = false;
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
         $validated['slug'] = Str::slug($validated['code']);
 
         Facade::create($validated);
@@ -73,15 +77,18 @@ class FacadeController extends Controller
     public function update(Request $request, Facade $facade)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:facade,code,' . $facade->id,
+            'code' => 'required|string|max:255',
+            'nama_produk' => 'nullable|string|max:255',
             'lebar' => 'required|numeric|min:0',
             'tebal' => 'required|numeric|min:0',
             'panjang' => 'required|numeric|min:0',
             'luas_btg' => 'required|numeric|min:0',
             'luas_m2' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
         ]);
 
         $validated['slug'] = Str::slug($validated['code']);
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
         $facade->update($validated);
 
         return redirect()->route('admin.facade.index')

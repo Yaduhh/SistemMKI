@@ -14,13 +14,16 @@ class Facade extends Model
 
     protected $fillable = [
         'code',
+        'nama_produk',
         'slug',
         'lebar',
         'tebal',
         'panjang',
         'luas_btg',
         'luas_m2',
+        'harga',
         'status_deleted',
+        'status_aksesoris',
         'created_by'
     ];
 
@@ -30,7 +33,9 @@ class Facade extends Model
         'panjang' => 'double',
         'luas_btg' => 'double',
         'luas_m2' => 'double',
+        'harga' => 'double',
         'status_deleted' => 'boolean',
+        'status_aksesoris' => 'boolean',
     ];
 
     public function creator()

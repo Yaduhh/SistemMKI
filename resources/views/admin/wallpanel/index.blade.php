@@ -14,17 +14,23 @@
     <x-flash-message type="success" :message="session('success')" />
     <x-flash-message type="error" :message="session('error')" />
 
-    <div class="py-6">
+    <div class="py-6 space-y-6">
+        <!-- Regular Wallpanel Section -->
         <div class="w-full mx-auto">
             <x-card>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Wallpanel Regular</h3>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-accent-foreground dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-center">{{ __('NO') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Code') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Nama Produk') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
@@ -34,12 +40,14 @@
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $wallpanel->code }}</td>
+                                    <td class="px-6 py-4">{{ $wallpanel->nama_produk ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
                                     </td>
+                                    <td class="px-6 py-4">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">{{ $wallpanel->creator->name ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
@@ -58,8 +66,70 @@
                                 </tr>
                             @empty
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
-                                    <td colspan="6" class="px-6 py-4 text-center">
+                                    <td colspan="8" class="px-6 py-4 text-center">
                                         {{ __('No wallpanel found.') }}
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-card>
+        </div>
+
+        <!-- Aksesoris Wallpanel Section -->
+        <div class="w-full mx-auto">
+            <x-card>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Wallpanel Aksesoris</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-accent-foreground dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-center">{{ __('NO') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Code') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Nama Produk') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
+                                <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($aksesorisWallpanels as $wallpanel)
+                                <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
+                                    <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4">{{ $wallpanel->code }}</td>
+                                    <td class="px-6 py-4">{{ $wallpanel->nama_produk ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
+                                    </td>
+                                    <td class="px-6 py-4">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">{{ $wallpanel->creator->name ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex space-x-2">
+                                            <x-button href="{{ route('admin.wallpanel.edit', $wallpanel) }}" size="sm" variant="secondary">
+                                                <x-icon name="pencil" class="w-4 h-4" />
+                                            </x-button>
+                                            <form action="{{ route('admin.wallpanel.destroy', $wallpanel) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <x-button type="submit" size="sm" variant="danger" onclick="return confirm('Are you sure you want to delete this wallpanel?')">
+                                                    <x-icon name="trash" class="w-4 h-4" />
+                                                </x-button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
+                                    <td colspan="8" class="px-6 py-4 text-center">
+                                        {{ __('No aksesoris wallpanel found.') }}
                                     </td>
                                 </tr>
                             @endforelse

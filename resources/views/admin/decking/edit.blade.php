@@ -49,6 +49,17 @@
                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                            placeholder="Masukkan kode decking" required>
                                     @error('code')
+                                        <p class="mt-1 textsm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                
+                                <!-- Nama Produk -->
+                                <div class="md:col-span-2">
+                                    <label for="nama_produk" class="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">Nama Produk</label>
+                                    <input type="text" name="nama_produk" id="nama_produk" value="{{ old('nama_produk', $decking->nama_produk) }}" 
+                                           class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="Enter product name">
+                                    @error('nama_produk')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -127,6 +138,19 @@
                                              Is Accessory
                                          </label>
                                      </div>
+                                 </div>
+
+                                 <div>
+                                     <flux:input 
+                                         name="harga" 
+                                         :label="__('Harga')" 
+                                         type="number" 
+                                         step="0.01"
+                                         required 
+                                         autocomplete="off"
+                                         :placeholder="__('Enter price')"
+                                         :value="old('harga', $decking->harga)"
+                                     />
                                  </div>
                             </div>
 

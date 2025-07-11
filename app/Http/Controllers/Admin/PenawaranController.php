@@ -20,7 +20,7 @@ class PenawaranController extends Controller
 {
     public function index()
     {
-        $query = Penawaran::with(['client', 'user']);
+        $query = Penawaran::with(['client', 'user'])->where('status_deleted', false);
 
         // Search functionality
         if (request('search')) {
@@ -103,6 +103,7 @@ class PenawaranController extends Controller
 
     public function show(Penawaran $penawaran)
     {
+        $penawaran->load(['pemasangans']);
         return view('admin.penawaran.show', compact('penawaran'));
     }
 
@@ -135,8 +136,34 @@ class PenawaranController extends Controller
 
     public function destroy(Penawaran $penawaran)
     {
-        $penawaran->delete();
+        $penawaran->update(['status_deleted' => true]);
         return redirect()->route('admin.penawaran.index')->with('success', 'Penawaran berhasil dihapus.');
+    }
+
+    public function updateStatus(Request $request, Penawaran $penawaran)
+    {
+        $request->validate([
+            'status' => 'required|in:0,1,2'
+        ]);
+
+        $status = $request->status;
+        $statusText = '';
+        
+        switch ($status) {
+            case 0:
+                $statusText = 'Draft';
+                break;
+            case 1:
+                $statusText = 'WIN';
+                break;
+            case 2:
+                $statusText = 'LOSE';
+                break;
+        }
+
+        $penawaran->update(['status' => $status]);
+        
+        return redirect()->route('admin.penawaran.show', $penawaran)->with('success', "Status penawaran berhasil diubah menjadi {$statusText}.");
     }
 
     /**

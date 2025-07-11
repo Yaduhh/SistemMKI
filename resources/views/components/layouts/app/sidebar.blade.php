@@ -22,13 +22,16 @@
                     <flux:navlist.item icon="check-circle" :href="route('admin.absensi.index')" :current="request()->routeIs('admin.absensi.*')" wire:navigate>{{ __('Absensi') }}</flux:navlist.item>
                 </flux:navlist.group>
 
+                <flux:navlist.group :heading="__('Syarat & Kondisi')" class="mt-10">
+                    <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" :href="route('admin.syarat-pemasangan.index')" :current="request()->routeIs('admin.syarat-pemasangan.*')" wire:navigate>{{ __('Syarat Pemasangan') }}</flux:navlist.item>
+                </flux:navlist.group>
+
                 <flux:navlist.group :heading="__('Produk & Aksesoris')" class="mt-10">
                     <flux:navlist.item icon="cube" :href="route('admin.produk.index')" :current="request()->routeIs('admin.produk.index')" wire:navigate>{{ __('Produk') }}</flux:navlist.item>
                     <flux:navlist.item icon="wrench-screwdriver" :href="route('admin.aksesoris.index')" :current="request()->routeIs('admin.aksesoris.*')" wire:navigate>{{ __('Aksesoris') }}</flux:navlist.item>
-                    <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
                     
-                    
-                    <flux:navlist.group heading="Semua Produk WPC" expandable :expanded="false">
+                    <flux:navlist.group heading="Semua Produk WPC" expandable :expanded="true">
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.decking.index')" :current="request()->routeIs('admin.decking.*')" wire:navigate>{{ __('Decking') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.facade.index')" :current="request()->routeIs('admin.facade.*')" wire:navigate>{{ __('Facade') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.flooring.index')" :current="request()->routeIs('admin.flooring.*')" wire:navigate>{{ __('Flooring') }}</flux:navlist.item>
@@ -65,6 +68,10 @@
                     @if(auth()->user()->role === 1)
                         <flux:navlist.item icon="user-plus" :href="route('admin.akun.create')" :current="request()->routeIs('admin.akun.create')" wire:navigate>{{ __('Tambah User') }}</flux:navlist.item>
                     @endif
+                </flux:navlist.group>
+
+                <flux:navlist.group :heading="__('Pemasangan')" class="mt-10">
+                    <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.pemasangan.index')" :current="request()->routeIs('admin.pemasangan.index')" wire:navigate>{{ __('Pemasangan') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

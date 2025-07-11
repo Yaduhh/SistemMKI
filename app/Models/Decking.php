@@ -25,6 +25,7 @@ class Decking extends Model
      */
     protected $fillable = [
         'code',
+        'nama_produk',
         'slug',
         'lebar',
         'tebal',
@@ -32,6 +33,7 @@ class Decking extends Model
         'luas_btg',
         'luas_m2',
         'satuan',
+        'harga',
         'status_deleted',
         'status_aksesoris',
         'created_by',
@@ -48,6 +50,7 @@ class Decking extends Model
         'panjang' => 'double',
         'luas_btg' => 'double',
         'luas_m2' => 'double',
+        'harga' => 'double',
         'status_deleted' => 'boolean',
         'status_aksesoris' => 'boolean',
     ];

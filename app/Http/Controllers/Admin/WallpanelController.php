@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Wallpanel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class WallpanelController extends Controller
 {
@@ -15,10 +16,16 @@ class WallpanelController extends Controller
     public function index()
     {
         $wallpanels = Wallpanel::where('status_deleted', false)
+            ->where('status_aksesoris', 0)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        $aksesorisWallpanels = Wallpanel::where('status_deleted', false)
+            ->where('status_aksesoris', 1)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('admin.wallpanel.index', compact('wallpanels'));
+        return view('admin.wallpanel.index', compact('wallpanels', 'aksesorisWallpanels'));
     }
 
     /**
@@ -34,35 +41,25 @@ class WallpanelController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'code' => 'required|string|max:255',
-            'lebar' => 'required|numeric',
-            'tebal' => 'required|numeric',
-            'panjang' => 'required|numeric',
-            'luas_btg' => 'required|numeric',
-            'luas_m2' => 'required|numeric',
+            'nama_produk' => 'nullable|string|max:255',
+            'lebar' => 'required|numeric|min:0',
+            'tebal' => 'required|numeric|min:0',
+            'panjang' => 'required|numeric|min:0',
             'satuan' => 'required|in:mm,cm,m',
+            'luas_btg' => 'required|numeric|min:0',
+            'luas_m2' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        $validated['created_by'] = Auth::id();
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
 
-        $wallpanel = Wallpanel::create([
-            'code' => $request->code,
-            'lebar' => $request->lebar,
-            'tebal' => $request->tebal,
-            'panjang' => $request->panjang,
-            'luas_btg' => $request->luas_btg,
-            'luas_m2' => $request->luas_m2,
-            'satuan' => $request->satuan,
-            'created_by' => auth()->id(),
-        ]);
+        Wallpanel::create($validated);
 
         return redirect()->route('admin.wallpanel.index')
-            ->with('success', 'Wallpanel berhasil ditambahkan');
+            ->with('success', 'Wallpanel berhasil ditambahkan.');
     }
 
     /**
@@ -86,34 +83,23 @@ class WallpanelController extends Controller
      */
     public function update(Request $request, Wallpanel $wallpanel)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'code' => 'required|string|max:255',
-            'lebar' => 'required|numeric',
-            'tebal' => 'required|numeric',
-            'panjang' => 'required|numeric',
-            'luas_btg' => 'required|numeric',
-            'luas_m2' => 'required|numeric',
+            'nama_produk' => 'nullable|string|max:255',
+            'lebar' => 'required|numeric|min:0',
+            'tebal' => 'required|numeric|min:0',
+            'panjang' => 'required|numeric|min:0',
             'satuan' => 'required|in:mm,cm,m',
+            'luas_btg' => 'required|numeric|min:0',
+            'luas_m2' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $wallpanel->update([
-            'code' => $request->code,
-            'lebar' => $request->lebar,
-            'tebal' => $request->tebal,
-            'panjang' => $request->panjang,
-            'luas_btg' => $request->luas_btg,
-            'luas_m2' => $request->luas_m2,
-            'satuan' => $request->satuan,
-        ]);
+        $validated['status_aksesoris'] = $request->has('status_aksesoris');
+        $wallpanel->update($validated);
 
         return redirect()->route('admin.wallpanel.index')
-            ->with('success', 'Wallpanel berhasil diperbarui');
+            ->with('success', 'Wallpanel berhasil diperbarui.');
     }
 
     /**

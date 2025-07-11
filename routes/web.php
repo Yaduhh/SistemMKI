@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\FacadeController;
 use App\Http\Controllers\Admin\FlooringController;
 use App\Http\Controllers\Admin\WallpanelController;
 use App\Http\Controllers\Admin\CeilingController;
+use App\Http\Controllers\Admin\SyaratPemasanganController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -150,9 +151,11 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('flooring', FlooringController::class);
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
+    Route::resource('syarat-pemasangan', SyaratPemasanganController::class);
     Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
     Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');
     Route::get('penawaran/cetak/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetak'])->name('penawaran.cetak');
+    Route::patch('penawaran/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranController::class, 'updateStatus'])->name('penawaran.update-status');
 
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
@@ -179,6 +182,9 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::delete('events/{id}/force-delete', [EventController::class, 'forceDelete'])->name('events.force-delete');
     Route::put('events/{event}/update-status', [EventController::class, 'updateStatus'])->name('events.update-status');
     Route::resource('events', EventController::class);
+    Route::get('pemasangan/cetak/{id}', [App\Http\Controllers\Admin\PemasanganController::class, 'cetak'])->name('pemasangan.cetak');
+    Route::resource('pemasangan', App\Http\Controllers\Admin\PemasanganController::class);
+    Route::patch('pemasangan/{pemasangan}/update-status', [App\Http\Controllers\Admin\PemasanganController::class, 'updateStatus'])->name('pemasangan.update-status');
 });
 
 // Finance routes for role 3

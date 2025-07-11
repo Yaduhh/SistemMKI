@@ -32,6 +32,17 @@
                                 :value="old('code')" 
                             />
                         </div>
+                        
+                        <div class="col-span-2">
+                            <flux:input 
+                                name="nama_produk" 
+                                :label="__('Nama Produk')" 
+                                type="text" 
+                                autocomplete="off"
+                                :placeholder="__('Enter product name')"
+                                :value="old('nama_produk')" 
+                            />
+                        </div>
 
                         <div class="grid grid-cols-12 gap-6">
                             <div class="col-span-5">
@@ -121,6 +132,28 @@
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-show="luas_btg > 0">
                                 Jumlah batang per m²: <span x-text="luas_m2.toFixed(2)"></span> btg
                             </p>
+                        </div>
+
+                        <div>
+                            <flux:input 
+                                name="harga" 
+                                :label="__('Harga')" 
+                                type="number" 
+                                step="0.01"
+                                required 
+                                autocomplete="off"
+                                :placeholder="__('Enter price')"
+                                :value="old('harga')"
+                            />
+                        </div>
+
+                        <div class="col-span-2">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="status_aksesoris" id="status_aksesoris" value="1" {{ old('status_aksesoris') ? 'checked' : '' }} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="status_aksesoris" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                    {{ __('Status Aksesoris') }}
+                                </label>
+                            </div>
                         </div>
                     </div>
 

@@ -17,6 +17,7 @@ class Penawaran extends Model
         'nomor_penawaran',
         'tanggal_penawaran',
         'judul_penawaran',
+        'project',
         'diskon',
         'diskon_satu',
         'diskon_dua',
@@ -64,5 +65,10 @@ class Penawaran extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function pemasangans()
+    {
+        return $this->hasMany(\App\Models\Pemasangan::class, 'id_penawaran');
     }
 }

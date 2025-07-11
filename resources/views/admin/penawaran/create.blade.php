@@ -8,6 +8,10 @@
             </x-button>
         </div>
     </x-slot>
+
+    <x-flash-message type="success" :message="session('success')" />
+    <x-flash-message type="error" :message="session('error')" />
+
     <div class="py-4 mx-auto w-full">
         <form action="{{ route('admin.penawaran.store') }}" method="POST" class="space-y-8" x-data="penawaranForm()">
             @csrf
@@ -22,211 +26,321 @@
             </flux:select>
             
             <!-- Section Data Penawaran -->
-            <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
+            <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran</h2>
                 <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <p class="text-sm text-blue-700 dark:text-blue-300">
+                    <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
                         <x-icon name="info" class="w-4 h-4 inline mr-1" />
                         Nomor penawaran akan dibuat otomatis dengan format: <strong>A/MKI/MM/YY</strong>
                     </p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Client -->
                     <flux:select name="id_client" :label="__('Client')" required>
                         <option value="" disabled selected>{{ __('Pilih Client') }}</option>
                     </flux:select>
-                        
-                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" x-data="{ today: new Date().toISOString().split('T')[0] }" x-bind:min="today" />
                     <flux:input name="judul_penawaran" label="Judul Penawaran" placeholder="masukkan judul penawaran" type="text" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
             </div>
 
-            <!-- Section Produk Multi-Section -->
-            <template x-for="(section, sIdx) in sections" :key="section.kategori">
-                <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6 mt-6" :class="{
-                    'border-blue-400': section.kategori === 'flooring',
-                    'border-green-400': section.kategori === 'facade',
-                    'border-yellow-400': section.kategori === 'wallpanel',
-                    'border-purple-400': section.kategori === 'ceiling',
-                    'border-pink-400': section.kategori === 'decking',
-                }">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="section.label"></h2>
-                        <button type="button" @click="removeSection(sIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none flex items-center gap-2" x-show="sections.length > 1">
-                            <x-icon name="trash" class="w-5 h-5" /> Hapus Section
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-zinc-700">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-700 text-xs md:text-sm">
-                            <thead class="bg-gray-50 dark:bg-zinc-800 sticky top-0 z-10">
-                                <tr>
-                                    <th class="px-2 py-2 font-bold">No</th>
-                                    <th class="px-2 py-2 font-bold">Item</th>
-                                    <th class="px-2 py-2 font-bold">Type</th>
-                                    <th class="px-2 py-2 font-bold">Dimensi</th>
-                                    <th class="px-2 py-2 font-bold">Panjang</th>
-                                    <th class="px-2 py-2 font-bold">Warna</th>
-                                    <th class="px-2 py-2 font-bold">VOL(m2)</th>
-                                    <th class="px-2 py-2 font-bold">Qty</th>
-                                    <th class="px-2 py-2 font-bold">Harga</th>
-                                    <th class="px-2 py-2 font-bold">Total Harga</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="(row, i) in section.produk" :key="i">
-                                    <tr :class="i % 2 === 0 ? 'bg-gray-50 dark:bg-zinc-800' : 'bg-white dark:bg-zinc-900'" class="transition hover:bg-blue-50 dark:hover:bg-zinc-700">
-                                        <td class="px-2 py-2 text-center" x-text="i+1"></td>
-                                        <td class="px-2 py-2">
-                                            <select :name="'json_produk['+section.kategori+']['+i+'][item]'" x-model="row.item" class="w-44 py-2 px-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400" @change="autofillProduk(section, row)">
-                                                <option value="">Pilih Produk</option>
-                                                <template x-for="p in section.master">
-                                                    <option :value="p.code" x-text="p.code + (p.lebar ? ' - ' + p.lebar + 'x' + (p.tebal ?? '') + 'x' + (p.panjang ?? '') : '') + (p.warna ? ' - ' + p.warna : '')"></option>
-                                                </template>
-                                            </select>
-                                        </td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][type]'" x-model="row.type" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][dimensi]'" x-model="row.dimensi" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][tebal_panjang]'" x-model="row.tebal_panjang" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][warna]'" x-model="row.warna" class="w-20 rounded-xl px-2 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input :name="'json_produk['+section.kategori+']['+i+'][qty_area]'" x-model="row.qty_area" @input="calculateQty(section, row)" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2"><input x-model="row.qty" @input="calculateTotalHarga(row)" class="w-16 px-2 py-2 rounded-xl border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" /></td>
-                                        <td class="px-2 py-2">
-                                            <input x-model="row.harga_display" @input="formatHargaInput(row)" type="text" class="w-24 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="Rp 0" />
-                                        </td>
-                                        <td class="px-2 py-2">
-                                            <input x-model="row.total_harga_display" @input="formatTotalHargaInput(row)" type="text" class="w-32 rounded-xl py-2 px-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="Rp 0" readonly />
-                                        </td>
-                                        <!-- Hidden input untuk menyimpan data dalam format JSON -->
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][item]'" x-model="row.item" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][type]'" x-model="row.type" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][dimensi]'" x-model="row.dimensi" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][tebal_panjang]'" x-model="row.tebal_panjang" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][warna]'" x-model="row.warna" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][qty_area]'" x-model="row.qty_area" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][qty]'" x-model="row.qty" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][harga]'" x-model="row.harga" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][total_harga]'" x-model="row.total_harga" />
-                                        <input type="hidden" :name="'json_produk['+section.kategori+']['+i+'][satuan]'" x-model="row.satuan" />
-                                        <td class="px-2 py-2 text-center">
-                                            <button type="button" @click="removeProduk(sIdx, i)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none">
-                                                <x-icon name="trash" class="w-5 h-5" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-4 flex gap-2">
-                        <button type="button" @click="addProduk(sIdx)" class="px-4 py-2 bg-blue-950 text-blue-400 rounded-2xl hover:bg-blue-950">
-                            + Tambah Baris Produk
-                        </button>
-                    </div>
-                </div>
-            </template>
-            <div class="mt-4">
-                <template x-if="sectionOptions.filter(opt => !sections.map(s => s.kategori).includes(opt.kategori)).length > 0">
-                    <div class="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                        <label class="font-semibold text-sm">Tambah Section Produk:</label>
-                        <template x-for="opt in sectionOptions.filter(opt => !sections.map(s => s.kategori).includes(opt.kategori))" :key="opt.kategori">
-                            <button type="button" @click="addSection(opt.kategori)" class="px-4 py-2 flex gap-4 items-center rounded-2xl border font-semibold transition bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 hover:bg-blue-50 dark:hover:bg-zinc-800 text-xs md:text-sm" :class="{
-                                'border-blue-400 text-blue-700': opt.kategori === 'flooring',
-                                'border-green-400 text-green-700': opt.kategori === 'facade',
-                                'border-yellow-400 text-yellow-700': opt.kategori === 'wallpanel',
-                                'border-purple-400 text-purple-700': opt.kategori === 'ceiling',
-                                'border-pink-400 text-pink-700': opt.kategori === 'decking',
-                            }">
-                                <x-icon name="plus" class="w-4 h-4 mr-1" />
-                                <span x-text="opt.label"></span>
+            <!-- Section Main Sections -->
+            <template x-if="mainSections.length > 0">
+                <template x-for="(mainSection, mainIdx) in mainSections" :key="mainIdx">
+                    <div class="w-full border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-white dark:bg-zinc-900">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Section <span x-text="mainIdx + 1"></span></h2>
+                            <button type="button" @click="removeMainSection(mainIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none flex items-center gap-2" x-show="mainSections.length > 1">
+                                <x-icon name="trash" class="w-5 h-5" /> Hapus Section
                             </button>
+                        </div>
+                        
+                        <!-- Sub Judul Main Section -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Judul Section</label>
+                            <input :name="'json_produk[' + mainIdx + '][judul]'" x-model="mainSection.judul" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Masukkan judul section" />
+                        </div>
+
+                        <!-- Product Sections within Main Section -->
+                        <template x-if="mainSection.productSections.length > 0">
+                            <template x-for="(section, sIdx) in mainSection.productSections" :key="section.kategori">
+                                <div class="w-full mb-6" :class="{
+                                    'border-blue-400': section.kategori === 'flooring',
+                                    'border-green-400': section.kategori === 'facade',
+                                    'border-yellow-400': section.kategori === 'wallpanel',
+                                    'border-purple-400': section.kategori === 'ceiling',
+                                    'border-pink-400': section.kategori === 'decking',
+                                }">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="section.label"></h3>
+                                        <button type="button" @click="removeProductSection(mainIdx, sIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none flex items-center gap-2" x-show="mainSection.productSections.length > 1">
+                                            <x-icon name="trash" class="w-5 h-5" /> Hapus Sub Section
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="space-y-4">
+                                        <template x-for="(row, i) in section.produk" :key="i">
+                                            <div class="border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800">
+                                                <div class="flex justify-between items-center mb-3">
+                                                    <h4 class="font-semibold text-gray-900 dark:text-white">Produk #<span x-text="i+1"></span></h4>
+                                                    <button type="button" @click="removeProduk(mainIdx, sIdx, i)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none">
+                                                        <x-icon name="trash" class="w-5 h-5" />
+                                                    </button>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                    <!-- Product -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product</label>
+                                                        <select :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][item]'" x-model="row.slug" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" @change="autofillProduk(section, row)">
+                                                            <option value="">Pilih Produk</option>
+                                                            <template x-for="p in getAvailableProducts(section, row)" :key="p.slug">
+                                                                <option :value="p.slug" x-text="p.code + ' - ' + (p.lebar ? p.lebar + 'x' + (p.tebal ?? '') + 'x' + (p.panjang ?? '') : '') + (p.warna ? ' - ' + p.warna : '') + ' (Rp ' + (p.harga ? p.harga.toLocaleString('id-ID') : '0') + ')'"></option>
+                                                            </template>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Nama Produk -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Produk</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][nama_produk]'" x-model="row.nama_produk" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Nama Produk" />
+                                                    </div>
+
+                                                    <!-- Dimensi -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dimensi</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][dimensi]'" x-model="row.dimensi" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Dimensi" readonly />
+                                                    </div>
+
+
+
+                                                    <!-- Finishing -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Finishing</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][finishing]'" x-model="row.finishing" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Finishing" />
+                                                    </div>
+
+                                                    <!-- VOL(m²) -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VOL(m²)</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][qty_area]'" x-model="row.qty_area" @input="calculateQty(section, row)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Volume" />
+                                                    </div>
+
+                                                    <!-- Quantity -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantity</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][qty]'" x-model="row.qty" @input="calculateTotalHarga(row)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Qty" />
+                                                    </div>
+
+                                                    <!-- Panjang -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Panjang</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Panjang" />
+                                                    </div>
+
+                                                    <!-- Harga -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Harga</label>
+                                                        <input x-model="row.harga_display" @input="formatHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Rp 0" readonly />
+                                                    </div>
+
+                                                    <!-- Total -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total</label>
+                                                        <input x-model="row.total_harga_display" @input="formatTotalHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" placeholder="Rp 0" readonly />
+                                                    </div>
+                                                </div>
+
+                                                <!-- Hidden input untuk menyimpan data dalam format JSON -->
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][item]'" x-model="row.item" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][type]'" x-model="row.type" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][dimensi]'" x-model="row.dimensi" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][finishing]'" x-model="row.finishing" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][tebal_panjang]'" x-model="row.tebal_panjang" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][qty_area]'" x-model="row.qty_area" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][qty]'" x-model="row.qty" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][harga]'" x-model="row.harga" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][total_harga]'" x-model="row.total_harga" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][satuan]'" x-model="row.satuan" />
+                                            </div>
+                                        </template>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <button type="button" @click="addProduk(mainIdx, sIdx)" class="w-full hover:cursor-pointer py-2 px-4 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-lg border-2 border-blue-600 hover:border-blue-700 transition-colors duration-200 flex items-center justify-center gap-2">
+                                            <x-icon name="plus" class="w-5 h-5" />
+                                            <span>Tambah Produk</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
                         </template>
+                        
+                        <!-- Add Product Section Button -->
+                        <div class="mt-4">
+                            <template x-if="mainSection.productSections.length === 0">
+                                <div class="w-full">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <h3 class="text-md font-semibold text-gray-900 dark:text-white">Pilih Sub Section Produk</h3>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                        <template x-for="option in sectionOptions" :key="option.kategori">
+                                            <button type="button" @click="addProductSection(mainIdx, option)" class="p-4 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 text-center" :class="{
+                                                'border-blue-400 text-blue-700': option.kategori === 'flooring',
+                                                'border-green-400 text-green-700': option.kategori === 'facade',
+                                                'border-yellow-400 text-yellow-700': option.kategori === 'wallpanel',
+                                                'border-purple-400 text-purple-700': option.kategori === 'ceiling',
+                                                'border-pink-400 text-pink-700': option.kategori === 'decking',
+                                            }">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <x-icon name="plus" class="w-5 h-5" />
+                                                    <span x-text="option.label" class="font-medium text-gray-700 dark:text-gray-300"></span>
+                                                </div>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <template x-if="mainSection.productSections.length > 0">
+                                <template x-if="sectionOptions.filter(opt => !mainSection.productSections.map(s => s.kategori).includes(opt.kategori)).length > 0">
+                                    <div class="w-full">
+                                        <div class="flex items-center gap-2 mb-4">
+                                            <h3 class="text-md font-semibold text-gray-900 dark:text-white">Tambah Sub Section Produk</h3>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                            <template x-for="option in sectionOptions.filter(opt => !mainSection.productSections.map(s => s.kategori).includes(opt.kategori))" :key="option.kategori">
+                                                <button type="button" @click="addProductSection(mainIdx, option)" class="p-4 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 text-center" :class="{
+                                                    'border-blue-400 text-blue-700': option.kategori === 'flooring',
+                                                    'border-green-400 text-green-700': option.kategori === 'facade',
+                                                    'border-yellow-400 text-yellow-700': option.kategori === 'wallpanel',
+                                                    'border-purple-400 text-purple-700': option.kategori === 'ceiling',
+                                                    'border-pink-400 text-pink-700': option.kategori === 'decking',
+                                                }">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <x-icon name="plus" class="w-5 h-5" />
+                                                        <span x-text="option.label" class="font-medium text-gray-700 dark:text-gray-300"></span>
+                                                    </div>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </template>
+            
+            <!-- Section untuk menambah main section jika belum ada -->
+            <div class="mt-4">
+                <template x-if="mainSections.length === 0">
+                    <div class="w-full">
+                        <div class="flex items-center gap-2 mb-4">
+                            <h3 class="text-md font-semibold text-gray-900 dark:text-white">Buat Section Pertama</h3>
+                        </div>
+                        <button type="button" @click="addMainSection()" class="w-full p-6 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <x-icon name="plus" class="w-6 h-6" />
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Tambah Section</span>
+                            </div>
+                        </button>
+                    </div>
+                </template>
+                
+                <template x-if="mainSections.length > 0">
+                    <div class="w-full">
+                        <button type="button" @click="addMainSection()" class="w-full p-4 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <x-icon name="plus" class="w-5 h-5" />
+                                <span class="font-medium text-gray-700 dark:text-gray-300">Tambah Section Baru</span>
+                            </div>
+                        </button>
                     </div>
                 </template>
             </div>
-            <!-- Input Total dan Diskon -->
-            <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Total dan Diskon</h2>
-                
-                <!-- Hidden inputs untuk menyimpan nilai ke database -->
-                <input type="hidden" name="total" x-model="subtotalValue">
-                <input type="hidden" name="total_diskon" x-model="totalDiskonValue">
-                <input type="hidden" name="total_diskon_1" x-model="totalDiskon1Value">
-                <input type="hidden" name="total_diskon_2" x-model="totalDiskon2Value">
-                <input type="hidden" name="grand_total" x-model="grandTotalValue">
-                <input type="hidden" name="diskon" x-model="globalDiskon">
-                <input type="hidden" name="diskon_satu" x-model="diskon_satu">
-                <input type="hidden" name="diskon_dua" x-model="diskon_dua">
-                <input type="hidden" name="ppn" x-model="globalPPN">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Subtotal</label>
-                        <input type="text" x-model="subtotalDisplay" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Diskon (%)</label>
-                        <input x-model="globalDiskon" type="number" min="0" max="100" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Diskon 1 (%)</label>
-                        <input x-model="diskon_satu" type="number" min="0" max="100" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Diskon 2 (%)</label>
-                        <input x-model="diskon_dua" type="number" min="0" max="100" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Total Diskon</label>
-                        <input type="text" x-model="totalDiskonDisplay" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" readonly>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">PPN (%)</label>
-                        <input x-model="globalPPN" type="number" min="0" max="100" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="11">
-                    </div>
-                    <div class="md:col-span-2 lg:col-span-3">
-                        <label class="block text-sm font-medium mb-1">Grand Total</label>
-                        <input type="text" x-model="grandTotalDisplay" class="w-full rounded-xl px-4 py-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold text-lg" readonly>
-                    </div>
+
+            <!-- Section Syarat & Ketentuan -->
+            <div class="w-full">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Syarat & Ketentuan</h2>
+                <div class="grid grid-cols-1 gap-4">
+                    @foreach ($syaratKetentuan as $syarat)
+                        <div class="flex items-center">
+                            <input type="checkbox" name="syarat_kondisi[]" value="{{ $syarat->syarat }}" id="syarat_{{ $loop->index }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="syarat_{{ $loop->index }}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                {{ $syarat->syarat }}
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            <!-- Section Syarat & Catatan -->
-            <div class="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Tambahan</h2>
-                <div class="space-y-6">
-                    <!-- Syarat & Kondisi Checkbox -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Syarat & Kondisi</label>
-                        <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-zinc-700 rounded-lg p-4">
-                            @if($syaratKetentuan->count() > 0)
-                                @foreach($syaratKetentuan as $syarat)
-                                    <div class="flex items-start">
-                                        <input type="checkbox" 
-                                               id="syarat_{{ $syarat->id }}" 
-                                               name="syarat_kondisi[]" 
-                                               value="{{ $syarat->syarat }}" 
-                                               class="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                               {{ in_array($syarat->syarat, old('syarat_kondisi', [])) ? 'checked' : '' }}>
-                                        <label for="syarat_{{ $syarat->id }}" class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                                            {{ $syarat->syarat }}
-                                        </label>
-                                    </div>
-                                @endforeach
-                            @else
-                                <p class="text-sm text-gray-500 dark:text-gray-400 italic">Belum ada syarat & ketentuan yang tersedia</p>
-                            @endif
+
+            <!-- Section Perhitungan -->
+            <div class="w-full">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Perhitungan</h2>
+                <div class="bg-gray-50 dark:bg-zinc-800 rounded-lg p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subtotal</label>
+                            <input type="text" x-model="formatCurrency(subtotal)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                            <input type="hidden" name="total" :value="subtotal">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon (%)</label>
+                            <input type="number" name="diskon" x-model="diskon" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 1 (%)</label>
+                            <input type="number" name="diskon_satu" x-model="diskon_satu" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 2 (%)</label>
+                            <input type="number" name="diskon_dua" x-model="diskon_dua" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon</label>
+                            <input type="text" x-model="formatCurrency(total_diskon)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon 1</label>
+                            <input type="text" x-model="formatCurrency(total_diskon_1)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon 2</label>
+                            <input type="text" x-model="formatCurrency(total_diskon_2)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Setelah Diskon</label>
+                            <input type="text" x-model="formatCurrency(after_diskon)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN (%)</label>
+                            <input type="number" name="ppn" x-model="ppn" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand Total</label>
+                            <input type="text" x-model="formatCurrency(grand_total)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-blue-500 dark:border-blue-400 dark:bg-zinc-800 dark:text-white font-bold text-lg text-blue-600 dark:text-blue-400" />
+                            <input type="hidden" name="grand_total" :value="grand_total">
+                            <input type="hidden" name="total_diskon" :value="total_diskon">
+                            <input type="hidden" name="total_diskon_1" :value="total_diskon_1">
+                            <input type="hidden" name="total_diskon_2" :value="total_diskon_2">
                         </div>
                     </div>
-                    <flux:input name="catatan" label="Catatan" type="textarea" rows="2" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
             </div>
-            <!-- Action Buttons -->
-            <div class="flex justify-end gap-3">
-                <x-button as="a" href="{{ route('admin.penawaran.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white">
-                    <x-icon name="x" class="w-4 h-4 mr-2" />
+
+            <!-- Section Catatan -->
+            <div class="w-full">
+                <flux:input name="catatan" label="Catatan" placeholder="Tambahkan catatan jika diperlukan" type="textarea" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end space-x-4">
+                <x-button type="button" as="a" href="{{ route('admin.penawaran.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white">
                     Batal
                 </x-button>
-                <x-button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white">
+                <x-button type="submit" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white">
                     <x-icon name="check" class="w-4 h-4 mr-2" />
                     Simpan Penawaran
                 </x-button>
@@ -234,10 +348,11 @@
         </form>
     </div>
 </x-layouts.app>
+
 <script>
 function penawaranForm() {
     return {
-        sections: [],
+        mainSections: [], // Array untuk main sections
         sectionOptions: [
             { kategori: 'flooring', label: 'FLOORING', master: @json($floorings) },
             { kategori: 'facade', label: 'FACADE', master: @json($facades) },
@@ -245,61 +360,118 @@ function penawaranForm() {
             { kategori: 'ceiling', label: 'CEILING', master: @json($ceilings) },
             { kategori: 'decking', label: 'DECKING', master: @json($deckings) },
         ],
-        addSection(kategori) {
-            let opt = this.sectionOptions.find(o => o.kategori === kategori);
-            if (!opt) return;
-            this.sections.push({
-                kategori: opt.kategori,
-                label: opt.label,
-                master: opt.master,
-                produk: [{item: '', type: '', dimensi: '', tebal_panjang: '', warna: '', qty_area: '', qty: '', satuan: '', harga: '', harga_display: '', total_harga: '', total_harga_display: ''}],
-                diskon: 0,
-                ppn: 11
+        
+
+        subtotal: 0,
+        diskon: 0,
+        diskon_satu: 0,
+        diskon_dua: 0,
+        ppn: 11,
+        total_diskon: 0,
+        total_diskon_1: 0,
+        total_diskon_2: 0,
+        total_diskon_all: 0,
+        after_diskon: 0,
+        grand_total: 0,
+
+        addMainSection() {
+            this.mainSections.push({
+                judul: '',
+                productSections: []
             });
         },
-        removeSection(idx) {
-            this.sections.splice(idx, 1);
+
+        removeMainSection(index) {
+            this.mainSections.splice(index, 1);
+            this.calculateSubtotal();
         },
-        addProduk(sIdx) {
-            this.sections[sIdx].produk.push({item: '', type: '', dimensi: '', tebal_panjang: '', warna: '', qty_area: '', qty: '', satuan: '', harga: '', harga_display: '', total_harga: '', total_harga_display: ''});
+
+        addProductSection(mainIndex, option) {
+            this.mainSections[mainIndex].productSections.push({
+                kategori: option.kategori,
+                label: option.label,
+                master: option.master,
+                produk: [{
+                    item: '',
+                    code: '',
+                    slug: '',
+                    nama_produk: '',
+                    type: '',
+                    dimensi: '',
+                    panjang: '',
+                    finishing: '',
+                    tebal_panjang: '',
+                    qty_area: '',
+                    qty: '0', // Default quantity 0
+                    satuan: '',
+                    harga: 0,
+                    harga_display: 'Rp 0',
+                    total_harga: 0,
+                    total_harga_display: 'Rp 0'
+                }]
+            });
         },
-        removeProduk(sIdx, i) {
-            this.sections[sIdx].produk.splice(i, 1);
+
+        removeProductSection(mainIndex, sectionIndex) {
+            this.mainSections[mainIndex].productSections.splice(sectionIndex, 1);
+            this.calculateSubtotal();
         },
-        sectionSubtotal(section) {
-            return section.produk.reduce((sum, p) => sum + (parseFloat(p.total_harga) || 0), 0);
+
+        addProduk(mainIndex, sectionIndex) {
+            this.mainSections[mainIndex].productSections[sectionIndex].produk.push({
+                item: '',
+                code: '',
+                slug: '',
+                nama_produk: '',
+                type: '',
+                dimensi: '',
+                panjang: '',
+                finishing: '',
+                tebal_panjang: '',
+                qty_area: '',
+                qty: '0', // Default quantity 0
+                satuan: '',
+                harga: 0,
+                harga_display: 'Rp 0',
+                total_harga: 0,
+                total_harga_display: 'Rp 0'
+            });
         },
-        sectionGrandTotal(section) {
-            let subtotal = this.sectionSubtotal(section);
-            let diskon = section.diskon ? subtotal * (section.diskon/100) : 0;
-            let afterDiskon = subtotal - diskon;
-            let ppn = section.ppn ? afterDiskon * (section.ppn/100) : 0;
-            return Math.round(afterDiskon + ppn);
+
+        removeProduk(mainIndex, sectionIndex, productIndex) {
+            this.mainSections[mainIndex].productSections[sectionIndex].produk.splice(productIndex, 1);
+            this.calculateSubtotal();
         },
-        formatCurrency(amount) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount);
+
+        getAvailableProducts(section, row) {
+            const allProducts = (() => {
+                switch (section.kategori) {
+                    case 'flooring':
+                        return this.sectionOptions.find(opt => opt.kategori === 'flooring')?.master || [];
+                    case 'facade':
+                        return this.sectionOptions.find(opt => opt.kategori === 'facade')?.master || [];
+                    case 'wallpanel':
+                        return this.sectionOptions.find(opt => opt.kategori === 'wallpanel')?.master || [];
+                    case 'ceiling':
+                        return this.sectionOptions.find(opt => opt.kategori === 'ceiling')?.master || [];
+                    case 'decking':
+                        return this.sectionOptions.find(opt => opt.kategori === 'decking')?.master || [];
+                    default:
+                        return [];
+                }
+            })();
+
+            // Filter produk yang sudah dipilih di section ini
+            const selectedSlugs = section.produk
+                .filter(p => p.slug && p.slug !== row.slug) // Exclude current row
+                .map(p => p.slug);
+
+            return allProducts.filter(product => !selectedSlugs.includes(product.slug));
         },
-        formatInputCurrency(value) {
-            if (!value) return '';
-            // Hapus semua karakter non-digit
-            const numericValue = value.toString().replace(/[^\d]/g, '');
-            if (!numericValue) return '';
-            // Format sebagai rupiah
-            return this.formatCurrency(parseInt(numericValue));
-        },
-        parseCurrency(value) {
-            if (!value) return '';
-            // Hapus semua karakter non-digit
-            return value.toString().replace(/[^\d]/g, '');
-        },
+
         autofillProduk(section, row) {
-            if (!row.item) return;
-            const produk = section.master.find(p => p.code === row.item);
+            if (!row.slug) return;
+            const produk = section.master.find(p => p.slug === row.slug);
             if (produk) {
                 console.log('=== DEBUG AUTOFILL PRODUK ===');
                 console.log('Produk dipilih:', produk.code);
@@ -307,33 +479,39 @@ function penawaranForm() {
                 console.log('luas_m2 produk:', produk.luas_m2);
                 console.log('VOL(m²) saat ini:', row.qty_area);
                 
+                row.item = produk.nama_produk || section.label;
+                row.code = produk.code ?? '';
+                row.slug = produk.slug ?? '';
+                row.nama_produk = produk.nama_produk || section.label;
                 row.type = produk.code ?? '';
                 row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
+                row.panjang = produk.panjang ?? '';
                 row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
-                row.warna = produk.warna ?? '';
-                row.harga = produk.harga;
-                row.harga_display = this.formatCurrency(produk.harga);
-                row.total_harga = produk.harga * row.qty;
-                row.total_harga_display = this.formatCurrency(row.total_harga);
+                row.harga = produk.harga || 0;
+                row.harga_display = this.formatCurrency(produk.harga || 0);
+                row.qty = '0'; // Default quantity 0
+                row.total_harga = 0;
+                row.total_harga_display = this.formatCurrency(0);
+                
                 // Gunakan luas_m2 dari database produk
                 let luas_m2 = produk.luas_m2 || 1;
+                
                 // Jika vol (qty_area) sudah diisi, hitung qty
                 if (row.qty_area && luas_m2 > 0) {
-                    const qty = (parseFloat(row.qty_area) / luas_m2).toFixed(2);
-                    row.qty = qty;
-                    console.log('Perhitungan qty di autofill:', parseFloat(row.qty_area), '/', luas_m2, '=', qty);
-                } else {
-                    row.qty = '';
-                    console.log('qty_area kosong atau luas_m2 tidak valid');
+                    const qty = Math.ceil(parseFloat(row.qty_area) / luas_m2);
+                    row.qty = qty.toString();
                 }
+                
                 // Hitung total harga otomatis
                 if (row.harga && row.qty) {
                     row.total_harga = (parseFloat(row.harga) * parseFloat(row.qty)).toFixed(2);
+                    row.total_harga_display = this.formatCurrency(row.total_harga);
                 }
                 this.updateCalculations();
                 console.log('================================');
             }
         },
+
         loadClients(userId) {
             if (!userId) {
                 // Reset client dropdown jika tidak ada user yang dipilih
@@ -362,11 +540,12 @@ function penawaranForm() {
                     clientSelect.innerHTML = '<option value="" disabled selected>{{ __("Error loading clients") }}</option>';
                 });
         },
+
         calculateTotalHarga(row) {
             if (!row.qty || !row.harga) return;
             row.total_harga = row.qty * row.harga;
             row.total_harga_display = this.formatCurrency(row.total_harga);
-            this.updateCalculations();
+            this.calculateSubtotal();
             console.log('Calculate Total Harga:', {
                 qty: row.qty,
                 harga: row.harga,
@@ -374,10 +553,11 @@ function penawaranForm() {
                 total_harga_display: row.total_harga_display
             });
         },
+
         calculateQty(section, row) {
-            if (!row.item || !row.qty_area) return;
+            if (!row.slug || !row.qty_area) return;
             
-            const produk = section.master.find(p => p.code === row.item);
+            const produk = section.master.find(p => p.slug === row.slug);
             if (!produk) return;
             
             // Debug: Log nilai-nilai yang digunakan
@@ -395,8 +575,8 @@ function penawaranForm() {
             // Hitung qty = vol ÷ luas_m2
             const vol = parseFloat(row.qty_area);
             if (!isNaN(vol) && luas_m2 > 0) {
-                const qty = (vol / luas_m2).toFixed(2);
-                row.qty = qty;
+                const qty = Math.ceil(vol / luas_m2);
+                row.qty = qty.toString();
                 
                 // Debug: Log hasil perhitungan
                 console.log('Perhitungan: qty =', vol, '÷', luas_m2, '=', qty);
@@ -405,14 +585,16 @@ function penawaranForm() {
                 // Hitung ulang total harga
                 if (row.harga) {
                     row.total_harga = (parseFloat(row.harga) * parseFloat(row.qty)).toFixed(2);
+                    row.total_harga_display = this.formatCurrency(row.total_harga);
                 }
-                this.updateCalculations();
+                this.calculateSubtotal();
             } else {
                 console.log('Error: vol atau luas_m2 tidak valid');
                 console.log('vol:', vol, 'luas_m2:', luas_m2);
                 console.log('================================');
             }
         },
+
         formatHargaInput(row) {
             // Format input sebagai rupiah
             const numericValue = this.parseCurrency(row.harga_display);
@@ -422,6 +604,7 @@ function penawaranForm() {
                 this.calculateTotalHarga(row);
             }
         },
+
         formatTotalHargaInput(row) {
             // Format input total harga sebagai rupiah
             const numericValue = this.parseCurrency(row.total_harga_display);
@@ -430,94 +613,66 @@ function penawaranForm() {
                 row.total_harga_display = this.formatInputCurrency(numericValue);
             }
         },
-        globalDiskon: 0,
-        globalPPN: 11,
-        diskon_satu: 0,
-        diskon_dua: 0,
-        subtotalDisplay: 'Rp 0',
-        totalDiskonDisplay: 'Rp 0',
-        grandTotalDisplay: 'Rp 0',
-        subtotalValue: 0,
-        totalDiskonValue: 0,
-        totalDiskon1Value: 0,
-        totalDiskon2Value: 0,
-        grandTotalValue: 0,
-        init() {
-            // Watch for changes in discount and PPN values
-            this.$watch('globalDiskon', () => this.updateAllDisplays());
-            this.$watch('diskon_satu', () => this.updateAllDisplays());
-            this.$watch('diskon_dua', () => this.updateAllDisplays());
-            this.$watch('globalPPN', () => this.updateAllDisplays());
-            
-            // Watch for changes in sections
-            this.$watch('sections', () => {
-                this.updateAllDisplays();
-            }, { deep: true });
-            
-            // Initialize values
-            this.$nextTick(() => {
-                this.initializeValues();
-            });
-        },
-        initializeValues() {
-            // Force initial calculation
-            this.updateAllDisplays();
-        },
-        updateCalculations() {
-            // Update all displays
-            this.updateAllDisplays();
-        },
-        updateAllDisplays() {
-            // Calculate subtotal
-            let subtotal = 0;
-            this.sections.forEach((section) => {
-                section.produk.forEach((row) => {
-                    const totalHarga = parseFloat(row.total_harga) || 0;
-                    subtotal += totalHarga;
+
+        calculateSubtotal() {
+            this.subtotal = 0;
+            this.mainSections.forEach(mainSection => {
+                mainSection.productSections.forEach(section => {
+                    section.produk.forEach(produk => {
+                        this.subtotal += parseFloat(produk.total_harga) || 0;
+                    });
                 });
             });
+            this.calculateTotal();
+        },
+
+        calculateTotal() {
+            const subtotal = parseFloat(this.subtotal) || 0;
+            const diskon = parseFloat(this.diskon) || 0;
+            const diskon_satu = parseFloat(this.diskon_satu) || 0;
+            const diskon_dua = parseFloat(this.diskon_dua) || 0;
+            const ppn = parseFloat(this.ppn) || 0;
+
+            const total_diskon = subtotal * (diskon / 100);
+            const total_diskon_1 = (subtotal - total_diskon) * (diskon_satu / 100);
+            const total_diskon_2 = (subtotal - total_diskon - total_diskon_1) * (diskon_dua / 100);
             
-            // Calculate total diskon
-            let diskon1 = subtotal * (this.globalDiskon / 100);
-            let diskon2 = (subtotal - diskon1) * (this.diskon_satu / 100);
-            let diskon3 = (subtotal - diskon1 - diskon2) * (this.diskon_dua / 100);
-            let totalDiskon = diskon1 + diskon2 + diskon3;
-            
-            // Calculate grand total
-            let afterDiskon = subtotal - totalDiskon;
-            let ppnNominal = afterDiskon * (this.globalPPN / 100);
-            let grandTotal = Math.round(afterDiskon + ppnNominal);
-            
-            // Update displays
-            this.subtotalDisplay = this.formatCurrency(subtotal);
-            this.totalDiskonDisplay = this.formatCurrency(totalDiskon);
-            this.grandTotalDisplay = this.formatCurrency(grandTotal);
-            
-            // Update hidden inputs untuk database
-            this.subtotalValue = subtotal;
-            this.totalDiskonValue = totalDiskon;
-            this.totalDiskon1Value = diskon1;
-            this.totalDiskon2Value = diskon2;
-            this.grandTotalValue = grandTotal;
-            
-            console.log('updateAllDisplays called:', {
-                subtotal: subtotal,
-                subtotalDisplay: this.subtotalDisplay,
-                totalDiskon: totalDiskon,
-                totalDiskonDisplay: this.totalDiskonDisplay,
-                grandTotal: grandTotal,
-                grandTotalDisplay: this.grandTotalDisplay,
-                // Nilai yang akan dikirim ke database
-                subtotalValue: this.subtotalValue,
-                totalDiskonValue: this.totalDiskonValue,
-                totalDiskon1Value: this.totalDiskon1Value,
-                totalDiskon2Value: this.totalDiskon2Value,
-                grandTotalValue: this.grandTotalValue,
-                globalDiskon: this.globalDiskon,
-                diskon_satu: this.diskon_satu,
-                diskon_dua: this.diskon_dua,
-                globalPPN: this.globalPPN
-            });
+            // Simpan nilai diskon ke properti Alpine.js
+            this.total_diskon = total_diskon;
+            this.total_diskon_1 = total_diskon_1;
+            this.total_diskon_2 = total_diskon_2;
+            this.total_diskon_all = total_diskon + total_diskon_1 + total_diskon_2;
+            this.after_diskon = subtotal - this.total_diskon_all;
+            const ppn_nominal = this.after_diskon * (ppn / 100);
+            this.grand_total = Math.round(this.after_diskon + ppn_nominal);
+        },
+
+        formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        },
+
+        formatInputCurrency(value) {
+            if (!value) return '';
+            // Hapus semua karakter non-digit
+            const numericValue = value.toString().replace(/[^\d]/g, '');
+            if (!numericValue) return '';
+            // Format sebagai rupiah
+            return this.formatCurrency(parseInt(numericValue));
+        },
+
+        parseCurrency(value) {
+            if (!value) return '';
+            // Hapus semua karakter non-digit
+            return value.toString().replace(/[^\d]/g, '');
+        },
+
+        updateCalculations() {
+            this.calculateSubtotal();
         }
     }
 }
