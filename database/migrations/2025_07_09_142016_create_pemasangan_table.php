@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('pemasangan')) {
         Schema::create('pemasangan', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_pemasangan', 50)->unique(); // seperti nomor_penawaran, contoh: 024B/MKI/11/25
@@ -29,13 +30,58 @@ return new class extends Migration
             $table->timestamps();
             $table->tinyInteger('status')->default(0); // 0=draft, 1=aktif, dst
             $table->tinyInteger('status_deleted')->default(0); // 0=aktif, 1=deleted
-
-            // Foreign keys (optional, uncomment if needed)
-            // $table->foreign('id_penawaran')->references('id')->on('penawaran')->onDelete('cascade');
-            // $table->foreign('id_client')->references('id')->on('clients')->onDelete('cascade');
-            // $table->foreign('id_sales')->references('id')->on('users')->onDelete('cascade');
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-        });
+            });
+        } else {
+            // Jika sudah ada, pastikan struktur sesuai
+            Schema::table('pemasangan', function (Blueprint $table) {
+                // Tambahkan kolom jika belum ada
+                if (!Schema::hasColumn('pemasangan', 'nomor_pemasangan')) {
+                    $table->string('nomor_pemasangan', 50)->unique();
+                }
+                if (!Schema::hasColumn('pemasangan', 'tanggal_pemasangan')) {
+                    $table->date('tanggal_pemasangan');
+                }
+                if (!Schema::hasColumn('pemasangan', 'id_penawaran')) {
+                    $table->unsignedBigInteger('id_penawaran');
+                }
+                if (!Schema::hasColumn('pemasangan', 'id_client')) {
+                    $table->unsignedBigInteger('id_client');
+                }
+                if (!Schema::hasColumn('pemasangan', 'id_sales')) {
+                    $table->unsignedBigInteger('id_sales');
+                }
+                if (!Schema::hasColumn('pemasangan', 'judul_pemasangan')) {
+                    $table->string('judul_pemasangan', 255);
+                }
+                if (!Schema::hasColumn('pemasangan', 'json_pemasangan')) {
+                    $table->json('json_pemasangan');
+                }
+                if (!Schema::hasColumn('pemasangan', 'total')) {
+                    $table->decimal('total', 20, 2)->default(0);
+                }
+                if (!Schema::hasColumn('pemasangan', 'diskon')) {
+                    $table->decimal('diskon', 5, 2)->default(0);
+                }
+                if (!Schema::hasColumn('pemasangan', 'grand_total')) {
+                    $table->decimal('grand_total', 20, 2)->default(0);
+                }
+                if (!Schema::hasColumn('pemasangan', 'json_syarat_kondisi')) {
+                    $table->json('json_syarat_kondisi')->nullable();
+                }
+                if (!Schema::hasColumn('pemasangan', 'logo')) {
+                    $table->string('logo', 100)->nullable();
+                }
+                if (!Schema::hasColumn('pemasangan', 'created_by')) {
+                    $table->unsignedBigInteger('created_by');
+                }
+                if (!Schema::hasColumn('pemasangan', 'status')) {
+                    $table->tinyInteger('status')->default(0);
+                }
+                if (!Schema::hasColumn('pemasangan', 'status_deleted')) {
+                    $table->tinyInteger('status_deleted')->default(0);
+                }
+            });
+        }
     }
 
     /**
