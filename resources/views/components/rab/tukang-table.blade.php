@@ -1,6 +1,12 @@
-<div>
-    <div id="tukang-section-list" class="space-y-8"></div>
-    <button type="button" class="mt-6 bg-purple-600 dark:bg-purple-900/30 border-b border-t border-purple-600 dark:border-purple-400 text-white px-4 py-2 w-full" id="add-tukang-section">Tambah Section Pengeluaran Tukang</button>
+    <div>
+        <div id="tukang-section-list" class="space-y-8"></div>
+        <button type="button" class="mt-6 bg-purple-600 dark:bg-purple-900/30 border-b border-t border-purple-600 dark:border-purple-400 text-white px-4 py-2 w-full" id="add-tukang-section">Tambah Section Pengeluaran Tukang</button>
+        <div class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+            <div class="text-right">
+                <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Grand Total:</span>
+                <span class="ml-2 text-lg font-bold text-purple-600 dark:text-purple-400 tukang-grand-total">Rp 0</span>
+            </div>
+        </div>
     <template id="tukang-section-template">
         <div class="tukang-section rounded-xl bg-white dark:bg-zinc-800/40 relative">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
@@ -101,7 +107,7 @@
                     if (input) {
                         if (key === 'kredit' || key === 'sisa') {
                             // Format Rupiah untuk field kredit dan sisa
-                            const numericValue = parseInt(data[key]) || 0;
+                            const numericValue = parseInt(data[key].toString().replace(/\D/g, '')) || 0;
                             input.value = formatRupiah(numericValue);
                         } else {
                             input.value = data[key];
@@ -112,14 +118,16 @@
             
             function fillSection(section, data) {
                 if (!data) return;
+                console.log('Filling section with data:', data); // Debug
                 for (const key in data) {
                     if (key === 'termin') continue;
                     const input = section.querySelector(`[name^='json_pengeluaran_tukang'][name$='[${key}]']`);
                     if (input) {
                         if (key === 'debet') {
                             // Format Rupiah untuk field debet
-                            const numericValue = parseInt(data[key]) || 0;
+                            const numericValue = parseInt(data[key].toString().replace(/\D/g, '')) || 0;
                             input.value = formatRupiah(numericValue);
+                            console.log('Set debet input value:', input.value); // Debug
                         } else {
                             input.value = data[key];
                         }
@@ -143,6 +151,7 @@
                 renderSectionNames();
                 toggleRemoveSectionButtons();
                 setupAutoCalc(section);
+                setTimeout(updateGrandTotal, 100); // Update grand total setelah setup selesai
             }
 
             function addTermin(section, data) {
@@ -238,6 +247,7 @@
                         e.target.closest('.tukang-section').remove();
                         renderSectionNames();
                         toggleRemoveSectionButtons();
+                        updateGrandTotal();
                     }
                 }
                 // Add termin
@@ -260,21 +270,78 @@
             addSectionBtn.addEventListener('click', addSection);
 
             // Inisialisasi dari old input jika ada
-            if (window.oldTukang && Array.isArray(window.oldTukang) && window.oldTukang.length) {
+            if (window.oldTukang && Array.isArray(window.oldTukang) && window.oldTukang.length > 0) {
+                console.log('Loading old tukang data:', window.oldTukang); // Debug
                 window.oldTukang.forEach(section => addSection(section));
+                // Update grand total setelah semua section ditambahkan
+                setTimeout(updateGrandTotal, 1000);
             } else if (sectionList.querySelectorAll('.tukang-section').length === 0) {
                 addSection();
-            } else toggleRemoveSectionButtons();
+            }
+            toggleRemoveSectionButtons();
 
             // Setup format Rupiah untuk input yang sudah ada
-            document.addEventListener('DOMContentLoaded', function() {
+            function setupExistingRupiahFormat() {
                 sectionList.querySelectorAll('.debet-input').forEach(input => {
                     setupRupiahFormat(input);
                 });
                 sectionList.querySelectorAll('.kredit-input').forEach(input => {
                     setupRupiahFormat(input);
                 });
+            }
+            
+            // Setup format Rupiah setelah data dimuat
+            setTimeout(() => {
+                setupExistingRupiahFormat();
+                updateGrandTotal(); // Update grand total setelah format Rupiah
+            }, 100);
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                setupExistingRupiahFormat();
+                updateGrandTotal(); // Update grand total setelah DOM loaded
             });
+
+            // Function to update grand total
+            function updateGrandTotal() {
+                let grandTotal = 0;
+                sectionList.querySelectorAll('.tukang-section').forEach(section => {
+                    const debetInput = section.querySelector('.debet-input');
+                    if (debetInput) {
+                        // Handle both formatted and raw values
+                        let value = debetInput.value || '0';
+                        // Remove Rp, spaces, and convert to number
+                        value = value.replace(/[^\d]/g, '');
+                        const val = parseInt(value) || 0;
+                        grandTotal += val;
+                    }
+                });
+                const grandTotalEl = document.querySelector('.tukang-grand-total');
+                if (grandTotalEl) {
+                    grandTotalEl.textContent = 'Rp ' + grandTotal.toLocaleString('id-ID');
+                }
+                console.log('Tukang Grand Total:', grandTotal); // Debug
+            }
+
+            // Update grand total when inputs change
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('debet-input')) {
+                    setTimeout(updateGrandTotal, 100);
+                }
+            });
+
+            // Update grand total when sections are added/removed
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        setTimeout(updateGrandTotal, 100);
+                    }
+                });
+            });
+
+            observer.observe(sectionList, { childList: true });
+
+            // Initial grand total calculation
+            setTimeout(updateGrandTotal, 500);
         })();
     </script>
 </div> 

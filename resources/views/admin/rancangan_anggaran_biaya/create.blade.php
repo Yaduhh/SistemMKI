@@ -193,5 +193,18 @@
             // Set the hidden input value
             document.getElementById('json_pengeluaran_material_utama').value = JSON.stringify(materialUtamaData);
         }
+
+        function updateTotal(index) {
+            const qtyInput = document.querySelector(`input[name="material_utama[${index}][qty]"]`);
+            const hargaInput = document.querySelector(`input[name="material_utama[${index}][harga_satuan]"]`);
+            const totalInput = document.querySelector(`input[name="material_utama[${index}][total]"]`);
+            
+            if (qtyInput && hargaInput && totalInput) {
+                const qty = parseFloat(qtyInput.value) || 0;
+                const harga = parseFloat(hargaInput.value) || 0;
+                const total = qty * harga;
+                totalInput.value = total;
+            }
+        }
     </script>
 </x-layouts.app>

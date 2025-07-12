@@ -218,6 +218,7 @@
                     grandTotal += totalMr;
                 });
                 grandTotalEl.textContent = formatRupiah(grandTotal);
+                grandTotalEl.className = 'akomodasi-grand-total';
             }
 
             function updateRowTotal(row) {

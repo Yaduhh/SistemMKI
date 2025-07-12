@@ -123,7 +123,7 @@
                                 <label class="block text-sm font-medium text-blue-600 dark:text-blue-400">Grand Total
                                     Penawaran</label>
                                 <p class="mt-1 text-sm text-zinc-900 dark:text-white font-medium">Rp
-                                    {{ number_format($rancanganAnggaranBiaya->penawaran->grand_total ?? 0, 0, ',', '.') }}
+                                    {{ number_format($rancanganAnggaranBiaya->penawaran->total - (($rancanganAnggaranBiaya->penawaran->total_diskon ?? 0) + ($rancanganAnggaranBiaya->penawaran->total_diskon_1 ?? 0) + ($rancanganAnggaranBiaya->penawaran->total_diskon_2 ?? 0)) ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
                             <div>
@@ -716,7 +716,7 @@
                 // Material Utama - ambil dari grand_total penawaran yang terhubung
                 $materialUtamaTotal = 0;
                 if ($rancanganAnggaranBiaya->penawaran) {
-                    $materialUtamaTotal = (float) ($rancanganAnggaranBiaya->penawaran->grand_total ?? 0);
+                    $materialUtamaTotal = (float) (($rancanganAnggaranBiaya->penawaran->total ?? 0) - (($rancanganAnggaranBiaya->penawaran->total_diskon ?? 0) + ($rancanganAnggaranBiaya->penawaran->total_diskon_1 ?? 0) + ($rancanganAnggaranBiaya->penawaran->total_diskon_2 ?? 0)) ?? 0);
                 } else {
                     // Fallback ke perhitungan manual jika tidak ada penawaran terhubung
                     if ($rancanganAnggaranBiaya->json_pengeluaran_material_utama) {

@@ -218,6 +218,7 @@
                     grandTotal += totalMr;
                 });
                 grandTotalEl.textContent = formatRupiah(grandTotal);
+                grandTotalEl.className = 'entertaiment-grand-total';
             }
 
             function updateRowTotal(row) {

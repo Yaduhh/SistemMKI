@@ -406,6 +406,7 @@ class RancanganAnggaranBiayaController extends Controller
         $penawaran = $rancanganAnggaranBiaya->penawaran;
         $pemasangan = $rancanganAnggaranBiaya->pemasangan;
         $produkPenawaran = [];
+        $penawaranTotal = 0;
 
         if ($penawaran && is_array($penawaran->json_produk)) {
             foreach ($penawaran->json_produk as $area) {
@@ -420,6 +421,8 @@ class RancanganAnggaranBiayaController extends Controller
                                 ],
                                 $product
                             );
+                            // Calculate total from penawaran
+                            $penawaranTotal += floatval($product['total_harga'] ?? 0);
                         }
                     }
                 }
@@ -430,7 +433,7 @@ class RancanganAnggaranBiayaController extends Controller
         $rancanganAnggaranBiaya->json_pengeluaran_tukang = $this->cleanOldDataFormat($rancanganAnggaranBiaya->json_pengeluaran_tukang);
         $rancanganAnggaranBiaya->json_kerja_tambah = $this->cleanOldDataFormat($rancanganAnggaranBiaya->json_kerja_tambah);
 
-        return view('admin.rancangan_anggaran_biaya.edit', compact('rancanganAnggaranBiaya', 'penawaran', 'pemasangan', 'produkPenawaran'));
+        return view('admin.rancangan_anggaran_biaya.edit', compact('rancanganAnggaranBiaya', 'penawaran', 'pemasangan', 'produkPenawaran', 'penawaranTotal'));
     }
 
     public function update(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)

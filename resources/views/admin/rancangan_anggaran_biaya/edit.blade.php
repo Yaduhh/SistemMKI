@@ -49,7 +49,29 @@
                     <h2 class="text-lg font-semibold mb-2">Pengeluaran Material Utama</h2>
                     <x-rab.material-utama-table :produk="$produkPenawaran" :existing-data="$rancanganAnggaranBiaya->json_pengeluaran_material_utama" />
                     <!-- Hidden input untuk menyimpan data material utama -->
-                    <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama" value="">
+                    <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama" value="{{ json_encode($rancanganAnggaranBiaya->json_pengeluaran_material_utama ?? []) }}">
+                    
+                    <!-- Validasi Material Utama vs Penawaran -->
+                    <div class="mt-4 p-4 rounded-lg border" id="material-utama-validation">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Material Utama (RAB):</span>
+                                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400" id="rab-material-utama-total">Rp 0</span>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Penawaran:</span>
+                                    <span class="text-lg font-bold text-green-600 dark:text-green-400">Rp {{ number_format($penawaranTotal, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2" id="validation-status">
+                                <div class="px-3 py-1 rounded-full text-sm font-medium" id="validation-badge">
+                                    <span id="validation-text">Memvalidasi...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-sm" id="validation-message"></div>
+                    </div>
                 </div>
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-4 mb-6">
@@ -143,6 +165,48 @@
                     </div>
                     <x-rab.kerja-tambah-table />
                 </div>
+                
+                <!-- Grand Total Section -->
+                <div class="mt-8 p-6 bg-gray-50 dark:bg-zinc-800/40 rounded-lg border border-gray-200 dark:border-zinc-700">
+                    <h3 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-gray-200">RINGKASAN GRAND TOTAL</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Material Utama</div>
+                            <div class="text-lg font-bold text-blue-600 dark:text-blue-400" id="grand-total-material-utama">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Material Pendukung</div>
+                            <div class="text-lg font-bold text-sky-600 dark:text-sky-400" id="grand-total-material-pendukung">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Entertaiment</div>
+                            <div class="text-lg font-bold text-teal-600 dark:text-teal-400" id="grand-total-entertaiment">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Akomodasi</div>
+                            <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400" id="grand-total-akomodasi">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Lainnya</div>
+                            <div class="text-lg font-bold text-pink-600 dark:text-pink-400" id="grand-total-lainnya">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Tukang</div>
+                            <div class="text-lg font-bold text-purple-600 dark:text-purple-400" id="grand-total-tukang">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-700 p-4 rounded-lg border border-gray-200 dark:border-zinc-600">
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Kerja Tambah</div>
+                            <div class="text-lg font-bold text-orange-600 dark:text-orange-400" id="grand-total-kerja-tambah">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
+                        <div class="text-center">
+                            <div class="text-lg font-medium text-emerald-800 dark:text-emerald-200">TOTAL KESELURUHAN</div>
+                            <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400" id="grand-total-keseluruhan">Rp 0</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="mt-8 flex justify-end space-x-4">
                     <a href="{{ route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya) }}"
                         class="px-6 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition">
@@ -204,5 +268,128 @@
             // Set the hidden input value
             document.getElementById('json_pengeluaran_material_utama').value = JSON.stringify(materialUtamaData);
         }
+
+        // Function to calculate and display grand totals
+        function calculateGrandTotals() {
+            // Material Utama - Use penawaran grand total
+            const penawaranGrandTotal = {{ $penawaran->grand_total ?? 0 }};
+            document.getElementById('grand-total-material-utama').textContent = 'Rp ' + penawaranGrandTotal.toLocaleString('id-ID');
+            
+            // Update Material Utama total for validation (use RAB data for validation)
+            let totalMaterialUtama = 0;
+            document.querySelectorAll('input[name^="material_utama"][name$="[total]"]').forEach(input => {
+                totalMaterialUtama += parseFloat(input.value) || 0;
+            });
+            document.getElementById('rab-material-utama-total').textContent = 'Rp ' + totalMaterialUtama.toLocaleString('id-ID');
+            
+            // Validate Material Utama vs Penawaran
+            validateMaterialUtama(totalMaterialUtama);
+
+            // Material Pendukung
+            let totalMaterialPendukung = 0;
+            document.querySelectorAll('.material-pendukung-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalMaterialPendukung += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-material-pendukung').textContent = 'Rp ' + totalMaterialPendukung.toLocaleString('id-ID');
+
+            // Entertaiment
+            let totalEntertaiment = 0;
+            document.querySelectorAll('.entertaiment-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalEntertaiment += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-entertaiment').textContent = 'Rp ' + totalEntertaiment.toLocaleString('id-ID');
+
+            // Akomodasi
+            let totalAkomodasi = 0;
+            document.querySelectorAll('.akomodasi-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalAkomodasi += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-akomodasi').textContent = 'Rp ' + totalAkomodasi.toLocaleString('id-ID');
+
+            // Lainnya
+            let totalLainnya = 0;
+            document.querySelectorAll('.lainnya-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalLainnya += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-lainnya').textContent = 'Rp ' + totalLainnya.toLocaleString('id-ID');
+
+            // Tukang
+            let totalTukang = 0;
+            document.querySelectorAll('.tukang-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalTukang += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-tukang').textContent = 'Rp ' + totalTukang.toLocaleString('id-ID');
+
+            // Kerja Tambah
+            let totalKerjaTambah = 0;
+            document.querySelectorAll('.kerja-tambah-grand-total').forEach(el => {
+                const text = el.textContent.replace(/[^\d]/g, '');
+                totalKerjaTambah += parseInt(text) || 0;
+            });
+            document.getElementById('grand-total-kerja-tambah').textContent = 'Rp ' + totalKerjaTambah.toLocaleString('id-ID');
+
+            // Total Keseluruhan - Use penawaran grand total for Material Utama
+            const totalKeseluruhan = penawaranGrandTotal + totalMaterialPendukung + totalEntertaiment + 
+                                    totalAkomodasi + totalLainnya + totalTukang + totalKerjaTambah;
+            document.getElementById('grand-total-keseluruhan').textContent = 'Rp ' + totalKeseluruhan.toLocaleString('id-ID');
+        }
+
+        // Function to validate Material Utama vs Penawaran
+        function validateMaterialUtama(rabTotal) {
+            const penawaranTotal = {{ $penawaranTotal }};
+            const difference = Math.abs(rabTotal - penawaranTotal);
+            const tolerance = 1000; // Tolerance of Rp 1,000 for rounding differences
+            
+            const validationBadge = document.getElementById('validation-badge');
+            const validationText = document.getElementById('validation-text');
+            const validationMessage = document.getElementById('validation-message');
+            
+            if (difference <= tolerance) {
+                // Valid - totals match
+                validationBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+                validationText.textContent = '✓ Tervalidasi';
+                validationMessage.innerHTML = '<span class="text-green-600 dark:text-green-400">✓ Data Material Utama sesuai dengan Penawaran</span>';
+            } else {
+                // Invalid - totals don't match
+                validationBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+                validationText.textContent = '⚠ Ada Ketidakcocokan';
+                validationMessage.innerHTML = '<span class="text-red-600 dark:text-red-400">⚠ Ada ketidakcocokan data dengan Penawaran yang terhubung</span>';
+            }
+        }
+
+        // Calculate grand totals when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(calculateGrandTotals, 500); // Delay to ensure all components are loaded
+        });
+
+        // Recalculate when any input changes
+        document.addEventListener('input', function() {
+            setTimeout(calculateGrandTotals, 100);
+        });
+
+        // Initialize validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate initial Material Utama total from existing data for validation
+            let initialTotal = 0;
+            @if(isset($rancanganAnggaranBiaya->json_pengeluaran_material_utama) && is_array($rancanganAnggaranBiaya->json_pengeluaran_material_utama))
+                @foreach($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $item)
+                    initialTotal += {{ $item['total'] ?? 0 }};
+                @endforeach
+            @endif
+            
+            // Update the validation display and validate
+            document.getElementById('rab-material-utama-total').textContent = 'Rp ' + initialTotal.toLocaleString('id-ID');
+            validateMaterialUtama(initialTotal);
+            
+            // Set Material Utama grand total to penawaran grand total
+            const penawaranGrandTotal = {{ $penawaran->grand_total ?? 0 }};
+            document.getElementById('grand-total-material-utama').textContent = 'Rp ' + penawaranGrandTotal.toLocaleString('id-ID');
+        });
+
     </script>
 </x-layouts.app> 
