@@ -12,11 +12,11 @@
             <div class="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                 <div class="w-full">
                     <label class="block text-sm font-medium mb-1">MR</label>
-                    <input type="text" name="json_pengeluaran_lainnya[__MRIDX__][mr]" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    <input type="text" name="json_pengeluaran_lainnya[__MRIDX__][mr]" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium mb-1">Tanggal</label>
-                    <input type="date" name="json_pengeluaran_lainnya[__MRIDX__][tanggal]" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                    <input type="date" name="json_pengeluaran_lainnya[__MRIDX__][tanggal]" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Action</label>
@@ -58,11 +58,11 @@
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Harga Satuan</label>
-                <input type="number" min="0" data-material-field="harga_satuan" name="json_pengeluaran_lainnya[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
+                <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_lainnya[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
-                <input type="number" data-material-field="sub_total" name="json_pengeluaran_lainnya[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
+                <input type="text" data-material-field="sub_total" name="json_pengeluaran_lainnya[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
@@ -75,6 +75,45 @@
             const materialRowTemplate = document.getElementById('lainnya-material-row-template');
             const grandTotalEl = document.getElementById('grand-total-lainnya');
             if (!mrList || !addMrBtn || !mrGroupTemplate || !materialRowTemplate || !grandTotalEl) return;
+
+            // Fungsi format Rupiah
+            function formatRupiah(angka) {
+                if (!angka || angka === '') return '';
+                const number = parseInt(angka.toString().replace(/\D/g, ''));
+                if (isNaN(number)) return '';
+                return number.toLocaleString('id-ID');
+            }
+
+            // Fungsi untuk mendapatkan nilai numerik dari input yang diformat
+            function getNumericValue(input) {
+                const value = input.value.replace(/\D/g, '');
+                return value ? parseInt(value) : 0;
+            }
+
+            // Fungsi untuk setup format Rupiah pada input
+            function setupRupiahFormat(input) {
+                input.addEventListener('input', function(e) {
+                    const cursorPosition = e.target.selectionStart;
+                    const oldValue = e.target.value;
+                    const numericValue = oldValue.replace(/\D/g, '');
+                    const formattedValue = formatRupiah(numericValue);
+                    
+                    e.target.value = formattedValue;
+                    
+                    // Menyesuaikan posisi cursor
+                    const newCursorPosition = cursorPosition + (formattedValue.length - oldValue.length);
+                    e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+                });
+
+                input.addEventListener('blur', function(e) {
+                    const numericValue = getNumericValue(e.target);
+                    if (numericValue > 0) {
+                        e.target.value = formatRupiah(numericValue);
+                    } else {
+                        e.target.value = '';
+                    }
+                });
+            }
 
             function renderAllNames() {
                 mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIdx) => {
@@ -109,9 +148,18 @@
                 if (!data) return;
                 for (const key in data) {
                     const input = row.querySelector(`[data-material-field="${key}"]`);
-                    if (input) input.value = data[key];
+                    if (input) {
+                        if (key === 'harga_satuan' || key === 'sub_total') {
+                            // Format Rupiah untuk field harga
+                            const numericValue = parseInt(data[key]) || 0;
+                            input.value = numericValue > 0 ? formatRupiah(numericValue) : '';
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
                 }
             }
+            
             function fillMrGroup(mrGroup, data) {
                 if (!data) return;
                 for (const key in data) {
@@ -147,6 +195,13 @@
                 const row = temp.firstElementChild;
                 matList.appendChild(row);
                 fillMaterialRow(row, data);
+                
+                // Setup format Rupiah untuk input baru
+                const hargaInput = row.querySelector('.harga-input');
+                if (hargaInput) {
+                    setupRupiahFormat(hargaInput);
+                }
+                
                 renderAllNames();
             }
 
@@ -155,22 +210,24 @@
                 mrList.querySelectorAll('.mr-group').forEach(mrGroup => {
                     let totalMr = 0;
                     mrGroup.querySelectorAll('.sub-total-input').forEach(input => {
-                        const val = parseFloat(input.value);
+                        const val = getNumericValue(input);
                         if (!isNaN(val)) totalMr += val;
                     });
                     const totalMrEl = mrGroup.querySelector('.total-mr');
-                    if (totalMrEl) totalMrEl.textContent = totalMr.toLocaleString('id-ID');
+                    if (totalMrEl) totalMrEl.textContent = formatRupiah(totalMr);
                     grandTotal += totalMr;
                 });
-                grandTotalEl.textContent = grandTotal.toLocaleString('id-ID');
+                grandTotalEl.textContent = formatRupiah(grandTotal);
             }
 
             function updateRowTotal(row) {
                 const qty = parseFloat(row.querySelector('.qty-input')?.value || '0');
-                const harga = parseFloat(row.querySelector('.harga-input')?.value || '0');
+                const harga = getNumericValue(row.querySelector('.harga-input'));
                 const subTotal = qty * harga;
                 const subTotalInput = row.querySelector('.sub-total-input');
-                if (subTotalInput) subTotalInput.value = subTotal ? subTotal : '';
+                if (subTotalInput) {
+                    subTotalInput.value = subTotal > 0 ? formatRupiah(subTotal) : '';
+                }
                 updateGrandTotal();
             }
 
@@ -212,10 +269,25 @@
             });
 
             mrList.addEventListener('input', function (e) {
-                if (e.target.classList.contains('qty-input') || e.target.classList.contains('harga-input')) {
+                if (e.target.classList.contains('qty-input')) {
                     const row = e.target.closest('.lainnya-material-row');
-                    if (row) updateRowTotal(row);
+                    if (row) {
+                        setTimeout(() => updateRowTotal(row), 100);
+                    }
                 }
+                if (e.target.classList.contains('harga-input')) {
+                    const row = e.target.closest('.lainnya-material-row');
+                    if (row) {
+                        setTimeout(() => updateRowTotal(row), 100);
+                    }
+                }
+            });
+
+            // Setup format Rupiah untuk input yang sudah ada
+            document.addEventListener('DOMContentLoaded', function() {
+                mrList.querySelectorAll('.harga-input').forEach(input => {
+                    setupRupiahFormat(input);
+                });
             });
         })();
     </script>

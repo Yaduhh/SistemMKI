@@ -1,7 +1,7 @@
-<x-layouts.app :title="__('Buat Rancangan Anggaran Biaya (RAB)')">
+<x-layouts.app :title="__('Edit Rancangan Anggaran Biaya (RAB)')">
     <div class="container mx-auto">
         <div class="w-full mx-auto">
-            <h1 class="text-2xl font-bold mb-4">RAB {{ $penawaran->nomor_penawaran ?? '-' }}</h1>
+            <h1 class="text-2xl font-bold mb-4">Edit RAB {{ $rancanganAnggaranBiaya->proyek ?? '-' }}</h1>
             <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
                 <div>
                     <span class="font-medium">Nomor Penawaran:</span> {{ $penawaran->nomor_penawaran ?? '-' }}<br>
@@ -9,40 +9,45 @@
                 </div>
             </div>
             <script>
-                window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung'));
-                window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment'));
-                window.oldAkomodasi = @json(old('json_pengeluaran_akomodasi'));
-                window.oldLainnya = @json(old('json_pengeluaran_lainnya'));
-                window.oldTukang = @json(old('json_pengeluaran_tukang'));
-                window.oldKerjaTambah = @json(old('json_kerja_tambah'));
+                window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung', $rancanganAnggaranBiaya->json_pengeluaran_material_pendukung ?? []));
+                window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment', $rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? []));
+                window.oldAkomodasi = @json(old('json_pengeluaran_akomodasi', $rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? []));
+                window.oldLainnya = @json(old('json_pengeluaran_lainnya', $rancanganAnggaranBiaya->json_pengeluaran_lainnya ?? []));
+                window.oldTukang = @json(old('json_pengeluaran_tukang', $rancanganAnggaranBiaya->json_pengeluaran_tukang ?? []));
+                window.oldKerjaTambah = @json(old('json_kerja_tambah', $rancanganAnggaranBiaya->json_kerja_tambah ?? []));
             </script>
-            <form action="{{ route('admin.rancangan-anggaran-biaya.store') }}" method="POST">
+            <form action="{{ route('admin.rancangan-anggaran-biaya.update', $rancanganAnggaranBiaya) }}" method="POST">
                 @csrf
+                @method('PUT')
                 <!-- Hidden inputs untuk penawaran_id dan pemasangan_id -->
-                <input type="hidden" name="penawaran_id" value="{{ $penawaran->id ?? '' }}">
-                <input type="hidden" name="pemasangan_id" value="{{ $pemasangan->id ?? '' }}">
+                <input type="hidden" name="penawaran_id" value="{{ $rancanganAnggaranBiaya->penawaran_id ?? '' }}">
+                <input type="hidden" name="pemasangan_id" value="{{ $rancanganAnggaranBiaya->pemasangan_id ?? '' }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <flux:input name="proyek" label="Proyek" placeholder="Nama Proyek" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
+                            value="{{ old('proyek', $rancanganAnggaranBiaya->proyek) }}" />
                     </div>
                     <div>
                         <flux:input name="pekerjaan" label="Pekerjaan" placeholder="Nama Pekerjaan" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
+                            value="{{ old('pekerjaan', $rancanganAnggaranBiaya->pekerjaan) }}" />
                     </div>
                     <div>
                         <flux:input name="kontraktor" label="Kontraktor" placeholder="Nama Kontraktor" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
+                            value="{{ old('kontraktor', $rancanganAnggaranBiaya->kontraktor) }}" />
                     </div>
                     <div>
                         <flux:input name="lokasi" label="Lokasi" placeholder="Lokasi Proyek" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
+                            value="{{ old('lokasi', $rancanganAnggaranBiaya->lokasi) }}" />
                     </div>
                 </div>
 
                 <div class="mt-8">
                     <h2 class="text-lg font-semibold mb-2">Pengeluaran Material Utama</h2>
-                    <x-rab.material-utama-table :produk="$produkPenawaran" />
+                    <x-rab.material-utama-table :produk="$produkPenawaran" :existing-data="$rancanganAnggaranBiaya->json_pengeluaran_material_utama" />
                     <!-- Hidden input untuk menyimpan data material utama -->
                     <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama" value="">
                 </div>
@@ -138,9 +143,15 @@
                     </div>
                     <x-rab.kerja-tambah-table />
                 </div>
-                <div class="mt-8 flex justify-end">
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya) }}"
+                        class="px-6 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition">
+                        Batal
+                    </a>
                     <button type="submit" onclick="prepareFormData()"
-                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">Simpan</button>
+                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">
+                        Update
+                    </button>
                 </div>
             </form>
         </div>
@@ -194,4 +205,4 @@
             document.getElementById('json_pengeluaran_material_utama').value = JSON.stringify(materialUtamaData);
         }
     </script>
-</x-layouts.app>
+</x-layouts.app> 

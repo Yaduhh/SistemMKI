@@ -66,11 +66,11 @@
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Harga Satuan</label>
-                <input type="number" min="0" data-material-field="harga_satuan" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
+                <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-satuan-input" />
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
-                <input type="number" data-material-field="sub_total" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
+                <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
@@ -83,6 +83,25 @@
             const materialRowTemplate = document.getElementById('material-row-template');
             const grandTotalEl = document.getElementById('grand-total-pendukung');
             if (!mrList || !addMrBtn || !mrGroupTemplate || !materialRowTemplate || !grandTotalEl) return;
+
+            // Fungsi format rupiah
+            function formatRupiahInput(el) {
+                let value = el.value.replace(/[^\d]/g, '');
+                if (!value) {
+                    el.value = '';
+                    return;
+                }
+                let number = parseInt(value);
+                if (isNaN(number)) {
+                    el.value = '';
+                    return;
+                }
+                el.value = 'Rp ' + number.toLocaleString('id-ID');
+            }
+            
+            function getAngkaFromRupiah(str) {
+                return str.replace(/[^\d]/g, '');
+            }
 
             function renderAllNames() {
                 mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIdx) => {
@@ -156,6 +175,9 @@
                 matList.appendChild(row);
                 fillMaterialRow(row, data);
                 renderAllNames();
+                
+                // Setup format rupiah untuk row baru
+                setupRupiahFormatting();
             }
 
             function updateGrandTotal() {
@@ -163,7 +185,8 @@
                 mrList.querySelectorAll('.mr-group').forEach(mrGroup => {
                     let totalMr = 0;
                     mrGroup.querySelectorAll('.sub-total-input').forEach(input => {
-                        const val = parseFloat(input.value);
+                        // Ambil angka murni dari sub_total yang sudah diformat rupiah
+                        const val = parseFloat(getAngkaFromRupiah(input.value || '0'));
                         if (!isNaN(val)) totalMr += val;
                     });
                     const totalMrEl = mrGroup.querySelector('.total-mr');
@@ -175,10 +198,21 @@
 
             function updateRowTotal(row) {
                 const qty = parseFloat(row.querySelector('.qty-input')?.value || '0');
-                const harga = parseFloat(row.querySelector('.harga-input')?.value || '0');
+                const hargaInput = row.querySelector('.harga-satuan-input');
+                // Ambil angka murni dari input harga (hilangkan Rp dan titik)
+                const harga = parseFloat(getAngkaFromRupiah(hargaInput?.value || '0'));
                 const subTotal = qty * harga;
                 const subTotalInput = row.querySelector('.sub-total-input');
-                if (subTotalInput) subTotalInput.value = subTotal ? subTotal : '';
+                
+                console.log('Qty:', qty, 'Harga:', harga, 'SubTotal:', subTotal); // Debug
+                
+                if (subTotalInput) {
+                    if (subTotal > 0) {
+                        subTotalInput.value = 'Rp ' + subTotal.toLocaleString('id-ID');
+                    } else {
+                        subTotalInput.value = '';
+                    }
+                }
                 updateGrandTotal();
             }
 
@@ -220,9 +254,51 @@
             });
 
             mrList.addEventListener('input', function (e) {
-                if (e.target.classList.contains('qty-input') || e.target.classList.contains('harga-input')) {
+                if (e.target.classList.contains('qty-input')) {
                     const row = e.target.closest('.material-row');
-                    if (row) updateRowTotal(row);
+                    if (row) {
+                        updateRowTotal(row);
+                    }
+                }
+            });
+            // Event listener untuk format rupiah dan hitung sub_total
+            function setupRupiahFormatting() {
+                document.querySelectorAll('.harga-satuan-input, .sub-total-input').forEach(function(input) {
+                    input.addEventListener('input', function(e) {
+                        if (input.classList.contains('harga-satuan-input')) {
+                            // Format rupiah dulu
+                            setTimeout(() => {
+                                formatRupiahInput(input);
+                                // Lalu hitung sub_total
+                                const row = input.closest('.material-row');
+                                if (row) {
+                                    setTimeout(() => {
+                                        updateRowTotal(row);
+                                    }, 50);
+                                }
+                            }, 100);
+                        }
+                    });
+                    
+                    // Jika sudah ada value, format saat load
+                    if (input.value) {
+                        formatRupiahInput(input);
+                    }
+                });
+            }
+            
+            // Setup format rupiah saat halaman dimuat
+            document.addEventListener('DOMContentLoaded', function() {
+                setupRupiahFormatting();
+                
+                // Saat submit form, ubah ke angka murni
+                let form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function() {
+                        form.querySelectorAll('.harga-satuan-input, .sub-total-input').forEach(function(input) {
+                            input.value = getAngkaFromRupiah(input.value);
+                        });
+                    });
                 }
             });
         })();

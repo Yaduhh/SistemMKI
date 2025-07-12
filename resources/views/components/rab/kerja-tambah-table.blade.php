@@ -3,28 +3,24 @@
     <button type="button" class="mt-6 bg-orange-600 dark:bg-orange-900/30 border-b border-t border-orange-600 dark:border-orange-400 text-white px-4 py-2 w-full" id="add-kerja-tambah-section">Tambah Section Kerja Tambah</button>
     <template id="kerja-tambah-section-template">
         <div class="kerja-tambah-section rounded-xl bg-white dark:bg-zinc-800/40 relative">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Nilai Kontrak</label>
-                    <input type="number" name="json_kerja_tambah[__SECIDX__][nilai_kontrak]" class="border rounded-lg px-4 py-2.5 w-full dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Debet (Biaya Kerja Tambah)</label>
-                    <input type="number" name="json_kerja_tambah[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
+                    <input type="text" name="json_kerja_tambah[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                 </div>
             </div>
             <div class="space-y-4 kerja-tambah-termin-list"></div>
             <button type="button" class="mt-4 text-orange-400 border border-orange-600 dark:border-orange-400 rounded-xl px-4 py-2 add-kerja-tambah-termin">Tambah Termin</button>
-            <button type="button" class="absolute top-4 right-4 text-red-500 font-bold remove-kerja-tambah-section" style="z-index:10;">Hapus Section</button>
+            <button type="button" class="absolute top-0 right-0 text-red-500 font-bold remove-kerja-tambah-section" style="z-index:10;">Hapus Section</button>
             <template class="kerja-tambah-termin-row-template">
-                <div class="grid grid-cols-5 gap-2 items-end kerja-tambah-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
-                    <input type="date" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
-                    <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][item]" placeholder="Termin" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
-                    <input type="number" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][progress]" placeholder="%" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" min="0" max="100" required>
-                    <input type="number" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" min="0">
-                    <input type="number" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][sisa]" placeholder="Sisa" class="border rounded-lg px-4 py-2.5 sisa-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
-                    <div class="flex justify-end col-span-5">
-                        <button type="button" class="text-red-400 bg-red-600 dark:bg-red-900/30 border border-red-600 dark:border-red-400 font-bold remove-kerja-tambah-termin mt-4 px-4 py-2 rounded-lg">Hapus</button>
+                <div class="grid grid-cols-6 gap-2 items-center kerja-tambah-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
+                    <span class="termin-label font-semibold"></span>
+                    <input type="date" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                    <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                    <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][sisa]" placeholder="Sisa" class="border rounded-lg px-4 py-2.5 sisa-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
+                    <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][persentase]" placeholder="%" class="border rounded-lg px-4 py-2.5 persentase-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
+                    <div class="flex justify-end w-full">
+                        <button type="button" class="text-red-400 bg-red-600 dark:bg-red-900/30 border border-red-600 dark:border-red-400 font-bold remove-kerja-tambah-termin px-4 py-2.5 w-full rounded-lg">Hapus</button>
                     </div>
                 </div>
             </template>
@@ -36,9 +32,49 @@
             const addSectionBtn = document.getElementById('add-kerja-tambah-section');
             const sectionTemplate = document.getElementById('kerja-tambah-section-template');
 
+            // Fungsi format Rupiah
+            function formatRupiah(angka) {
+                if (angka === 0) return '0';
+                if (!angka || angka === '') return '';
+                const number = parseInt(angka.toString().replace(/\D/g, ''));
+                if (isNaN(number)) return '';
+                return number.toLocaleString('id-ID');
+            }
+
+            // Fungsi untuk mendapatkan nilai numerik dari input yang diformat
+            function getNumericValue(input) {
+                const value = input.value.replace(/\D/g, '');
+                return value ? parseInt(value) : 0;
+            }
+
+            // Fungsi untuk setup format Rupiah pada input
+            function setupRupiahFormat(input) {
+                input.addEventListener('input', function(e) {
+                    const cursorPosition = e.target.selectionStart;
+                    const oldValue = e.target.value;
+                    const numericValue = oldValue.replace(/\D/g, '');
+                    const formattedValue = formatRupiah(numericValue);
+                    
+                    e.target.value = formattedValue;
+                    
+                    // Menyesuaikan posisi cursor
+                    const newCursorPosition = cursorPosition + (formattedValue.length - oldValue.length);
+                    e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+                });
+
+                input.addEventListener('blur', function(e) {
+                    const numericValue = getNumericValue(e.target);
+                    if (numericValue >= 0) {
+                        e.target.value = formatRupiah(numericValue);
+                    } else {
+                        e.target.value = '';
+                    }
+                });
+            }
+
             function renderSectionNames() {
                 sectionList.querySelectorAll('.kerja-tambah-section').forEach((section, secIdx) => {
-                    // Nilai kontrak & debet
+                    // Debet
                     section.querySelectorAll('input[name^="json_kerja_tambah["]').forEach(input => {
                         let name = input.getAttribute('name');
                         name = name.replace(/json_kerja_tambah\[\d+\]/, `json_kerja_tambah[${secIdx}]`);
@@ -51,6 +87,9 @@
                             name = name.replace(/json_kerja_tambah\[\d+\]\[termin\]\[\d+\]/, `json_kerja_tambah[${secIdx}][termin][${terIdx}]`);
                             input.setAttribute('name', name);
                         });
+                        // Label Termin
+                        const label = row.querySelector('.termin-label');
+                        if (label) label.textContent = `Termin ${terIdx + 1}`;
                     });
                 });
             }
@@ -59,15 +98,32 @@
                 if (!data) return;
                 for (const key in data) {
                     const input = row.querySelector(`[name^='json_kerja_tambah'][name$='[${key}]']`);
-                    if (input) input.value = data[key];
+                    if (input) {
+                        if (key === 'kredit' || key === 'sisa') {
+                            // Format Rupiah untuk field kredit dan sisa
+                            const numericValue = parseInt(data[key]) || 0;
+                            input.value = formatRupiah(numericValue);
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
                 }
             }
+            
             function fillSection(section, data) {
                 if (!data) return;
                 for (const key in data) {
                     if (key === 'termin') continue;
                     const input = section.querySelector(`[name^='json_kerja_tambah'][name$='[${key}]']`);
-                    if (input) input.value = data[key];
+                    if (input) {
+                        if (key === 'debet') {
+                            // Format Rupiah untuk field debet
+                            const numericValue = parseInt(data[key]) || 0;
+                            input.value = formatRupiah(numericValue);
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
                 }
             }
 
@@ -86,6 +142,7 @@
                 }
                 renderSectionNames();
                 toggleRemoveSectionButtons();
+                setupAutoCalc(section);
             }
 
             function addTermin(section, data) {
@@ -98,8 +155,16 @@
                 const row = temp.firstElementChild;
                 terminList.appendChild(row);
                 fillTerminRow(row, data);
+                
+                // Setup format Rupiah untuk input baru
+                const kreditInput = row.querySelector('.kredit-input');
+                if (kreditInput) {
+                    setupRupiahFormat(kreditInput);
+                }
+                
                 renderSectionNames();
                 toggleRemoveTerminButtons(section);
+                setupAutoCalc(section);
             }
 
             function toggleRemoveSectionButtons() {
@@ -124,6 +189,45 @@
                         removeBtn.style.display = '';
                     }
                 });
+            }
+
+            function setupAutoCalc(section) {
+                const debetInput = section.querySelector('.debet-input');
+                const terminRows = section.querySelectorAll('.kerja-tambah-termin-row');
+                
+                function calcAllTermins() {
+                    const totalDebet = getNumericValue(debetInput);
+                    let remainingDebet = totalDebet;
+                    
+                    terminRows.forEach((row, idx) => {
+                        const kreditInput = row.querySelector('.kredit-input');
+                        const sisaInput = row.querySelector('.sisa-input');
+                        const persentaseInput = row.querySelector('.persentase-input');
+                        
+                        const kredit = getNumericValue(kreditInput);
+                        const sisa = remainingDebet - kredit;
+                        
+                        sisaInput.value = formatRupiah(sisa);
+                        persentaseInput.value = totalDebet ? ((kredit / totalDebet) * 100).toFixed(2) + '%' : '0%';
+                        
+                        // Update remaining debet for next termin
+                        remainingDebet = sisa;
+                    });
+                }
+                
+                // Add event listeners
+                debetInput.addEventListener('input', function() {
+                    setTimeout(() => calcAllTermins(), 100);
+                });
+                terminRows.forEach(row => {
+                    const kreditInput = row.querySelector('.kredit-input');
+                    kreditInput.addEventListener('input', function() {
+                        setTimeout(() => calcAllTermins(), 100);
+                    });
+                });
+                
+                // Initial calculation
+                calcAllTermins();
             }
 
             // Section events
@@ -161,6 +265,16 @@
             } else if (sectionList.querySelectorAll('.kerja-tambah-section').length === 0) {
                 addSection();
             } else toggleRemoveSectionButtons();
+
+            // Setup format Rupiah untuk input yang sudah ada
+            document.addEventListener('DOMContentLoaded', function() {
+                sectionList.querySelectorAll('.debet-input').forEach(input => {
+                    setupRupiahFormat(input);
+                });
+                sectionList.querySelectorAll('.kredit-input').forEach(input => {
+                    setupRupiahFormat(input);
+                });
+            });
         })();
     </script>
 </div> 

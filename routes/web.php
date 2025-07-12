@@ -186,11 +186,11 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::get('pemasangan/cetak/{id}', [App\Http\Controllers\Admin\PemasanganController::class, 'cetak'])->name('pemasangan.cetak');
     Route::resource('pemasangan', App\Http\Controllers\Admin\PemasanganController::class);
     Route::patch('pemasangan/{pemasangan}/update-status', [App\Http\Controllers\Admin\PemasanganController::class, 'updateStatus'])->name('pemasangan.update-status');
+    
+    // Rancangan Anggaran Biaya Routes
+    Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class);
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-status', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateStatus'])->name('rancangan-anggaran-biaya.update-status');
 });
-
-Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, [
-    'as' => 'admin'
-]);
 
 // Finance routes for role 3
 Route::middleware(['auth', 'role:3'])->prefix('finance')->name('finance.')->group(function () {

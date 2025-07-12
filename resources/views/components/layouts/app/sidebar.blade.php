@@ -48,6 +48,7 @@
                 <flux:navlist.group :heading="__('Data Penawaran')" class="mt-10">
                     <flux:navlist.item icon="document-duplicate" :href="route('admin.pengajuan.index')" :current="request()->routeIs('admin.pengajuan.index')" wire:navigate>{{ __('Pengajuan') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-chart-bar" :href="route('admin.penawaran.index')" :current="request()->routeIs('admin.penawaran.*')" wire:navigate>{{ __('Penawaran') }}</flux:navlist.item>
+                    <flux:navlist.item icon="calculator" :href="route('admin.rancangan-anggaran-biaya.index')" :current="request()->routeIs('admin.rancangan-anggaran-biaya.*')" wire:navigate>{{ __('Rancangan Anggaran Biaya') }}</flux:navlist.item>
                 </flux:navlist.group>
 
                 <flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
