@@ -3,6 +3,10 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Detail Rancangan Anggaran Biaya (RAB)</h1>
             <div class="flex space-x-2">
+                <a href="{{ route('admin.rancangan-anggaran-biaya.export-pdf', $rancanganAnggaranBiaya) }}"
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    Cetak PDF
+                </a>
                 <a href="{{ route('admin.rancangan-anggaran-biaya.edit', $rancanganAnggaranBiaya) }}"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Edit
@@ -728,17 +732,22 @@
                 $grandTotal += $materialUtamaTotal;
                 $breakdown['Material Utama'] = $materialUtamaTotal;
 
-                // Material Pendukung
+                // Material Pendukung - perhitungkan diskon yang ada di dalam material pendukung
                 $materialPendukungTotal = 0;
                 if ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung) {
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $material) {
-                                $materialPendukungTotal += (float) preg_replace(
-                                    '/[^\d]/',
-                                    '',
-                                    $material['sub_total'] ?? 0,
-                                );
+                                $itemValue = $material['item'] ?? '';
+                                $subTotal = (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+                                
+                                // Jika item adalah Diskon, kurangkan dari total
+                                if (trim($itemValue) === 'Diskon') {
+                                    $materialPendukungTotal -= $subTotal;
+                                } else {
+                                    // Untuk item lain (termasuk PPN dan Ongkir), tambahkan ke total
+                                    $materialPendukungTotal += $subTotal;
+                                }
                             }
                         }
                     }
@@ -825,8 +834,9 @@
                     @foreach ($breakdown as $category => $amount)
                         <div class="flex justify-between items-center">
                             <span class="text-zinc-600 dark:text-zinc-400">{{ $category }}:</span>
-                            <span class="font-medium text-zinc-900 dark:text-white">Rp
-                                {{ number_format($amount, 0, ',', '.') }}</span>
+                            <span class="font-medium {{ $amount < 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
+                                {{ $amount < 0 ? '-' : '' }}Rp {{ number_format(abs($amount), 0, ',', '.') }}
+                            </span>
                         </div>
                     @endforeach
                     <div class="col-span-full border-t border-zinc-200 dark:border-zinc-600 pt-2 mt-2">

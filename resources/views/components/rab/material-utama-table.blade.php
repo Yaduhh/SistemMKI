@@ -95,10 +95,8 @@
                         {{ $item['panjang'] ?? '' }}
                     </td>
                     <td class="border px-3 py-2 dark:border-zinc-700 truncate">
-                        <input type="number" step="0.01" min="0" name="material_utama[{{ $i }}][qty]" 
-                               value="{{ $item['qty'] ?? '' }}" 
-                               class="w-full px-2 py-1 border border-gray-300 rounded dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-                               onchange="updateTotal({{ $i }})">
+                        <input type="hidden" name="material_utama[{{ $i }}][qty]" value="{{ $item['qty'] ?? '' }}">
+                        {{ $item['qty'] ?? '' }}
                     </td>
                     <td class="border px-3 py-2 dark:border-zinc-700 truncate">
                         <input type="text" name="material_utama[{{ $i }}][satuan]" 
@@ -112,16 +110,18 @@
                                placeholder="Masukkan warna">
                     </td>
                     <td class="border px-3 py-2 dark:border-zinc-700 truncate">
-                        <input type="number" step="0.01" min="0" name="material_utama[{{ $i }}][harga_satuan]" 
-                               value="{{ $item['harga'] ?? 0 }}" 
-                               class="w-full px-2 py-1 border border-gray-300 rounded dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right"
-                               onchange="updateTotal({{ $i }})">
+                        <input type="hidden" name="material_utama[{{ $i }}][harga_satuan]" 
+                               value="{{ $item['harga'] ?? 0 }}">
+                        <div class="w-full px-2 py-1 text-right">
+                            Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }}
+                        </div>
                     </td>
                     <td class="border px-3 py-2 dark:border-zinc-700 truncate">
-                        <input type="number" step="0.01" min="0" name="material_utama[{{ $i }}][total]" 
-                               value="{{ $item['total_harga'] ?? 0 }}" 
-                               class="w-full px-2 py-1 border border-gray-300 rounded dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right font-semibold"
-                               readonly>
+                        <input type="hidden" name="material_utama[{{ $i }}][total]" 
+                               value="{{ $item['total_harga'] ?? 0 }}">
+                        <div class="w-full px-2 py-1 text-right font-semibold">
+                            Rp {{ number_format($item['total_harga'] ?? 0, 0, ',', '.') }}
+                        </div>
                     </td>
                 </tr>
                 @php 

@@ -189,6 +189,7 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     
     // Rancangan Anggaran Biaya Routes
     Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class);
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/export-pdf', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'exportPdf'])->name('rancangan-anggaran-biaya.export-pdf');
     Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-status', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateStatus'])->name('rancangan-anggaran-biaya.update-status');
 });
 

@@ -8,6 +8,7 @@ use App\Models\RancanganAnggaranBiaya;
 use App\Models\Penawaran;
 use App\Models\Pemasangan;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RancanganAnggaranBiayaController extends Controller
 {
@@ -672,6 +673,17 @@ class RancanganAnggaranBiayaController extends Controller
         $rancanganAnggaranBiaya->update(['status' => $status]);
         
         return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)->with('success', "Status RAB berhasil diubah menjadi {$statusText}.");
+    }
+
+    /**
+     * Export RAB as PDF
+     */
+    public function exportPdf(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan', 'user']);
+        $pdf = Pdf::loadView('admin.rancangan_anggaran_biaya.pdf_item', compact('rancanganAnggaranBiaya'));
+        $safeFilename = 'RAB_' . preg_replace('/[^A-Za-z0-9_-]/', '-', $rancanganAnggaranBiaya->proyek ?? 'RAB') . '.pdf';
+        return $pdf->download($safeFilename);
     }
 
     /**
