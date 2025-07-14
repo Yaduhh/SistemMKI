@@ -954,10 +954,74 @@
 
     {{-- REKAPITULASI KONTRAK (MATERIAL + PEMASANGAN & PEMASANGAN SAJA) --}}
     <div style="page-break-before: always;"></div>
+
+    <div class="header" style="font-size: 12px !important;">
+        <h3 style="padding-left: 5px;">WPC MAKMUR ABADI</h3>
+        <table class="header-table">
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Proyek</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">{{ $rancanganAnggaranBiaya->proyek }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Pekerjaan</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">{{ $rancanganAnggaranBiaya->pekerjaan }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Kontraktor</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">{{ $rancanganAnggaranBiaya->kontraktor }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Lokasi</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">{{ $rancanganAnggaranBiaya->lokasi }}</td>
+            </tr>
+        </table>
+    </div>
+    @php
+        $penawaran = $rancanganAnggaranBiaya->penawaran;
+        $total = $penawaran->total ?? 0;
+        $total_diskon = ($penawaran->total_diskon ?? 0) > 0 ? $penawaran->total_diskon : 0;
+        $total_diskon_1 = ($penawaran->total_diskon_1 ?? 0) > 0 ? $penawaran->total_diskon_1 : 0;
+        $total_diskon_2 = ($penawaran->total_diskon_2 ?? 0) > 0 ? $penawaran->total_diskon_2 : 0;
+        $totalUtama = $total - $total_diskon - $total_diskon_1 - $total_diskon_2;
+    @endphp
+    <div class="header" style="font-size: 12px !important;">
+        <table class="header-table">
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Harga Material</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">Rp {{ number_format($totalUtama, 0, ',', '.') }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Harga Pemasangan</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">Rp
+                    {{ number_format($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0, 0, ',', '.') }}</td>
+            </tr>
+            <tr class="no-border">
+                <td class="no-border" style="width: 20%;">Total Nilai Kontrak</td>
+                <td class="no-border" style="width: 10px;">:</td>
+                <td class="no-border" style="width: 70%;">Rp
+                    {{ number_format($totalUtama + ($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0), 0, ',', '.') }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <div style="margin-top: 30px; margin-bottom: 10px;">
-        <div style="border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 6px 0; font-weight: bold; font-size: 15px; letter-spacing: 1px;">NILAI KONTRAK (MATERIAL + PEMASANGAN)</div>
+        <div style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">NILAI KONTRAK (MATERIAL + PEMASANGAN)</div>
         <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
-            <tr><td class="no-border" style="width:60%">NILAI KONTRAK</td><td style="width:2%" class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($totalNilaiKontrak, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
+            <tr><td class="no-border" style="width:60%;">NILAI KONTRAK</td><td style="width:2%" class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($totalNilaiKontrak, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
             <tr><td class="no-border">MATERIAL UTAMA</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialUtama, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">MATERIAL PEMASANGAN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA ENTERTAINT</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td></tr>
@@ -965,19 +1029,34 @@
             <tr><td class="no-border">BIAYA LAIN-LAIN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA TUKANG</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">KERJA TAMBAH</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
             <tr style="font-weight:bold;"><td colspan="2" class="no-border">SISA</td><td class="text-right no-border">Rp {{ number_format($sisa, 0, ',', '.') }}</td></tr>
         </table>
     </div>
     <div style="margin-top: 30px; margin-bottom: 10px;">
-        <div style="border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 6px 0; font-weight: bold; font-size: 15px; letter-spacing: 1px;">NILAI KONTRAK (PEMASANGAN)</div>
+         <div style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">NILAI KONTRAK (PEMASANGAN)</div>
         <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
             <tr><td class="no-border" style="width:60%">NILAI KONTRAK</td><td style="width:2%" class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($nilaiKontrakPemasanganFix, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
             <tr><td class="no-border">MATERIAL PEMASANGAN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA ENTERTAINT</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA AKOMODASI</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA LAIN-LAIN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">BIAYA TUKANG</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td></tr>
             <tr><td class="no-border">KERJA TAMBAH</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
             <tr style="font-weight:bold;"><td colspan="2" class="no-border">SISA</td><td class="text-right no-border">Rp {{ number_format($sisaPemasanganFix, 0, ',', '.') }}</td></tr>
         </table>
     </div>

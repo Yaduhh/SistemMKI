@@ -10,108 +10,15 @@
                             {{ $penawaran->nomor_penawaran }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <!-- Status Action Buttons -->
-                        <div class="flex items-center space-x-2">
-                            @if ($penawaran->status != 1)
-                                <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}"
-                                    method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="1">
-                                    <button type="submit"
-                                        class="inline-flex items-center px-3 py-2 bg-green-600 dark:bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white hover:bg-green-700 dark:hover:bg-green-600 focus:bg-green-700 dark:focus:bg-green-600 active:bg-green-900 dark:active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        WIN
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if ($penawaran->status != 2)
-                                <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}"
-                                    method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="2">
-                                    <button type="submit"
-                                        class="inline-flex items-center px-3 py-2 bg-red-600 dark:bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white hover:bg-red-700 dark:hover:bg-red-600 focus:bg-red-700 dark:focus:bg-red-600 active:bg-red-900 dark:active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                        LOSE
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if ($penawaran->status != 0)
-                                <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}"
-                                    method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="0">
-                                    <button type="submit"
-                                        class="inline-flex items-center px-3 py-2 bg-yellow-600 dark:bg-yellow-600 border border-transparent rounded-lg font-semibold text-xs text-white hover:bg-yellow-700 dark:hover:bg-yellow-600 focus:bg-yellow-700 dark:focus:bg-yellow-600 active:bg-yellow-900 dark:active:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
-                                            </path>
-                                        </svg>
-                                        BATALKAN
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-
-                        <a href="{{ route('admin.penawaran.cetak', $penawaran) }}"
-                            class="inline-flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
-                                </path>
-                            </svg>
-                            Cetak PDF
-                        </a>
-                        <a href="{{ route('admin.penawaran.edit', $penawaran->id) }}"
-                            class="inline-flex items-center px-4 py-2 bg-yellow-600 dark:bg-yellow-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-yellow-700 dark:hover:bg-yellow-600 focus:bg-yellow-700 dark:focus:bg-yellow-600 active:bg-yellow-900 dark:active:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                            Edit
-                        </a>
+                        <!-- Button Kembali -->
                         <a href="{{ route('admin.penawaran.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 dark:focus:bg-gray-600 active:bg-gray-900 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                            class="flex items-center bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/20 dark:hover:bg-gray-900/30 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                             </svg>
                             Kembali
                         </a>
-                        @if($penawaran->status == 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
-                        <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
-                           class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-blue-700 dark:hover:bg-blue-600 focus:bg-blue-700 dark:focus:bg-blue-600 active:bg-blue-900 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Buat Pemasangan
-                        </a>
-                        @endif
-                        @if($penawaran->status == 1)
-                        <a href="{{ route('admin.rancangan-anggaran-biaya.create', ['penawaran_id' => $penawaran->id]) }}"
-                           class="inline-flex items-center px-4 py-2 bg-emerald-700 dark:bg-emerald-700 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-emerald-800 dark:hover:bg-emerald-800 focus:bg-emerald-800 dark:focus:bg-emerald-800 active:bg-emerald-900 dark:active:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 ml-2">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Buat RAB
-                        </a>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -166,18 +73,6 @@
                                     <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                        </path>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Judul
-                                        Penawaran:</span>
-                                    <span
-                                        class="ml-2 text-sm text-gray-900 dark:text-white">{{ $penawaran->judul_penawaran ?? '-' }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                         </path>
                                     </svg>
@@ -185,8 +80,6 @@
                                     <span
                                         class="ml-2 text-sm text-gray-900 dark:text-white">{{ $penawaran->project ?? '-' }}</span>
                                 </div>
-                            </div>
-                            <div class="space-y-3">
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -214,6 +107,8 @@
                                         </span>
                                     </span>
                                 </div>
+                            </div>
+                            <div class="space-y-3">
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -249,12 +144,24 @@
                                         class="ml-2 text-sm text-gray-900 dark:text-white">{{ $penawaran->created_at->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
+
+                            <div class="flex items-center col-span-1 md:col-span-2">
+                                <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                    </path>
+                                </svg>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Judul
+                                    Penawaran:</span>
+                                <span
+                                    class="ml-2 text-sm text-gray-900 dark:text-white">{{ $penawaran->judul_penawaran ?? '-' }}</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Detail Produk -->
-                    <div
-                        class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="w-full">
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -267,56 +174,102 @@
                             @php $no = 1; @endphp
                             @foreach ($penawaran->json_produk as $mainIndex => $mainSection)
                                 <!-- Main Section -->
-                                <div class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                <div
+                                    class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
+                                    <h3
+                                        class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                            </path>
                                         </svg>
-                                        Section {{ $mainIndex + 1 }}: {{ $mainSection['judul'] ?? 'Untitled Section' }}
+                                        {{ $mainSection['judul'] ?? 'Untitled Section' }}
                                     </h3>
-                                    
+
                                     @if (isset($mainSection['product_sections']) && is_array($mainSection['product_sections']))
                                         @foreach ($mainSection['product_sections'] as $kategori => $items)
                                             @if (is_array($items) && !empty($items))
                                                 <!-- Product Section -->
                                                 <div class="mb-6">
-                                                    <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center" 
+                                                    <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center"
                                                         style="color: {{ $kategori === 'flooring' ? '#3B82F6' : ($kategori === 'facade' ? '#10B981' : ($kategori === 'wallpanel' ? '#F59E0B' : ($kategori === 'ceiling' ? '#8B5CF6' : '#EC4899'))) }}">
-                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                        <svg class="w-4 h-4 mr-2" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                            </path>
                                                         </svg>
                                                         {{ strtoupper($kategori) }}
                                                     </h4>
-                                                    
+
                                                     <div class="overflow-x-auto">
-                                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                        <table
+                                                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                             <thead class="bg-gray-100 dark:bg-zinc-700">
                                                                 <tr>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">No</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Item</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dimensi</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Finishing</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">VOL(m²)</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Qty</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Warna</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Harga</th>
-                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        No</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Item</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Dimensi</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Finishing</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        VOL(m²)</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Qty</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Warna</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Harga</th>
+                                                                    <th
+                                                                        class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                        Total</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
+                                                            <tbody
+                                                                class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
                                                                 @foreach ($items as $item)
-                                                                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $no++ }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['item'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['dimensi'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['finishing'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['qty_area'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['qty'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['warna'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                    <tr
+                                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $no++ }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['item'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['dimensi'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['finishing'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['qty_area'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['qty'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['warna'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                             {{ isset($item['harga']) ? 'Rp ' . number_format($item['harga'], 0, ',', '.') : '-' }}
                                                                         </td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                                                             {{ isset($item['total_harga']) ? 'Rp ' . number_format($item['total_harga'], 0, ',', '.') : '-' }}
                                                                         </td>
                                                                     </tr>
@@ -333,32 +286,64 @@
                                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                 <thead class="bg-gray-100 dark:bg-zinc-700">
                                                     <tr>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">No</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Item</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dimensi</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Warna</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Qty</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Harga</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            No</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Item</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Type</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Dimensi</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Warna</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Qty</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Harga</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Total</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
+                                                <tbody
+                                                    class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
                                                     @if (is_array($mainSection))
                                                         @foreach ($mainSection as $kategori => $items)
                                                             @if (is_array($items))
                                                                 @foreach ($items as $item)
-                                                                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $no++ }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['item'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['type'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['dimensi'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['warna'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $item['qty'] ?? '-' }}</td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                    <tr
+                                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $no++ }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['item'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['type'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['dimensi'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['warna'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                            {{ $item['qty'] ?? '-' }}</td>
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                             {{ isset($item['harga']) ? 'Rp ' . number_format($item['harga'], 0, ',', '.') : '-' }}
                                                                         </td>
-                                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                                        <td
+                                                                            class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                                                             {{ isset($item['total_harga']) ? 'Rp ' . number_format($item['total_harga'], 0, ',', '.') : '-' }}
                                                                         </td>
                                                                     </tr>
@@ -549,31 +534,176 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <!-- Main Content -->
+                    @if ($penawaran->pemasangans && $penawaran->pemasangans->count())
+                        <div class="my-6">
+                            <div
+                                class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg p-4">
+                                <div
+                                    class="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
+                                    Pemasangan Terkait Penawaran Ini:
+                                </div>
+                                <ul class="list-disc ml-6 space-y-1">
+                                    @foreach ($penawaran->pemasangans as $pemasangan)
+                                        <li>
+                                            <a href="{{ route('admin.pemasangan.show', $pemasangan->id) }}"
+                                                class="text-blue-700 dark:text-blue-300 underline font-medium">
+                                                {{ $pemasangan->nomor_pemasangan }}
+                                                ({{ $pemasangan->tanggal_pemasangan ? $pemasangan->tanggal_pemasangan->format('d/m/Y') : '-' }})
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($penawaran->rancanganAnggaranBiayas && $penawaran->rancanganAnggaranBiayas->count())
+                        <div class="my-6">
+                            <div
+                                class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4">
+                                <div class="font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    RAB Terkait Penawaran Ini:
+                                </div>
+                                <ul class="list-disc ml-6 space-y-1">
+                                    @foreach ($penawaran->rancanganAnggaranBiayas as $rab)
+                                        <li>
+                                            <a href="{{ route('admin.rancangan-anggaran-biaya.show', $rab->id) }}"
+                                                class="text-blue-700 dark:text-blue-300 underline font-medium">
+                                                {{ $rab->proyek }} - {{ $rab->pekerjaan }}
+                                                ({{ $rab->created_at->format('d/m/Y') }})
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
+        </div>
 
-            <!-- Main Content -->
-            @if($penawaran->pemasangans && $penawaran->pemasangans->count())
-                <div class="my-6">
-                    <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg p-4">
-                        <div class="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        <!-- Action Buttons Section -->
+        <div
+            class="mt-8 bg-white dark:bg-zinc-900/30 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Aksi Penawaran
+            </h3>
+
+            <div class="flex flex-wrap gap-3">
+                <!-- Status Action Buttons -->
+                @if ($penawaran->status != 1)
+                    <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
+                        class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="1">
+                        <button type="submit"
+                            class="flex items-center bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            Pemasangan Terkait Penawaran Ini:
-                        </div>
-                        <ul class="list-disc ml-6 space-y-1">
-                            @foreach($penawaran->pemasangans as $pemasangan)
-                                <li>
-                                    <a href="{{ route('admin.pemasangan.show', $pemasangan->id) }}" class="text-blue-700 dark:text-blue-300 underline font-medium">
-                                        {{ $pemasangan->nomor_pemasangan }} ({{ $pemasangan->tanggal_pemasangan ? $pemasangan->tanggal_pemasangan->format('d/m/Y') : '-' }})
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
+                            WIN
+                        </button>
+                    </form>
+                @endif
+
+                @if ($penawaran->status != 2 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
+                    <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
+                        class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="2">
+                        <button type="submit"
+                            class="flex items-center bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            LOSE
+                        </button>
+                    </form>
+                @endif
+
+                @if ($penawaran->status != 0 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
+                    <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
+                        class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="0">
+                        <button type="submit"
+                            class="flex items-center bg-yellow-50 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            BATALKAN
+                        </button>
+                    </form>
+                @endif
+
+                <!-- Action Buttons -->
+                <a href="{{ route('admin.penawaran.cetak', $penawaran) }}"
+                    class="flex items-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        </path>
+                    </svg>
+                    Cetak PDF
+                </a>
+
+                <a href="{{ route('admin.penawaran.edit', $penawaran->id) }}"
+                    class="flex items-center bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                        </path>
+                    </svg>
+                    Edit
+                </a>
+
+                @if ($penawaran->status == 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
+                    <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
+                        class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                        Buat Pemasangan
+                    </a>
+                @endif
+
+                @if ($penawaran->status == 1)
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.create', ['penawaran_id' => $penawaran->id]) }}"
+                        class="flex items-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        Buat RAB
+                    </a>
+                @endif
+            </div>
         </div>
     </div>
 </x-layouts.app>

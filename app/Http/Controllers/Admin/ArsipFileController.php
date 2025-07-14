@@ -16,7 +16,12 @@ class ArsipFileController extends Controller
      */
     public function index()
     {
-        //
+        $arsipFiles = ArsipFile::with(['client', 'creator'])
+            ->where('status_deleted', false)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('admin.arsip-file.index', compact('arsipFiles'));
     }
 
     /**
@@ -36,6 +41,7 @@ class ArsipFileController extends Controller
             'nama' => 'required|string|max:255',
             'id_client' => 'nullable|exists:clients,id',
             'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,zip,rar|max:10240', // 10MB
+            'status' => 'nullable|in:draft,on progress,done',
         ]);
 
         // Upload file
@@ -49,6 +55,7 @@ class ArsipFileController extends Controller
             'id_client' => $request->id_client,
             'file' => $filePath,
             'status_deleted' => false,
+            'status' => $request->status ?? ArsipFile::STATUS_DRAFT,
             'created_by' => Auth::id(),
         ]);
 
@@ -83,7 +90,26 @@ class ArsipFileController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:draft,on progress,done',
+        ]);
+
+        $arsipFile = ArsipFile::findOrFail($id);
+        $oldStatus = $arsipFile->status;
+        
+        $arsipFile->update([
+            'status' => $request->status,
+        ]);
+
+        // Log activity
+        ActivityLogService::logUpdate(
+            'ArsipFile',
+            'Mengubah status arsip file: ' . $arsipFile->nama . ' dari ' . $oldStatus . ' ke ' . $request->status,
+            ['status' => $oldStatus],
+            ['status' => $request->status]
+        );
+
+        return redirect()->back()->with('success', 'Status arsip file berhasil diperbarui!');
     }
 
     /**

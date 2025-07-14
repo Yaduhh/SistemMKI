@@ -36,12 +36,12 @@ class PenawaranController extends Controller
         }
 
         // Filter by user (sales)
-        if (request('user')) {
+        if (request('user') && request('user') !== '') {
             $query->where('id_user', request('user'));
         }
 
         // Filter by status
-        if (request()->has('status') && request('status') !== '') {
+        if (request('status') && request('status') !== '') {
             $query->where('status', request('status'));
         }
 
@@ -103,13 +103,13 @@ class PenawaranController extends Controller
 
     public function show(Penawaran $penawaran)
     {
-        $penawaran->load(['pemasangans']);
+        $penawaran->load(['pemasangans', 'rancanganAnggaranBiayas']);
         return view('admin.penawaran.show', compact('penawaran'));
     }
 
     public function edit(Penawaran $penawaran)
     {
-        $users = User::all();
+        $users = User::where('status_deleted', 0)->get();
         $deckings = Decking::active()->get();
         $ceilings = Ceiling::active()->get();
         $wallpanels = Wallpanel::active()->get();
@@ -129,6 +129,9 @@ class PenawaranController extends Controller
         } else {
             $data['syarat_kondisi'] = [];
         }
+        
+        // Debug: Log data yang akan diupdate
+        \Log::info('Penawaran data to be updated:', $data);
         
         $penawaran->update($data);
         return redirect()->route('admin.penawaran.index')->with('success', 'Penawaran berhasil diupdate.');

@@ -184,7 +184,20 @@
                         }
                     });
                 });
+                
+                // Renumber MR secara otomatis
+                renumberMR();
                 updateGrandTotal();
+            }
+            
+            function renumberMR() {
+                mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIdx) => {
+                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                    if (mrInput) {
+                        const mrNumber = mrIdx + 1;
+                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                    }
+                });
             }
 
             function fillMaterialRow(row, data) {
@@ -250,6 +263,16 @@
                 temp.innerHTML = html;
                 const mrGroup = temp.firstElementChild;
                 mrList.appendChild(mrGroup);
+                
+                // Auto-fill MR number jika tidak ada data
+                if (!data || !data.mr) {
+                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                    if (mrInput) {
+                        const mrNumber = mrIdx + 1;
+                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                    }
+                }
+                
                 fillMrGroup(mrGroup, data);
                 if (data && Array.isArray(data.materials) && data.materials.length) {
                     data.materials.forEach((mat, i) => addMaterialRow(mrGroup, mat));
@@ -642,7 +665,7 @@
                     const mrGroups = mrList.querySelectorAll('.mr-group');
                     if (mrGroups.length > 1) {
                         e.target.closest('.mr-group').remove();
-                        renderAllNames();
+                        renderAllNames(); // Ini akan memanggil renumberMR() otomatis
                     }
                 }
                 // Tambah baris material

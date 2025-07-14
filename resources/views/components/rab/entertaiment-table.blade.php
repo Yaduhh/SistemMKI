@@ -12,11 +12,11 @@
             <div class="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                 <div class="w-full">
                     <label class="block text-sm font-medium mb-1">MR</label>
-                    <input type="text" name="json_pengeluaran_entertaiment[__MRIDX__][mr]" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    <input type="text" data-mr-field="mr" name="json_pengeluaran_entertaiment[__MRIDX__][mr]" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium mb-1">Tanggal</label>
-                    <input type="date" name="json_pengeluaran_entertaiment[__MRIDX__][tanggal]" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    <input type="date" data-mr-field="tanggal" name="json_pengeluaran_entertaiment[__MRIDX__][tanggal]" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Action</label>
@@ -141,7 +141,20 @@
                         }
                     });
                 });
+                
+                // Renumber MR secara otomatis
+                renumberMR();
                 updateGrandTotal();
+            }
+            
+            function renumberMR() {
+                mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIdx) => {
+                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                    if (mrInput) {
+                        const mrNumber = mrIdx + 1;
+                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                    }
+                });
             }
 
             function fillMaterialRow(row, data) {
@@ -164,7 +177,7 @@
                 if (!data) return;
                 for (const key in data) {
                     if (key === 'materials') continue;
-                    const input = mrGroup.querySelector(`[name^='json_pengeluaran_entertaiment'][data-mr-field='${key}']`);
+                    const input = mrGroup.querySelector(`[data-mr-field="${key}"]`);
                     if (input) input.value = data[key];
                 }
             }
@@ -176,6 +189,16 @@
                 temp.innerHTML = html;
                 const mrGroup = temp.firstElementChild;
                 mrList.appendChild(mrGroup);
+                
+                // Auto-fill MR number jika tidak ada data
+                if (!data || !data.mr) {
+                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                    if (mrInput) {
+                        const mrNumber = mrIdx + 1;
+                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                    }
+                }
+                
                 fillMrGroup(mrGroup, data);
                 if (data && Array.isArray(data.materials) && data.materials.length) {
                     data.materials.forEach((mat, i) => addMaterialRow(mrGroup, mat));

@@ -71,4 +71,9 @@ class Penawaran extends Model
     {
         return $this->hasMany(\App\Models\Pemasangan::class, 'id_penawaran');
     }
+
+    public function rancanganAnggaranBiayas()
+    {
+        return $this->hasMany(\App\Models\RancanganAnggaranBiaya::class, 'penawaran_id');
+    }
 }
