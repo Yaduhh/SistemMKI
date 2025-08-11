@@ -1,18 +1,18 @@
     <div>
         <div id="kerja-tambah-section-list" class="space-y-8"></div>
         <button type="button" class="mt-6 bg-orange-600 dark:bg-orange-900/30 border-b border-t border-orange-600 dark:border-orange-400 text-white px-4 py-2 w-full" id="add-kerja-tambah-section">Tambah Section Kerja Tambah</button>
-        <div class="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+        <div class="mt-4 p-4 bg-orange-50 dark:bg-orange-900 rounded-lg border border-orange-200 dark:border-orange-700">
             <div class="text-right">
                 <span class="text-sm font-medium text-orange-700 dark:text-orange-300">Grand Total:</span>
-                <span class="ml-2 text-lg font-bold text-orange-600 dark:text-orange-400 kerja-tambah-grand-total">Rp 0</span>
+                <span class="ml-2 text-lg font-bold text-orange-600/30 dark:text-orange-400 kerja-tambah-grand-total">Rp 0</span>
             </div>
         </div>
     <template id="kerja-tambah-section-template">
-        <div class="kerja-tambah-section rounded-xl bg-white dark:bg-zinc-800/40 relative">
+        <div class="kerja-tambah-section rounded-xl bg-gray-100 dark:bg-zinc-700 p-4 relative">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Debet (Biaya Kerja Tambah)</label>
-                    <input type="text" name="json_kerja_tambah[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                    <input type="text" placeholder="masukkan nilai debet" name="json_kerja_tambah[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                 </div>
             </div>
             <div class="space-y-4 kerja-tambah-termin-list"></div>

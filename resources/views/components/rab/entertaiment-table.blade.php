@@ -39,7 +39,7 @@
         </div>
     </template>
     <template id="entertaiment-material-row-template">
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end p-6 rounded-xl bg-white dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
             <div>
                 <label class="block text-xs font-medium mb-1">Supplier</label>
                 <input type="text" data-material-field="supplier" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][supplier]" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />

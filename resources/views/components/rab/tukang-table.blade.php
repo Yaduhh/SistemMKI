@@ -8,11 +8,11 @@
             </div>
         </div>
     <template id="tukang-section-template">
-        <div class="tukang-section rounded-xl bg-white dark:bg-zinc-800/40 relative">
+        <div class="tukang-section rounded-xl bg-gray-100 dark:bg-zinc-700 p-4 relative">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Debet (Biaya Tukang)</label>
-                    <input type="text" name="json_pengeluaran_tukang[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
+                    <input type="text" placeholder="masukkan nilai debet" name="json_pengeluaran_tukang[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
                 </div>
             </div>
             <div class="space-y-4 termin-list"></div>
