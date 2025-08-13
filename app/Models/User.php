@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(SuratJalan::class, 'author');
     }
+
+    public function rancanganAnggaranBiaya()
+    {
+        return $this->hasMany(RancanganAnggaranBiaya::class, 'supervisi_id');
+    }
 }

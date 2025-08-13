@@ -397,7 +397,7 @@ class RancanganAnggaranBiayaController extends Controller
 
     public function show(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
-        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan', 'user']);
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
         return view('admin.rancangan_anggaran_biaya.show', compact('rancanganAnggaranBiaya'));
     }
 
@@ -673,6 +673,28 @@ class RancanganAnggaranBiayaController extends Controller
         $rancanganAnggaranBiaya->update(['status' => $status]);
         
         return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)->with('success', "Status RAB berhasil diubah menjadi {$statusText}.");
+    }
+
+    public function updateSupervisi(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'supervisi_id' => 'nullable|exists:users,id'
+        ]);
+
+        // Jika supervisi_id kosong, set null
+        $supervisiId = $request->supervisi_id ?: null;
+        
+        // Update supervisi
+        $rancanganAnggaranBiaya->update(['supervisi_id' => $supervisiId]);
+        
+        if ($supervisiId) {
+            $supervisi = \App\Models\User::find($supervisiId);
+            $message = "Supervisi berhasil diubah menjadi {$supervisi->name}.";
+        } else {
+            $message = "Supervisi berhasil dihapus dari RAB ini.";
+        }
+        
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)->with('success', $message);
     }
 
     /**

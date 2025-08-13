@@ -68,6 +68,37 @@
                     <p class="mt-1 text-sm text-zinc-900 dark:text-white">
                         {{ $rancanganAnggaranBiaya->user->name ?? '-' }}</p>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Supervisi</label>
+                    <div class="mt-1">
+                        @if($rancanganAnggaranBiaya->supervisi)
+                            <p class="text-sm text-zinc-900 dark:text-white">
+                                {{ $rancanganAnggaranBiaya->supervisi->name }}
+                            </p>
+                        @else
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Belum ditugaskan</p>
+                        @endif
+                        
+                        <!-- Form untuk mengubah supervisi -->
+                        <form action="{{ route('admin.rancangan-anggaran-biaya.update-supervisi', $rancanganAnggaranBiaya) }}" method="POST" class="mt-2">
+                            @csrf
+                            @method('PATCH')
+                            <div class="flex items-center space-x-2">
+                                <select name="supervisi_id" class="text-sm border border-zinc-300 dark:border-zinc-600 rounded-md px-3 py-1 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Pilih Supervisi</option>
+                                    @foreach(\App\Models\User::where('role', 4)->get() as $supervisi)
+                                        <option value="{{ $supervisi->id }}" {{ $rancanganAnggaranBiaya->supervisi_id == $supervisi->id ? 'selected' : '' }}>
+                                            {{ $supervisi->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -323,70 +354,94 @@
                         <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600/30 mt-2"></div>
                     </div>
                 </div>
-                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment as $mrIndex => $mrGroup)
-                    <div class="mb-8 p-4 border border-teal-200 dark:border-teal-700 rounded-lg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-teal-700 dark:text-teal-300">MR</label>
-                                <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $mrGroup['mr'] ?? '-' }}</p>
+                @php
+                    // Filter hanya material yang statusnya "Disetujui"
+                    $filteredEntertainment = [];
+                    foreach($rancanganAnggaranBiaya->json_pengeluaran_entertaiment as $mrIndex => $mrGroup) {
+                        if(isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                            $approvedMaterials = array_filter($mrGroup['materials'], function($material) {
+                                return ($material['status'] ?? '') === 'Disetujui';
+                            });
+                            
+                            if(!empty($approvedMaterials)) {
+                                $filteredMR = $mrGroup;
+                                $filteredMR['materials'] = array_values($approvedMaterials);
+                                $filteredEntertainment[] = $filteredMR;
+                            }
+                        }
+                    }
+                @endphp
+                
+                @if(count($filteredEntertainment) > 0)
+                    @foreach ($filteredEntertainment as $mrIndex => $mrGroup)
+                        <div class="mb-8 p-4 border border-teal-200 dark:border-teal-700 rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-teal-700 dark:text-teal-300">MR</label>
+                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $mrGroup['mr'] ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-teal-700 dark:text-teal-300">Tanggal</label>
+                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">@formatTanggalIndonesia($mrGroup['tanggal'] ?? null)</p>
+                                </div>
                             </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-teal-700 dark:text-teal-300">Tanggal</label>
-                                <p class="mt-1 text-sm text-zinc-900 dark:text-white">@formatTanggalIndonesia($mrGroup['tanggal'] ?? null)</p>
-                            </div>
-                        </div>
-                        @if (isset($mrGroup['materials']) && is_array($mrGroup['materials']))
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-teal-50 dark:bg-teal-900/20">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Supplier</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Item</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Qty</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Satuan</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Harga Satuan</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
-                                                Sub Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody
-                                        class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        @foreach ($mrGroup['materials'] as $material)
+                            @if (isset($mrGroup['materials']) && is_array($mrGroup['materials']))
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-teal-50 dark:bg-teal-900/20">
                                             <tr>
-                                                <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                    {{ $material['supplier'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                    {{ $material['item'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ $material['qty'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ $material['satuan'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan'] ?? 0), 0, ',', '.') }}
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
-                                                </td>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Supplier</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Item</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Qty</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Satuan</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Harga Satuan</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-teal-700 dark:text-teal-300 uppercase">
+                                                    Sub Total</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
+                                        </thead>
+                                        <tbody
+                                            class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            @foreach ($mrGroup['materials'] as $material)
+                                                <tr>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                        {{ $material['supplier'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                        {{ $material['item'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ $material['qty'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ $material['satuan'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <p>Tidak ada material entertainment yang disetujui</p>
                     </div>
-                @endforeach
+                @endif
             </div>
         @endif
 

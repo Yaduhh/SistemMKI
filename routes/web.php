@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\WallpanelController;
 use App\Http\Controllers\Admin\CeilingController;
 use App\Http\Controllers\Admin\SyaratPemasanganController;
 use App\Http\Controllers\Admin\RancanganAnggaranBiayaController;
+use App\Http\Controllers\Admin\EntertainmentController;
+use App\Http\Controllers\Admin\PintuController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -38,7 +40,9 @@ Route::get('dashboard', function () {
         return redirect()->route('sales.dashboard');
     } elseif ($user->role === 3) {
         return redirect()->route('finance.dashboard');
-    } elseif ($user->role === 1 || $user->role === 4) {
+    } elseif ($user->role === 4) {
+        return redirect()->route('supervisi.dashboard');
+    } elseif ($user->role === 1) {
         return redirect()->route('admin.dashboard');
     }
     return redirect()->route('login');
@@ -152,6 +156,7 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('flooring', FlooringController::class);
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
+    Route::resource('pintu', PintuController::class);
     Route::resource('syarat-pemasangan', SyaratPemasanganController::class);
     Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
     Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');
@@ -191,6 +196,11 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class);
     Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/export-pdf', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'exportPdf'])->name('rancangan-anggaran-biaya.export-pdf');
     Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-status', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateStatus'])->name('rancangan-anggaran-biaya.update-status');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-supervisi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateSupervisi'])->name('rancangan-anggaran-biaya.update-supervisi');
+    
+    // Entertainment Routes
+    Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
+    Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');
 });
 
 // Finance routes for role 3
@@ -221,6 +231,20 @@ Route::middleware(['auth', 'role:3'])->prefix('finance')->name('finance.')->grou
     Route::get('events/my-upcoming', [App\Http\Controllers\Finance\EventController::class, 'myUpcoming'])->name('events.my-upcoming');
     Route::get('events/past', [App\Http\Controllers\Finance\EventController::class, 'past'])->name('events.past');
     Route::get('events/{event}', [App\Http\Controllers\Finance\EventController::class, 'show'])->name('events.show');
+});
+
+// Supervisi routes for role 4
+Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->group(function () {
+    // Supervisi Dashboard
+    Route::get('dashboard', [App\Http\Controllers\Supervisi\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('logs', [App\Http\Controllers\Supervisi\DashboardController::class, 'logs'])->name('logs');
+
+                    // RAB Routes
+                Route::resource('rab', App\Http\Controllers\Supervisi\RabController::class)->only(['index', 'show']);
+                Route::patch('rab/{rab}/update-entertainment', [App\Http\Controllers\Supervisi\RabController::class, 'updateEntertainment'])->name('rab.update-entertainment');
+
+    // Settings Route
+    Route::view('/setting', 'supervisi.setting.index')->name('setting.index');
 });
 
 require __DIR__.'/auth.php';

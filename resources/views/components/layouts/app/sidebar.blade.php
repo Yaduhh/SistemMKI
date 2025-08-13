@@ -34,6 +34,10 @@
                     <flux:navlist.item icon="calculator" :href="route('admin.rancangan-anggaran-biaya.index')" :current="request()->routeIs('admin.rancangan-anggaran-biaya.*')" wire:navigate>{{ __('RAB') }}</flux:navlist.item>
                 </flux:navlist.group>
 
+                <flux:navlist.group :heading="__('Pengeluaran RAB')" class="mt-10">
+                    <flux:navlist.item icon="musical-note" :href="route('admin.entertainment.index')" :current="request()->routeIs('admin.entertainment.*')" wire:navigate>{{ __('Entertainment') }}</flux:navlist.item>
+                </flux:navlist.group>
+
                 <flux:navlist.group :heading="__('Syarat & Kondisi')" class="mt-10">
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat-pemasangan.index')" :current="request()->routeIs('admin.syarat-pemasangan.*')" wire:navigate>{{ __('Syarat Pemasangan') }}</flux:navlist.item>
@@ -49,6 +53,7 @@
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.flooring.index')" :current="request()->routeIs('admin.flooring.*')" wire:navigate>{{ __('Flooring') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.wallpanel.index')" :current="request()->routeIs('admin.wallpanel.*')" wire:navigate>{{ __('Wallpanel') }}</flux:navlist.item>
                         <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.ceiling.index')" :current="request()->routeIs('admin.ceiling.*')" wire:navigate>{{ __('Ceiling') }}</flux:navlist.item>
+                        <flux:navlist.item icon="home-modern" :href="route('admin.pintu.index')" :current="request()->routeIs('admin.pintu.*')" wire:navigate>{{ __('Pintu') }}</flux:navlist.item>
                     </flux:navlist.group>
                 </flux:navlist.group>
 

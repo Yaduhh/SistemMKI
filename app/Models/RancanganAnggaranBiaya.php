@@ -28,6 +28,7 @@ class RancanganAnggaranBiaya extends Model
         'created_by',
         'penawaran_id',
         'pemasangan_id',
+        'supervisi_id',
     ];
 
     protected $casts = [
@@ -93,9 +94,19 @@ class RancanganAnggaranBiaya extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function supervisi()
+    {
+        return $this->belongsTo(User::class, 'supervisi_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {
         return $query->where('status_deleted', false);
+    }
+
+    public function scopeBySupervisi($query, $supervisiId)
+    {
+        return $query->where('supervisi_id', $supervisiId);
     }
 }
