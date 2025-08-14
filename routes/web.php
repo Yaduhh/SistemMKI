@@ -163,6 +163,12 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::get('penawaran/cetak/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetak'])->name('penawaran.cetak');
     Route::patch('penawaran/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranController::class, 'updateStatus'])->name('penawaran.update-status');
 
+    // Penawaran Pintu Routes
+    Route::resource('penawaran-pintu', App\Http\Controllers\Admin\PenawaranPintuController::class);
+    Route::get('penawaran-pintu/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'getClientsBySales'])->name('penawaran-pintu.clients');
+    Route::get('penawaran-pintu/cetak/{id}', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'cetak'])->name('penawaran-pintu.cetak');
+    Route::patch('penawaran-pintu/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'updateStatus'])->name('penawaran-pintu.update-status');
+
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
     Route::put('pengajuan/{pengajuan}/reject', [PengajuanController::class, 'reject'])->name('pengajuan.reject');
