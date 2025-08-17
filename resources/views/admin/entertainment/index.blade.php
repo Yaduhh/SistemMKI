@@ -176,7 +176,11 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    @formatTanggalIndonesia($entertainment['tanggal'])
+                                    @if(!empty($entertainment['tanggal']) && $entertainment['tanggal'] !== '-' && $entertainment['tanggal'] !== null)
+                                        @formatTanggalIndonesia($entertainment['tanggal'])
+                                    @else
+                                        -
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
                                     {{ $entertainment['supplier'] }}

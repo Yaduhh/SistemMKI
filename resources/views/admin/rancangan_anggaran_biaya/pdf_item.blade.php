@@ -398,77 +398,107 @@
                     return ltrim($exp[2], '0') . ' ' . $bulan[(int) $exp[1]] . ' ' . $exp[0];
                 }
             @endphp
-            @foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? [] as $mrGroup)
-                @php
-                    $isFirst = true;
-                    $subtotalMr = 0;
-                    $materialCount = count($mrGroup['materials'] ?? []);
-                    $materialIndex = 0;
-                @endphp
-                @foreach ($mrGroup['materials'] ?? [] as $material)
+            @php
+                $hasApprovedData = false;
+                foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? [] as $mrGroup) {
+                    $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                        return isset($material['status']) && $material['status'] === 'Disetujui';
+                    });
+                    if (!empty($approvedMaterials)) {
+                        $hasApprovedData = true;
+                        break;
+                    }
+                }
+            @endphp
+
+            @if ($hasApprovedData)
+                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? [] as $mrGroup)
                     @php
-                        if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
-                            echo '<tr>';
-                            for ($i = 0; $i < 10; $i++) {
-                                echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
-                            }
-                            echo '</tr>';
+                        // Filter hanya material dengan status Disetujui
+                        $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                            return isset($material['status']) && $material['status'] === 'Disetujui';
+                        });
+
+                        // Skip MR jika tidak ada material yang disetujui
+                        if (empty($approvedMaterials)) {
+                            continue;
                         }
-                        $lastMr = $mrGroup['mr'] ?? '';
-                        $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
-                            ? $material['harga_satuan']
-                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
-                        $subTotal = is_numeric($material['sub_total'] ?? null)
-                            ? $material['sub_total']
-                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
-                        $itemName = strtolower(trim($material['item'] ?? ''));
-                        if ($itemName === 'diskon') {
-                            $totalEntertaiment -= $subTotal;
-                            $subtotalMr -= $subTotal;
-                        } else {
-                            $totalEntertaiment += $subTotal;
-                            $subtotalMr += $subTotal;
-                        }
-                        $materialIndex++;
+
+                        $isFirst = true;
+                        $subtotalMr = 0;
+                        $materialCount = count($approvedMaterials);
+                        $materialIndex = 0;
                     @endphp
-                    <tr>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo2($mrGroup['tanggal']) : '' }}
-                            @endif
-                        </td>
-                        <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
-                        <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
-                        <td class="text-center">
-                            {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
-                        </td>
-                        <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
-                        <td class="text-right">
-                            @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
-                            @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
-                                {{-- kosong --}}
-                            @else
-                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
-                            @endif
-                        </td>
-                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
-                    </tr>
-                    @php $isFirst = false; @endphp
-                    @if ($materialIndex === $materialCount)
-                        <tr class="highlightTotal">
-                            <td colspan="10" style="text-align:center;">Total: Rp
-                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                    @foreach ($approvedMaterials as $material)
+                        @php
+                            if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
+                                echo '<tr>';
+                                for ($i = 0; $i < 10; $i++) {
+                                    echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
+                                }
+                                echo '</tr>';
+                            }
+                            $lastMr = $mrGroup['mr'] ?? '';
+                            $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
+                                ? $material['harga_satuan']
+                                : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                            $subTotal = is_numeric($material['sub_total'] ?? null)
+                                ? $material['sub_total']
+                                : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                            $itemName = strtolower(trim($material['item'] ?? ''));
+                            if ($itemName === 'diskon') {
+                                $totalEntertaiment -= $subTotal;
+                                $subtotalMr -= $subTotal;
+                            } else {
+                                $totalEntertaiment += $subTotal;
+                                $subtotalMr += $subTotal;
+                            }
+                            $materialIndex++;
+                        @endphp
+                        <tr>
+                            <td class="text-center">
+                                @if ($isFirst)
+                                    {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if ($isFirst)
+                                    {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo2($mrGroup['tanggal']) : '' }}
+                                @endif
+                            </td>
+                            <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
+                            <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
+                            <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
+                            <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}
+                            </td>
+                            <td class="text-center">
+                                {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
+                            </td>
+                            <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
+                            <td class="text-right">
+                                @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
+                                @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
+                                    {{-- kosong --}}
+                                @else
+                                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                                @endif
+                            </td>
+                            <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
                         </tr>
-                    @endif
+                        @php $isFirst = false; @endphp
+                        @if ($materialIndex === $materialCount)
+                            <tr class="highlightTotal">
+                                <td colspan="10" style="text-align:center;">Total: Rp
+                                    {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
+                    @endforeach
                 @endforeach
-            @endforeach
+            @else
+                <tr>
+                    <td colspan="10" class="text-center">-</td>
+                </tr>
+            @endif
             <tr class="highlight">
                 <td colspan="9" class="text-right">GRAND TOTAL</td>
                 <td class="text-right">Rp {{ number_format($totalEntertaiment, 0, ',', '.') }}</td>
@@ -942,12 +972,20 @@
         $biayaTukang = $totalTukangDebet ?? 0;
         $kerjaTambah = $totalKerjaTambahDebet ?? 0;
         $totalNilaiKontrak = $totalUtama + ($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0);
-        $totalPengeluaran = $materialUtama + $materialPemasangan + $biayaEntertaint + $biayaAkomodasi + $biayaLainLain + $biayaTukang + $kerjaTambah;
+        $totalPengeluaran =
+            $materialUtama +
+            $materialPemasangan +
+            $biayaEntertaint +
+            $biayaAkomodasi +
+            $biayaLainLain +
+            $biayaTukang +
+            $kerjaTambah;
         $sisa = $totalNilaiKontrak - $totalPengeluaran;
 
         // Nilai Kontrak (Pemasangan Saja) - FIX sesuai permintaan user
         $nilaiKontrakPemasanganFix = $rancanganAnggaranBiaya->pemasangan->grand_total ?? 0;
-        $totalPengeluaranPemasangan = $materialPemasangan + $biayaEntertaint + $biayaAkomodasi + $biayaLainLain + $biayaTukang + $kerjaTambah;
+        $totalPengeluaranPemasangan =
+            $materialPemasangan + $biayaEntertaint + $biayaAkomodasi + $biayaLainLain + $biayaTukang + $kerjaTambah;
         $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasangan;
     @endphp
     <div class="section-title grand-total">GRAND TOTAL : Rp {{ number_format($grandTotal, 0, ',', '.') }}</div>
@@ -1012,52 +1050,122 @@
     </div>
 
     <div style="margin-top: 30px; margin-bottom: 10px;">
-        <div style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">NILAI KONTRAK (MATERIAL + PEMASANGAN)</div>
+        <div
+            style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">
+            NILAI KONTRAK (MATERIAL + PEMASANGAN)</div>
         <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr><td class="no-border" style="width:60%;">NILAI KONTRAK</td><td style="width:2%" class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($totalNilaiKontrak, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="width:60%;">NILAI KONTRAK</td>
+                <td style="width:2%" class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($totalNilaiKontrak, 0, ',', '.') }}</td>
+            </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr><td class="no-border">MATERIAL UTAMA</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialUtama, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">MATERIAL PEMASANGAN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA ENTERTAINT</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA AKOMODASI</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA LAIN-LAIN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA TUKANG</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">KERJA TAMBAH</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border">MATERIAL UTAMA</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($materialUtama, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">MATERIAL PEMASANGAN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA ENTERTAINT</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA AKOMODASI</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA LAIN-LAIN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA TUKANG</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">KERJA TAMBAH</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td>
+            </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr style="font-weight:bold;"><td colspan="2" class="no-border">SISA</td><td class="text-right no-border">Rp {{ number_format($sisa, 0, ',', '.') }}</td></tr>
+            <tr style="font-weight:bold;">
+                <td colspan="2" class="no-border">SISA</td>
+                <td class="text-right no-border">Rp {{ number_format($sisa, 0, ',', '.') }}</td>
+            </tr>
         </table>
     </div>
     <div style="margin-top: 30px; margin-bottom: 10px;">
-         <div style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">NILAI KONTRAK (PEMASANGAN)</div>
+        <div
+            style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">
+            NILAI KONTRAK (PEMASANGAN)</div>
         <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr><td class="no-border" style="width:60%">NILAI KONTRAK</td><td style="width:2%" class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($nilaiKontrakPemasanganFix, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border" style="width:60%">NILAI KONTRAK</td>
+                <td style="width:2%" class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($nilaiKontrakPemasanganFix, 0, ',', '.') }}</td>
+            </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr><td class="no-border">MATERIAL PEMASANGAN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA ENTERTAINT</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA AKOMODASI</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA LAIN-LAIN</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">BIAYA TUKANG</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td></tr>
-            <tr><td class="no-border">KERJA TAMBAH</td><td class="no-border">:</td><td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td></tr>
+            <tr>
+                <td class="no-border">MATERIAL PEMASANGAN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA ENTERTAINT</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA AKOMODASI</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA LAIN-LAIN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">BIAYA TUKANG</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">KERJA TAMBAH</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td>
+            </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
-            <tr style="font-weight:bold;"><td colspan="2" class="no-border">SISA</td><td class="text-right no-border">Rp {{ number_format($sisaPemasanganFix, 0, ',', '.') }}</td></tr>
+            <tr style="font-weight:bold;">
+                <td colspan="2" class="no-border">SISA</td>
+                <td class="text-right no-border">Rp {{ number_format($sisaPemasanganFix, 0, ',', '.') }}</td>
+            </tr>
         </table>
     </div>
 </body>

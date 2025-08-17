@@ -31,6 +31,52 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Informasi Utama -->
                 <div class="lg:col-span-2 space-y-6">
+                    <!-- Informasi Revisi -->
+                    @if ($penawaran->is_revisi)
+                        <div
+                            class="col-span-1 md:col-span-2 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
+                                </svg>
+                                <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Informasi
+                                    Revisi</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="font-medium text-purple-700 dark:text-purple-300">Revisi dari:</span>
+                                    <span class="text-purple-800 dark:text-purple-200">
+                                        @if ($penawaran->penawaranAsli)
+                                            <a href="{{ route('admin.penawaran-pintu.show', $penawaran->penawaranAsli->id) }}"
+                                                class="hover:underline">
+                                                {{ $penawaran->penawaranAsli->nomor_penawaran }}
+                                            </a>
+                                        @else
+                                            {{ $penawaran->revisi_from ?? 'Tidak diketahui' }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="font-medium text-purple-700 dark:text-purple-300">Revisi:</span>
+                                    <span class="text-purple-800 dark:text-purple-200">
+                                        @php
+                                            $revisionLevel = preg_match(
+                                                '/R(\d+)$/',
+                                                $penawaran->nomor_penawaran,
+                                                $matches,
+                                            )
+                                                ? $matches[1]
+                                                : '?';
+                                        @endphp
+                                        R{{ $revisionLevel }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <!-- Informasi Penawaran -->
                     <div
                         class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -107,41 +153,6 @@
                                         </span>
                                     </span>
                                 </div>
-                                
-                                <!-- Informasi Revisi -->
-                                @if($penawaran->is_revisi)
-                                    <div class="col-span-1 md:col-span-2 mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                            </svg>
-                                            <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Informasi Revisi</span>
-                                        </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                            <div>
-                                                <span class="font-medium text-purple-700 dark:text-purple-300">Revisi dari:</span>
-                                                <span class="text-purple-800 dark:text-purple-200">
-                                                    @if($penawaran->penawaranAsli)
-                                                        <a href="{{ route('admin.penawaran-pintu.show', $penawaran->penawaranAsli->id) }}" class="hover:underline">
-                                                            {{ $penawaran->penawaranAsli->nomor_penawaran }}
-                                                        </a>
-                                                    @else
-                                                        {{ $penawaran->revisi_from ?? 'Tidak diketahui' }}
-                                                    @endif
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium text-purple-700 dark:text-purple-300">Level Revisi:</span>
-                                                <span class="text-purple-800 dark:text-purple-200">
-                                                    @php
-                                                        $revisionLevel = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? $matches[1] : '?';
-                                                    @endphp
-                                                    R{{ $revisionLevel }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center">
@@ -205,30 +216,38 @@
                             </svg>
                             Detail Produk Pintu
                         </h2>
-                        
+
                         @if (is_array($penawaran->json_penawaran_pintu) && !empty($penawaran->json_penawaran_pintu))
                             @php $no = 1; @endphp
                             @foreach ($penawaran->json_penawaran_pintu as $sectionIndex => $section)
                                 @if (strpos($sectionIndex, 'section_') === 0)
                                     <!-- Section Produk Pintu -->
-                                    <div class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
+                                    <div
+                                        class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
                                         <div class="mb-4">
                                             @if (!empty($section['judul_1']))
-                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                <h3
+                                                    class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+                                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                        </path>
                                                     </svg>
                                                     {{ $section['judul_1'] }}
                                                 </h3>
                                             @endif
                                             <div class="grid grid-cols-1 md:grid-cols-2">
                                                 @if (!empty($section['judul_2']))
-                                                    <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
+                                                    <h4
+                                                        class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
                                                         {{ $section['judul_2'] }}
                                                     </h4>
                                                 @endif
                                                 @if (!empty($section['jumlah']))
-                                                    <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
+                                                    <h4
+                                                        class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
                                                         Jumlah : {{ $section['jumlah'] }}
                                                     </h4>
                                                 @endif
@@ -237,62 +256,91 @@
 
                                         @if (isset($section['products']) && is_array($section['products']) && !empty($section['products']))
                                             <div class="overflow-x-auto">
-                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <table
+                                                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                     <thead class="bg-gray-100 dark:bg-zinc-700">
                                                         <tr>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">No</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Item</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dimensi</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Warna</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Harga</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Diskon</th>
-                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                No</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Item</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Dimensi</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Warna</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Jumlah</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Harga</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Diskon</th>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                                Total</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    <tbody
+                                                        class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
                                                         @foreach ($section['products'] as $product)
                                                             <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $no++ }}</td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product['item'] ?? '-' }}</td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                    {{ $no++ }}</td>
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                    {{ $product['item'] ?? '-' }}</td>
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                     @if (!empty($product['lebar']) || !empty($product['tinggi']) || !empty($product['tebal']))
                                                                         {{ $product['lebar'] ?? '' }}{{ !empty($product['lebar']) && (!empty($product['tinggi']) || !empty($product['tebal'])) ? ' x ' : '' }}{{ $product['tinggi'] ?? '' }}{{ !empty($product['tinggi']) && !empty($product['tebal']) ? ' x ' : '' }}{{ $product['tebal'] ?? '' }}
                                                                     @else
                                                                         -
                                                                     @endif
                                                                 </td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product['warna'] ?? '-' }}</td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                    {{ $product['warna'] ?? '-' }}</td>
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                     @if (isset($product['jumlah_individual']) && $product['jumlah_individual'] > 1)
                                                                         {{ $product['jumlah_individual'] }}
                                                                     @else
                                                                         -
                                                                     @endif
                                                                 </td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                     {{ isset($product['harga']) ? (is_string($product['harga']) ? $product['harga'] : 'Rp ' . number_format($product['harga'], 0, ',', '.')) : '-' }}
                                                                 </td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                                     <table>
                                                                         <tr>
                                                                             <td>
                                                                                 {{ isset($product['diskon']) ? (is_string($product['diskon']) ? $product['diskon'] : 'Rp ' . number_format($product['diskon'], 0, ',', '.')) . '%' : '-' }}
                                                                             </td>
-                                                                            @if(isset($product['diskon_satu']) && (int)$product['diskon_satu'] > 0)
-                                                                            <td>
-                                                                                {{ isset($product['diskon_satu']) ? (is_string($product['diskon_satu']) ? $product['diskon_satu'] : 'Rp ' . number_format($product['diskon_satu'], 0, ',', '.')) . '%' : '-' }}
-                                                                            </td>
+                                                                            @if (isset($product['diskon_satu']) && (int) $product['diskon_satu'] > 0)
+                                                                                <td>
+                                                                                    {{ isset($product['diskon_satu']) ? (is_string($product['diskon_satu']) ? $product['diskon_satu'] : 'Rp ' . number_format($product['diskon_satu'], 0, ',', '.')) . '%' : '-' }}
+                                                                                </td>
                                                                             @endif
-                                                                            @if(isset($product['diskon_dua']) && (int)$product['diskon_dua'] > 0)
-                                                                            <td>
-                                                                                {{ isset($product['diskon_dua']) ? (is_string($product['diskon_dua']) ? $product['diskon_dua'] : 'Rp ' . number_format($product['diskon_dua'], 0, ',', '.')) . '%' : '-' }}
-                                                                            </td>
+                                                                            @if (isset($product['diskon_dua']) && (int) $product['diskon_dua'] > 0)
+                                                                                <td>
+                                                                                    {{ isset($product['diskon_dua']) ? (is_string($product['diskon_dua']) ? $product['diskon_dua'] : 'Rp ' . number_format($product['diskon_dua'], 0, ',', '.')) . '%' : '-' }}
+                                                                                </td>
                                                                             @endif
                                                                         </tr>
                                                                     </table>
                                                                 </td>
-                                                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                                <td
+                                                                    class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                                                     {{ isset($product['total_harga']) ? (is_string($product['total_harga']) ? $product['total_harga'] : 'Rp ' . number_format($product['total_harga'], 0, ',', '.')) : '-' }}
                                                                 </td>
                                                             </tr>
@@ -302,24 +350,32 @@
                                             </div>
                                         @else
                                             <div class="text-center py-4">
-                                                <p class="text-gray-500 dark:text-gray-400">Tidak ada produk dalam section ini</p>
+                                                <p class="text-gray-500 dark:text-gray-400">Tidak ada produk dalam
+                                                    section ini</p>
                                             </div>
                                         @endif
                                     </div>
                                 @elseif (is_numeric($sectionIndex))
                                     <!-- Produk Pintu Langsung (jika ada) -->
-                                    <div class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
+                                    <div
+                                        class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
                                         <div class="mb-4">
                                             @if (!empty($penawaran->json_penawaran_pintu['judul_1']))
-                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                <h3
+                                                    class="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+                                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                        </path>
                                                     </svg>
                                                     {{ $penawaran->json_penawaran_pintu['judul_1'] }}
                                                 </h3>
                                             @endif
                                             @if (!empty($penawaran->json_penawaran_pintu['judul_2']))
-                                                <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
+                                                <h4
+                                                    class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3 ml-7">
                                                     {{ $penawaran->json_penawaran_pintu['judul_2'] }}
                                                 </h4>
                                             @endif
@@ -329,32 +385,58 @@
                                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                 <thead class="bg-gray-100 dark:bg-zinc-700">
                                                     <tr>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">No</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Item</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dimensi</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Warna</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Jumlah</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Harga</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            No</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Item</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Dimensi</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Warna</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Jumlah</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Harga</th>
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                            Total</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
+                                                <tbody
+                                                    class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
                                                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $no++ }}</td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $section['item'] ?? '-' }}</td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                            {{ $no++ }}</td>
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                            {{ $section['item'] ?? '-' }}</td>
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                             @if (!empty($section['lebar']) || !empty($section['tinggi']) || !empty($section['tebal']))
                                                                 {{ $section['lebar'] ?? '' }}{{ !empty($section['lebar']) && (!empty($section['tinggi']) || !empty($section['tebal'])) ? ' x ' : '' }}{{ $section['tinggi'] ?? '' }}{{ !empty($section['tinggi']) && !empty($section['tebal']) ? ' x ' : '' }}{{ $section['tebal'] ?? '' }}
                                                             @else
                                                                 -
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $section['warna'] ?? '-' }}</td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $section['jumlah'] ?? '-' }}</td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                            {{ $section['warna'] ?? '-' }}</td>
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                            {{ $section['jumlah'] ?? '-' }}</td>
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                             {{ isset($section['harga']) ? (is_string($section['harga']) ? $section['harga'] : 'Rp ' . number_format($section['harga'], 0, ',', '.')) : '-' }}
                                                         </td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                        <td
+                                                            class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                                             {{ isset($section['total_harga']) ? (is_string($section['total_harga']) ? $section['total_harga'] : 'Rp ' . number_format($section['total_harga'], 0, ',', '.')) : '-' }}
                                                         </td>
                                                     </tr>
@@ -496,7 +578,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Ringkasan Keuangan -->
                     <div
                         class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -538,8 +620,7 @@
                     @if ($penawaran->pemasangans && $penawaran->pemasangans->count())
                         <div
                             class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg p-4">
-                            <div
-                                class="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center">
+                            <div class="font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -675,7 +756,7 @@
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                             </path>
                         </svg>
-                        @if($penawaran->is_revisi)
+                        @if ($penawaran->is_revisi)
                             Buat Revisi Lanjutan
                         @else
                             Buat Revisi

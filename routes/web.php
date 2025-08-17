@@ -219,6 +219,10 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     // Entertainment Routes
     Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
     Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');
+    
+    // Akomodasi Routes
+    Route::get('akomodasi', [App\Http\Controllers\Admin\AkomodasiController::class, 'index'])->name('akomodasi.index');
+    Route::patch('akomodasi/{id}/update-status', [App\Http\Controllers\Admin\AkomodasiController::class, 'updateStatus'])->name('akomodasi.update-status');
 });
 
 // Finance routes for role 3

@@ -7,20 +7,35 @@ use App\Models\RancanganAnggaranBiaya;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class EntertainmentController extends Controller
+class AkomodasiController extends Controller
 {
     public function index(Request $request)
     {
-        $entertainments = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_entertaiment')
-            ->where('json_pengeluaran_entertaiment', '!=', '[]')
+        $akomodasis = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_akomodasi')
+            ->where('json_pengeluaran_akomodasi', '!=', '[]')
             ->get()
             ->map(function ($rab) {
-                $entertainmentData = [];
-                if (isset($rab->json_pengeluaran_entertaiment) && is_array($rab->json_pengeluaran_entertaiment)) {
-                    foreach ($rab->json_pengeluaran_entertaiment as $mrIndex => $mrGroup) {
+                $akomodasiData = [];
+                if (isset($rab->json_pengeluaran_akomodasi) && is_array($rab->json_pengeluaran_akomodasi)) {
+                    foreach ($rab->json_pengeluaran_akomodasi as $mrIndex => $mrGroup) {
+                        // Skip MR jika tidak ada data yang valid
+                        if (empty($mrGroup['mr']) || $mrGroup['mr'] === null || $mrGroup['mr'] === '') {
+                            continue;
+                        }
+                        
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $materialIndex => $material) {
-                                $entertainmentData[] = [
+                                // Skip material jika semua field penting null/kosong
+                                if (empty($material['supplier']) && 
+                                    empty($material['item']) && 
+                                    empty($material['qty']) && 
+                                    empty($material['satuan']) && 
+                                    empty($material['harga_satuan']) && 
+                                    empty($material['sub_total'])) {
+                                    continue;
+                                }
+                                
+                                $akomodasiData[] = [
                                     'rab_id' => $rab->id,
                                     'rab_proyek' => $rab->proyek,
                                     'rab_pekerjaan' => $rab->pekerjaan,
@@ -41,26 +56,26 @@ class EntertainmentController extends Controller
                         }
                     }
                 }
-                return $entertainmentData;
+                return $akomodasiData;
             })
             ->flatten(1);
 
         // Filter berdasarkan status jika ada
         if ($request->filled('status_filter')) {
-            $entertainments = $entertainments->filter(function ($entertainment) use ($request) {
-                return $entertainment['status'] === $request->status_filter;
+            $akomodasis = $akomodasis->filter(function ($akomodasi) use ($request) {
+                return $akomodasi['status'] === $request->status_filter;
             });
         }
 
-        $entertainments = $entertainments->sortByDesc('created_at');
+        $akomodasis = $akomodasis->sortByDesc('created_at');
 
-        return view('admin.entertainment.index', compact('entertainments'));
+        return view('admin.akomodasi.index', compact('akomodasis'));
     }
 
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'entertainment_index' => 'required|integer',
+            'akomodasi_index' => 'required|integer',
             'material_index' => 'required|integer',
             'status' => 'required|in:Pengajuan,Disetujui,Ditolak',
         ]);
@@ -69,28 +84,28 @@ class EntertainmentController extends Controller
             DB::beginTransaction();
 
             $rab = RancanganAnggaranBiaya::findOrFail($id);
-            $entertainmentIndex = $request->entertainment_index;
+            $akomodasiIndex = $request->akomodasi_index;
             $materialIndex = $request->material_index;
 
             // Ambil data JSON dan convert ke array
-            $entertainmentData = $rab->json_pengeluaran_entertaiment ?? [];
+            $akomodasiData = $rab->json_pengeluaran_akomodasi ?? [];
             
-            if (isset($entertainmentData[$entertainmentIndex]['materials'][$materialIndex])) {
+            if (isset($akomodasiData[$akomodasiIndex]['materials'][$materialIndex])) {
                 // Update status
-                $entertainmentData[$entertainmentIndex]['materials'][$materialIndex]['status'] = $request->status;
+                $akomodasiData[$akomodasiIndex]['materials'][$materialIndex]['status'] = $request->status;
                 
                 // Update field JSON dengan data baru
-                $rab->json_pengeluaran_entertaiment = $entertainmentData;
+                $rab->json_pengeluaran_akomodasi = $akomodasiData;
                 $rab->save();
             }
 
             DB::commit();
 
-            return redirect()->route('admin.entertainment.index')
+            return redirect()->route('admin.akomodasi.index')
                 ->with('success', 'Status material berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-} 
+}
