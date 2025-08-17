@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot name="header">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Buat Penawaran Pintu</h1>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Buat Revisi Penawaran Pintu</h1>
             <x-button as="a" href="{{ route('admin.penawaran-pintu.index') }}"
                 class="bg-gray-600 hover:bg-gray-700 text-white">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
@@ -13,15 +13,49 @@
     <x-flash-message type="success" :message="session('success')" />
     <x-flash-message type="error" :message="session('error')" />
 
+    <!-- Informasi Penawaran yang akan di-Revisi -->
+    <div class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        <div class="flex items-center gap-2 mb-2">
+            <x-icon name="info" class="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+            <h3 class="font-semibold text-yellow-800 dark:text-yellow-200">
+                @if($penawaran->is_revisi)
+                    Revisi dari Penawaran Pintu Revisi
+                @else
+                    Revisi dari Penawaran Pintu Asli
+                @endif
+            </h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+                <span class="font-medium text-yellow-700 dark:text-yellow-300">Nomor:</span>
+                <span class="text-yellow-800 dark:text-yellow-200">{{ $penawaran->nomor_penawaran }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-yellow-700 dark:text-yellow-300">Judul:</span>
+                <span class="text-yellow-800 dark:text-yellow-200">{{ $penawaran->judul_penawaran }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-yellow-700 dark:text-yellow-300">Client:</span>
+                <span class="text-yellow-800 dark:text-yellow-200">{{ $penawaran->client->nama ?? $penawaran->client->nama_perusahaan }}</span>
+            </div>
+        </div>
+        @if($penawaran->is_revisi)
+            <div class="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                <span class="font-medium text-blue-700 dark:text-blue-300">Info:</span>
+                <span class="text-blue-800 dark:text-blue-200">Ini adalah revisi dari penawaran pintu yang sudah direvisi sebelumnya. Revisi berikutnya akan menjadi R{{ preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? $matches[1] + 1 : '?' }}.</span>
+            </div>
+        @endif
+    </div>
+
     <div class="py-4 mx-auto w-full">
-        <form action="{{ route('admin.penawaran-pintu.store') }}" method="POST" class="space-y-8"
+        <form action="{{ route('admin.penawaran-pintu.store-revisi', $penawaran) }}" method="POST" class="space-y-8"
             x-data="penawaranForm()" id="penawaran-form">
             @csrf
             <!-- Sales -->
             <flux:select name="id_user" :label="__('Sales')" required @change="loadClients($event.target.value)">
                 <option value="" disabled>{{ __('Pilih Pengguna') }}</option>
                 @foreach ($users as $user)
-                    <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
+                    <option value="{{ $user->id }}" {{ old('id_user', $penawaran->id_user) == $user->id ? 'selected' : '' }}>
                         {{ $user->name }}
                     </option>
                 @endforeach
@@ -34,20 +68,31 @@
                     class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
                         <x-icon name="info" class="w-4 h-4 inline mr-1" />
-                        Nomor penawaran pintu akan dibuat otomatis dengan format: <strong>A/MKI/MM/YY</strong>
+                        @php
+                            $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
+                            $currentRevision = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? (int)$matches[1] : 0;
+                            $nextRevision = $currentRevision + 1;
+                        @endphp
+                        Nomor revisi akan dibuat otomatis dengan format: <strong>{{ $nomorAsli }} R{{ $nextRevision }}</strong>
+                        @if($penawaran->is_revisi)
+                            <br><span class="text-xs">(Revisi ke-{{ $nextRevision }} dari penawaran {{ $nomorAsli }})</span>
+                        @endif
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
                     <!-- Client -->
                     <flux:select name="id_client" :label="__('Client')" required>
-                        <option value="" disabled selected>{{ __('Pilih Client') }}</option>
+                        <option value="" disabled>{{ __('Pilih Client') }}</option>
+                        @if($penawaran->client)
+                            <option value="{{ $penawaran->client->id }}" selected>{{ $penawaran->client->nama ?? $penawaran->client->nama_perusahaan }}</option>
+                        @endif
                     </flux:select>
                     <flux:input name="judul_penawaran" label="Judul Penawaran"
                         placeholder="masukkan judul penawaran pintu" type="text" required
-                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                         <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
-                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                     <input type="hidden" name="tanggal_penawaran" value="{{ date('Y-m-d') }}" />
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('judul_penawaran', $penawaran->judul_penawaran) }}" />
+                    <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('project', $penawaran->project) }}" />
+                    <input type="hidden" name="tanggal_penawaran" value="{{ old('tanggal_penawaran', date('Y-m-d')) }}" />
                  </div>
 
 
@@ -79,7 +124,7 @@
                         <div class="flex items-center">
                             <input type="checkbox" name="syarat_kondisi[]" value="{{ $syarat->syarat }}"
                                 id="syarat_{{ $syarat->id }}"
-                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" {{ in_array($syarat->syarat, $penawaran->syarat_kondisi ?? []) ? 'checked' : '' }}>
                             <label for="syarat_{{ $syarat->id }}"
                                 class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                                 {{ $syarat->syarat }}
@@ -99,21 +144,21 @@
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subtotal</label>
                             <input type="text" x-model="formatCurrency(subtotal)" readonly
                                 class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
-                            <input type="hidden" name="total" :value="subtotal">
+                            <input type="hidden" name="total" :value="subtotal" value="{{ old('total', $penawaran->total ?? 0) }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN
                                 (%)</label>
                             <input type="number" name="ppn" x-model="ppn" @input="calculateTotal"
                                 step="0.01"
-                                class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                                class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" value="{{ old('ppn', $penawaran->ppn ?? 11) }}" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand
                                 Total</label>
                             <input type="text" x-model="formatCurrency(grand_total)" readonly
                                 class="w-full py-2 px-3 rounded-lg border-2 border-blue-500 dark:border-blue-400 dark:bg-zinc-800 dark:text-white font-bold text-lg text-blue-600 dark:text-blue-400" />
-                            <input type="hidden" name="grand_total" :value="grand_total">
+                            <input type="hidden" name="grand_total" :value="grand_total" value="{{ old('grand_total', $penawaran->grand_total ?? 0) }}">
                         </div>
                     </div>
                 </div>
@@ -123,14 +168,17 @@
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Catatan</h2>
                 <flux:textarea name="catatan" label="Catatan" placeholder="Masukkan catatan tambahan (opsional)"
-                    rows="4" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    rows="4" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('catatan', $penawaran->catatan) }}" />
             </div>
 
             <!-- Submit Button -->
-            <div class="flex justify-end">
-                <x-button type="submit" @click="submitForm($event)" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+            <div class="flex justify-end space-x-4">
+                <x-button type="button" as="a" href="{{ route('admin.penawaran-pintu.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white">
+                    Batal
+                </x-button>
+                <x-button type="submit" @click="submitForm($event)" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3">
                     <x-icon name="save" class="w-4 h-4 mr-2" />
-                    Simpan Penawaran Pintu
+                    Simpan Revisi Penawaran Pintu
                 </x-button>
             </div>
         </form>
@@ -142,22 +190,23 @@
                 mainSections: [],
                 pintuSections: [],
                 pintuProduk: [],
+                isLoadingData: false,
                 products: {
                     pintu: @json($pintus)
                 },
 
                 // Properti untuk perhitungan
-                subtotal: 0,
-                diskon: 0,
-                diskon_satu: 0,
-                diskon_dua: 0,
-                ppn: 11,
+                subtotal: {{ $penawaran->total ?? 0 }},
+                diskon: {{ $penawaran->diskon ?? 0 }},
+                diskon_satu: {{ $penawaran->diskon_satu ?? 0 }},
+                diskon_dua: {{ $penawaran->diskon_dua ?? 0 }},
+                ppn: {{ $penawaran->ppn ?? 11 }},
                 total_diskon: 0,
                 total_diskon_1: 0,
                 total_diskon_2: 0,
                 total_diskon_all: 0,
                 after_diskon: 0,
-                grand_total: 0,
+                grand_total: {{ $penawaran->grand_total ?? 0 }},
 
                 init() {
                     console.log('=== ALPINE.JS INIT ===');
@@ -165,14 +214,164 @@
                     console.log('Initializing penawaran form...');
                     
                     try {
-                        this.addPintuSection();
-                        console.log('✅ Section pertama berhasil ditambahkan');
+                        // Load data produk pintu dari penawaran asli
+                        this.loadDataFromOriginal();
+                        
+                        // Tambah section pertama jika tidak ada data
+                        if (this.pintuSections.length === 0) {
+                            this.addPintuSection();
+                            console.log('✅ Section pertama berhasil ditambahkan');
+                        } else {
+                            console.log(`✅ Loaded ${this.pintuSections.length} sections from original data`);
+                        }
                     } catch (error) {
-                        console.error('❌ Error saat menambahkan section pertama:', error);
+                        console.error('❌ Error saat inisialisasi:', error);
                         alert('Error saat inisialisasi: ' + error.message);
                     }
                     
                     console.log('=== INIT COMPLETE ===');
+                },
+
+                // Load data dari penawaran asli
+                loadDataFromOriginal() {
+                    console.log('=== LOAD DATA FROM ORIGINAL ===');
+                    this.isLoadingData = true;
+                    const originalData = @json($penawaran->json_penawaran_pintu ?? '{}');
+                    console.log('Data asli:', originalData);
+                    
+                    if (originalData && Object.keys(originalData).length > 0) {
+                        // Convert object keys to array and sort by section number
+                        const sections = Object.keys(originalData)
+                            .filter(key => key.startsWith('section_'))
+                            .sort((a, b) => {
+                                const numA = parseInt(a.replace('section_', ''));
+                                const numB = parseInt(b.replace('section_', ''));
+                                return numA - numB;
+                            });
+                        
+                        sections.forEach((sectionKey, sectionIndex) => {
+                            const section = originalData[sectionKey];
+                            console.log(`Loading section ${sectionIndex}:`, section);
+                            
+                            // Tambah section
+                            this.addPintuSection();
+                            
+                            // Set nilai section (judul_1, judul_2, jumlah)
+                            this.setSectionValue(sectionIndex, section);
+                            
+                            // Load data produk
+                            if (section.products && section.products.length > 0) {
+                                section.products.forEach((produk, produkIndex) => {
+                                    console.log(`Loading produk ${produkIndex}:`, produk);
+                                    
+                                    // Tambah produk
+                                    this.addPintuProduk(sectionIndex);
+                                    
+                                    // Set nilai produk
+                                    this.setProductValue(sectionIndex, produkIndex, produk);
+                                });
+                            }
+                        });
+                        
+                        // Hitung ulang total
+                        this.calculateSubtotal();
+                        this.calculateTotal();
+                    }
+                    
+                    this.isLoadingData = false;
+                    console.log('=== LOAD DATA COMPLETE ===');
+                },
+
+                // Set nilai section
+                setSectionValue(sectionIndex, section) {
+                    const container = document.getElementById('pintu-sections-container');
+                    if (container) {
+                        const sectionDiv = container.children[sectionIndex];
+                        if (sectionDiv) {
+                            // Set judul_1
+                            const judul1Input = sectionDiv.querySelector('input[name*="[judul_1]"]');
+                            if (judul1Input) judul1Input.value = section.judul_1 || '';
+                            
+                            // Set judul_2
+                            const judul2Input = sectionDiv.querySelector('input[name*="[judul_2]"]');
+                            if (judul2Input) judul2Input.value = section.judul_2 || '';
+                            
+                            // Set jumlah
+                            const jumlahInput = sectionDiv.querySelector('input[name*="[jumlah]"]');
+                            if (jumlahInput) jumlahInput.value = section.jumlah || 1;
+                        }
+                    }
+                },
+
+                // Set nilai produk
+                setProductValue(sectionIndex, productIndex, produk) {
+                    const container = document.getElementById(`pintu-products-${sectionIndex}`);
+                    if (container) {
+                        const productDiv = container.children[productIndex];
+                        if (productDiv) {
+                            console.log(`Setting product values for section ${sectionIndex}, product ${productIndex}:`, produk);
+                            
+                            // Set select produk pintu
+                            const selectProduct = productDiv.querySelector('select[name*="[item]"]');
+                            if (selectProduct) {
+                                selectProduct.value = produk.item || '';
+                                console.log(`Set select product to: ${produk.item}`);
+                                
+                                // Cek status aksesoris dari produk yang dipilih
+                                if (produk.item) {
+                                    const selectedProduct = this.products.pintu.find(p => p.code === produk.item);
+                                    if (selectedProduct) {
+                                        console.log(`Found product:`, selectedProduct);
+                                        console.log(`Status aksesoris:`, selectedProduct.status_aksesoris);
+                                    }
+                                }
+                            }
+                            
+                            // Set jumlah individual - SELALU SET dan TAMPILKAN
+                            const jumlahIndividualInput = productDiv.querySelector('input[name*="[jumlah_individual]"]');
+                            if (jumlahIndividualInput) {
+                                jumlahIndividualInput.value = produk.jumlah_individual || 1;
+                                jumlahIndividualInput.closest('div').style.display = 'block';
+                                console.log(`Set jumlah_individual to: ${produk.jumlah_individual || 1}`);
+                            }
+                            
+                            // Set nama produk
+                            const namaProdukInput = productDiv.querySelector('input[name*="[nama_produk]"]');
+                            if (namaProdukInput) namaProdukInput.value = produk.nama_produk || '';
+                            
+                            // Set dimensi
+                            const lebarInput = productDiv.querySelector('input[name*="[lebar]"]');
+                            const tebalInput = productDiv.querySelector('input[name*="[tebal]"]');
+                            const tinggiInput = productDiv.querySelector('input[name*="[tinggi]"]');
+                            
+                            if (lebarInput) lebarInput.value = produk.lebar || '';
+                            if (tebalInput) tebalInput.value = produk.tebal || '';
+                            if (tinggiInput) tinggiInput.value = produk.tinggi || '';
+                            
+                            // Set warna
+                            const warnaInput = productDiv.querySelector('input[name*="[warna]"]');
+                            if (warnaInput) warnaInput.value = produk.warna || '';
+                            
+                            // Set harga
+                            const hargaInput = productDiv.querySelector('input[name*="[harga]"]');
+                            if (hargaInput) hargaInput.value = produk.harga || '';
+                            
+                            // Set diskon
+                            const diskonInput = productDiv.querySelector('input[name*="[diskon]"]');
+                            const diskonSatuInput = productDiv.querySelector('input[name*="[diskon_satu]"]');
+                            const diskonDuaInput = productDiv.querySelector('input[name*="[diskon_dua]"]');
+                            
+                            if (diskonInput) diskonInput.value = produk.diskon || 0;
+                            if (diskonSatuInput) diskonSatuInput.value = produk.diskon_satu || 0;
+                            if (diskonDuaInput) diskonDuaInput.value = produk.diskon_dua || 0;
+                            
+                            // Set total harga
+                            const totalInput = productDiv.querySelector('input[name*="[total_harga]"]');
+                            if (totalInput) totalInput.value = produk.total_harga || '';
+                            
+                            console.log(`Product values set successfully for section ${sectionIndex}, product ${productIndex}`);
+                        }
+                    }
                 },
 
                 loadClients(salesId) {
@@ -183,12 +382,16 @@
                         .then(result => {
                             if (result.success) {
                                 const clientSelect = document.querySelector('select[name="id_client"]');
-                                clientSelect.innerHTML = '<option value="" disabled selected>Pilih Client</option>';
+                                clientSelect.innerHTML = '<option value="" disabled>Pilih Client</option>';
 
                                 result.data.forEach(client => {
                                     const option = document.createElement('option');
                                     option.value = client.id;
                                     option.textContent = client.nama_perusahaan || client.nama;
+                                    // Set selected jika ini adalah client yang sudah dipilih sebelumnya
+                                    if (client.id == {{ $penawaran->id_client ?? 0 }}) {
+                                        option.selected = true;
+                                    }
                                     clientSelect.appendChild(option);
                                 });
                             } else {
@@ -284,12 +487,14 @@
                         products: []
                     });
                     
-                    // Tambahkan produk pintu pertama secara otomatis
-                    try {
-                        this.addPintuProduk(sectionIndex);
-                        console.log(`✅ Produk pertama berhasil ditambahkan ke section ${sectionIndex}`);
-                    } catch (error) {
-                        console.error(`❌ Error saat menambahkan produk pertama ke section ${sectionIndex}:`, error);
+                    // Tambahkan produk pintu pertama secara otomatis (hanya jika bukan loading data)
+                    if (!this.isLoadingData) {
+                        try {
+                            this.addPintuProduk(sectionIndex);
+                            console.log(`✅ Produk pertama berhasil ditambahkan ke section ${sectionIndex}`);
+                        } catch (error) {
+                            console.error(`❌ Error saat menambahkan produk pertama ke section ${sectionIndex}:`, error);
+                        }
                     }
                     
                     console.log(`=== SECTION ${sectionIndex} COMPLETE ===`);
@@ -355,11 +560,11 @@
                                 <input type="text" name="json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][harga]" placeholder="Harga" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" readonly />
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
-                            <div style="display: none;">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jumlah Individual</label>
-                                <input type="number" name="json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][jumlah_individual]" placeholder="1" min="1" value="1" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" data-section="${sectionIndex}" data-product="${productIndex}" style="display: none;" />
-                            </div>
+                                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
+                             <div>
+                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jumlah Individual</label>
+                                 <input type="number" name="json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][jumlah_individual]" placeholder="1" min="1" value="1" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" data-section="${sectionIndex}" data-product="${productIndex}" />
+                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon (%)</label>
                                 <input type="number" name="json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][diskon]" placeholder="0" min="0" step="0.01" value="0" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" data-section="${sectionIndex}" data-product="${productIndex}" />
@@ -396,11 +601,13 @@
                     selectProduct.addEventListener('change', function(e) {
                         self.autofillPintuProduct(sectionIndex, productIndex, e.target.value);
                     });
+                    
                     if (jumlahIndividualInput) {
                         jumlahIndividualInput.addEventListener('input', function() {
                             self.calculatePintuProductTotal(sectionIndex, productIndex);
                         });
                     }
+                    
                     diskonInput.addEventListener('input', function() {
                         self.calculatePintuProductTotal(sectionIndex, productIndex);
                     });
@@ -591,17 +798,12 @@
                                 hargaInput.dataset.rawValue = produk.harga_satuan || 0;
                             }
 
-                            // Tampilkan/sembunyikan field jumlah individual berdasarkan status_aksesoris
-                            const jumlahIndividualInput = productDiv.querySelector('input[name*="[jumlah_individual]"]');
-                            if (jumlahIndividualInput) {
-                                if (produk.status_aksesoris == 1) {
-                                    jumlahIndividualInput.style.display = 'block';
-                                    jumlahIndividualInput.closest('div').style.display = 'block';
-                                } else {
-                                    jumlahIndividualInput.style.display = 'none';
-                                    jumlahIndividualInput.closest('div').style.display = 'none';
-                                }
-                            }
+                                                         // Selalu tampilkan field jumlah individual
+                             const jumlahIndividualInput = productDiv.querySelector('input[name*="[jumlah_individual]"]');
+                             if (jumlahIndividualInput) {
+                                 jumlahIndividualInput.style.display = 'block';
+                                 jumlahIndividualInput.closest('div').style.display = 'block';
+                             }
 
                             // Hitung total harga otomatis
                             this.calculatePintuProductTotal(sectionIndex, productIndex);
@@ -898,7 +1100,7 @@
                     console.log('Form ID:', form.id);
                     
                     // Debug route
-                    console.log('Expected route:', '{{ route("admin.penawaran-pintu.store") }}');
+                    console.log('Expected route:', '{{ route("admin.penawaran-pintu.store-revisi", $penawaran) }}');
                     console.log('Current form action:', form.action);
                     
                     // Validasi sales

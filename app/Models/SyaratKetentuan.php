@@ -15,6 +15,7 @@ class SyaratKetentuan extends Model
     // Tentukan atribut yang bisa diisi (fillable)
     protected $fillable = [
         'syarat',
+        'syarat_pintu',
         'status_deleted',
     ];
 

@@ -6,354 +6,493 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 10px;
+            font-size: 9px;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             line-height: 1.2;
         }
 
         p {
             margin: 4px 0;
-            line-height: 1.2;
+            line-height: 1;
         }
 
-        h1, h3 {
+        h1,
+        h3 {
             margin: 0px 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 0px;
         }
 
-        th, td {
+        th,
+        .table-style {
             padding: 5px;
             border: 1px solid #000000;
-            text-align: center;
-            font-size: 9px;
+        }
+
+        .table-style-grand-total {
+            padding: 5px;
+            border: 1px solid #000000;
+            background-color: #567CBA;
+            color: white;
+        }
+
+        .table-none {
+            padding: 5px;
+            border: 0px solid #000000;
         }
 
         th {
             background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        .header-section {
-            margin-bottom: 20px;
-        }
-
-        .company-info {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .recipient-info {
-            margin-bottom: 20px;
-        }
-
-        .subject-info {
-            margin-bottom: 20px;
-        }
-
-        .product-title {
-            background-color: #567CBA;
-            color: white;
-            font-weight: bold;
             text-align: center;
-            padding: 8px;
-            margin: 15px 0 10px 0;
+        }
+
+        div {
+            margin-bottom: 10px;
+        }
+
+        .title-produk {
             font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 0px;
+            background-color: #577dbb;
+            padding: 5px;
+            text-transform: uppercase;
+            color: white;
         }
 
         .text-right {
             text-align: right;
         }
 
-        .text-left {
-            text-align: left;
-        }
-
-        .currency-table {
+        .grid-content {
             width: 100%;
-            border: none;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: center;
         }
 
-        .currency-table td {
-            border: none;
-            padding: 0;
-            text-align: right;
-        }
-
-        .summary-row {
-            background-color: #f9f9f9;
-            font-weight: bold;
-        }
-
-        .grand-total {
-            background-color: #567CBA;
-            color: white;
-            font-weight: bold;
-        }
-
-        .terms-section {
-            margin-top: 20px;
-        }
-
-        .footer-section {
-            margin-top: 30px;
-        }
-
-        .signature-section {
-            margin-top: 40px;
+        .w-100 {
+            width: 100%;
         }
     </style>
+
 </head>
 
 <body>
-    <!-- Header Section -->
-    <div class="header-section">
-        <div class="company-info">
-            <img src="{{ public_path('assets/images/logomki.png') }}" alt="Logo" width="200" style="float: right;">
-            <h1 style="margin: 0; font-size: 18px; font-weight: bold;">MEGA KOMPOSIT</h1>
-        </div>
-        
-        <div style="clear: both; margin-top: 10px;">
-            <p><strong>No:</strong> {{ $penawaran->nomor_penawaran }}</p>
-            <p><strong>Tgl:</strong> {{ $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('d-M-y') : 'Belum ditentukan' }}</p>
+    <div style="position: relative; z-index: 0; width: 100%;">
+        <div style="position: absolute; top: 0; right: 0; z-index: 1;">
+            <img src="{{ public_path('assets/images/logomki.png') }}" alt="Logo Perusahaan" width="250">
         </div>
     </div>
-
-    <!-- Recipient Section -->
-    <div class="recipient-info">
-        <p><strong>Kepada Yth,</strong></p>
-        <p><strong>{{ $penawaran->client->nama_perusahaan ?? $penawaran->client->nama ?? 'Nama client tidak ditemukan' }}</strong></p>
-        <p>{{ $penawaran->client->alamat ?? 'Alamat tidak tersedia' }}</p>
-        <p>Di tempat</p>
-    </div>
-
-    <!-- Subject Section -->
-    <div class="subject-info">
-        <p><strong>Hal:</strong> {{ $penawaran->judul_penawaran }}</p>
-    </div>
-
-    <!-- Greeting -->
     <div>
-        <p><strong>Dengan hormat,</strong></p>
-        <p>Bersama ini kami sampaikan penawaran harga produk Pintu WPC, sebagai berikut:</p>
+        <p>
+            No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
+            Tgl:
+            @if($penawaran->tanggal_penawaran)
+                @php
+                    $bulanIndonesia = [
+                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                    ];
+                    $tanggal = $penawaran->tanggal_penawaran;
+                    $bulan = $bulanIndonesia[$tanggal->month];
+                    echo $tanggal->day . '-' . $bulan . '-' . $tanggal->year;
+                @endphp
+            @else
+                Belum ditentukan
+            @endif
+        </p>
     </div>
 
-    <!-- Product Title -->
-    <div class="product-title">
-        PINTU WPC + KUSEN MKK-B
+    <div>
+        Kepada Yth, <br>
+        <b>{{ $penawaran->client->nama_perusahaan ?? ($penawaran->client->nama ?? 'Nama client tidak ditemukan') }}</b><br>
+        {{ $penawaran->client->alamat ?? 'Alamat tidak tersedia' }}<br>
     </div>
 
-    <!-- Product Table -->
-    <table>
-        <thead>
-            <tr>
-                <th width="3%">NO</th>
-                <th width="15%">ITEM</th>
-                <th width="10%">TYPE</th>
-                <th width="8%">DIMENSI</th>
-                <th width="8%">WARNA</th>
-                <th width="12%">HARGA SATUAN</th>
-                <th width="5%">DISC</th>
-                <th width="12%">HARGA NETT SATUAN</th>
-                <th width="12%">HARGA NETT (/unit)</th>
-                <th width="5%">QTY (unit)</th>
-                <th width="12%">TOTAL HARGA</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>
-                    <table style="width: 100%; border: none;">
-                        <tr>
-                            <th style="border: none; padding: 2px;">LEBAR</th>
-                        </tr>
-                        <tr>
-                            <th style="border: none; padding: 2px;">TEBAL</th>
-                        </tr>
-                        <tr>
-                            <th style="border: none; padding: 2px;">TINGGI</th>
-                        </tr>
-                    </table>
-                </th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $no = 1;
-                $totalKeseluruhan = 0;
-                $totalQty = 0;
-            @endphp
+    <div>
+        <p>
+            Up: {{ $penawaran->client->nama ?? 'Contact Person' }}<br>
+            Hal : Penawaran Harga produk Pintu WPC <br>
+        </p>
+    </div>
+    <div>
+        <p>
+            Dengan Hormat,
+        </p>
+        <p style="margin-bottom: 10px; padding: 0;">Bersama ini kami sampaikan penawaran harga produk Pintu WPC, sebagai
+            berikut :
+        </p>
+    </div>
 
-            {{-- Produk Pintu Section --}}
-            @if (is_array($json_penawaran_pintu) && count($json_penawaran_pintu) > 0)
-                @foreach ($json_penawaran_pintu as $pintuIndex => $pintuItem)
-                    @php
-                        // Ambil data pintu dari database berdasarkan slug
-                        $pintuData = null;
-                        if (isset($pintuItem['item'])) {
-                            $pintuData = \App\Models\Pintu::where('slug', $pintuItem['item'])->first();
-                        }
-                        
-                        $totalHargaPintu = isset($pintuItem['harga']) && isset($pintuItem['jumlah']) ? ($pintuItem['harga'] * $pintuItem['jumlah']) : 0;
-                        $totalKeseluruhan += $totalHargaPintu;
-                        $totalQty += isset($pintuItem['jumlah']) ? (int) $pintuItem['jumlah'] : 0;
-                    @endphp
+    @if (is_array($json_penawaran_pintu) && count($json_penawaran_pintu) > 0)
+        <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 10px; font-weight: bold; color: #000000;">PINTU WPC
+        </h3>
+        @php
+            $no = 1;
+            $totalKeseluruhan = 0;
+            $totalQty = 0;
+            $totalHargaNettSatuan = 0;
+
+            // Hitung total harga nett satuan terlebih dahulu
+            foreach ($json_penawaran_pintu as $sectionIndex => $section) {
+                if (strpos($sectionIndex, 'section_') === 0 && isset($section['products'])) {
+                    foreach ($section['products'] as $product) {
+                        $totalHargaNettSatuan += isset($product['harga']) ? (float) $product['harga'] : 0;
+                    }
+                }
+            }
+        @endphp
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th rowspan="2" width="3%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        NO</th>
+                    <th rowspan="2" width="25%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        ITEM</th>
+                    <th rowspan="2" width="10%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        TYPE</th>
+                    <th colspan="3" width="8%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        DIMENSI</th>
+                    <th rowspan="2" width="8%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        WARNA</th>
+                    <th rowspan="2" width="12%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        HARGA SATUAN</th>
+                    <th rowspan="2" width="5%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        DISC</th>
+                    <th rowspan="2" width="15%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        HARGA NETT SATUAN</th>
+                    <th rowspan="2" width="15%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        HARGA NETT (/unit)</th>
+                    <th rowspan="2" width="5%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        QTY (unit)</th>
+                    <th rowspan="2" width="100%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        TOTAL HARGA</th>
+                </tr>
+                <tr>
+                    <th width="8%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        LEBAR</th>
+                    <th width="8%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        TEBAL</th>
+                    <th width="8%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        TINGGI</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($json_penawaran_pintu as $sectionIndex => $section)
+                    @if (strpos($sectionIndex, 'section_') === 0)
+                        {{-- Section Header --}}
+                        @if (!empty($section['judul_1']))
+                            <tr>
+                                <td colspan="3"
+                                    style="padding: 5px; font-weight: bold; border: 1px solid #000000; text-align: left;">
+                                    {{ $section['judul_1'] }}
+                                </td>
+                                @if (!empty($section['judul_2']))
+                                    <td colspan="10"
+                                        style="padding: 5px; font-weight: bold; border: 1px solid #000000; text-align: left;">
+                                        {{ $section['judul_2'] }}
+                                    </td>
+                                @endif
+                            </tr>
+                        @endif
+
+                        {{-- Products in Section --}}
+                        @if (isset($section['products']) && is_array($section['products']))
+                            @foreach ($section['products'] as $product)
+                                @php
+                                    $totalHargaProduct = 0;
+                                    if (isset($product['total_harga'])) {
+                                        // Ambil nilai langsung karena sudah dalam format angka
+                                        $totalHargaProduct = (float) $product['total_harga'];
+                                    }
+                                    $totalKeseluruhan += $totalHargaProduct;
+                                    // QTY dihitung per section, bukan per produk
+                                    if ($loop->first) {
+                                        $totalQty += isset($section['jumlah']) ? (int) $section['jumlah'] : 0;
+                                    }
+
+                                    // Hitung total harga nett satuan dan total harga untuk section ini
+                                    $sectionHargaNettSatuan = 0;
+                                    $sectionTotalHarga = 0;
+                                    if (isset($section['products'])) {
+                                        foreach ($section['products'] as $sectionProduct) {
+                                            $sectionHargaNettSatuan += isset($sectionProduct['total_harga'])
+                                                ? (float) $sectionProduct['total_harga']
+                                                : 0;
+                                            $sectionTotalHarga += isset($sectionProduct['total_harga'])
+                                                ? (float) $sectionProduct['total_harga']
+                                                : 0;
+                                        }
+                                    }
+                                @endphp
+                                <tr>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ $no++ }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ $product['nama_produk'] ?? ($product['item'] ?? '-') }}</td>
+                                    <td width="25%"
+                                        style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ $product['item'] ?? ($product['item'] ?? '-') }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ isset($product['lebar']) && (int)$product['lebar'] > 0 ? (int) $product['lebar'] . ' cm' : '-' }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ isset($product['tebal']) && (int)$product['tebal'] > 0 ? (int) $product['tebal'] . ' cm' : '-' }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ isset($product['tinggi']) && (int)$product['tinggi'] > 0 ? (int) $product['tinggi'] . ' cm' : '-' }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        {{ $product['warna'] ?? '-' }}</td>
+                                    <td style="padding: 5px; border: 1px solid #000000;">
+                                        <table>
+                                            <tr>
+                                                <td>Rp</td>
+                                                <td style="text-align: right;">
+                                                    {{ isset($product['harga']) ? number_format($product['harga'], 0, ',', '.') : '-' }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                        <table>
+                                            <tr>
+                                                <td style="text-align: center;">
+                                                    {{ isset($product['diskon']) && (int)$product['diskon'] > 0 ? (int) $product['diskon'] . '%' : '-' }}
+                                                </td>
+                                                @if(isset($product['diskon_satu']) && (int)$product['diskon_satu'] > 0)
+                                                    <td style="text-align: right; padding-left: 10px;">{{ (int) $product['diskon_satu'] . '%' }}</td>
+                                                @endif
+                                                @if(isset($product['diskon_dua']) && (int)$product['diskon_dua'] > 0)
+                                                    <td style="text-align: right; padding-left: 10px;">{{ (int) $product['diskon_dua'] . '%' }}</td>
+                                                @endif
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="padding: 5px; border: 1px solid #000000;">
+                                        <table>
+                                            <tr>
+                                                <td>Rp</td>
+                                                <td style="text-align: right;">
+                                                    {{ isset($product['total_harga']) ? number_format($product['total_harga'], 0, ',', '.') : '-' }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    @if ($loop->first)
+                                        <td style="padding: 5px; border: 1px solid #000000;"
+                                            rowspan="{{ count($section['products']) }}">
+                                            <table>
+                                                <tr>
+                                                    <td>Rp</td>
+                                                    <td style="text-align: right;">
+                                                        <strong>{{ number_format($sectionHargaNettSatuan, 0, ',', '.') }}</strong>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    @endif
+                                    @if ($loop->first)
+                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;"
+                                            rowspan="{{ count($section['products']) }}">
+                                            <table>
+                                                <tr>
+                                                    <td style="text-align: center;">
+                                                        <strong>{{ $section['jumlah'] ?? '-' }}</strong>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    @endif
+                                    @if ($loop->first)
+                                        <td style="padding: 5px; border: 1px solid #000000;"
+                                            rowspan="{{ count($section['products']) }}">
+                                            <table>
+                                                <tr>
+                                                    <td>Rp</td>
+                                                    <td style="text-align: right;">
+                                                        <strong>{{ number_format($sectionTotalHarga * $section['jumlah'], 0, ',', '.') }}</strong>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        @endif
+                    @endif
+                @endforeach
+
+                {{-- Summary rows --}}
+                <tr>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style"></td>
+                    <td class="table-style" style="text-align: center;"><strong>{{ $totalQty }}</strong></td>
+                    <td class="table-style"></td>
+                </tr>
+                <tr>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td colspan="2" class="table-none text-right"><strong>TOTAL</strong></td>
+                    <td class="table-style">
+                        <table>
+                            <tr>
+                                <td>Rp</td>
+                                <td style="text-align: right;">{{ number_format($penawaran->total, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                @if (($penawaran->ppn ?? 0) > 0)
                     <tr>
-                        <td>{{ $no++ }}</td>
-                        <td class="text-left">{{ $pintuData ? $pintuData->nama_produk : ($pintuItem['item'] ?? '-') }}</td>
-                        <td>{{ $pintuData ? $pintuData->code : '-' }}</td>
-                        <td>
-                            <table style="width: 100%; border: none;">
-                                <tr>
-                                    <td style="border: none; padding: 1px;">{{ $pintuData ? $pintuData->lebar . ' cm' : '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="border: none; padding: 1px;">{{ $pintuData ? $pintuData->tebal . ' cm' : '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="border: none; padding: 1px;">{{ $pintuData ? $pintuData->tinggi . ' cm' : '-' }}</td>
-                                </tr>
-                            </table>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td colspan="2" class="table-none text-right"><strong>PPN {{ $penawaran->ppn }}%</strong>
                         </td>
-                        <td>{{ $pintuData ? $pintuData->warna : '-' }}</td>
-                        <td class="text-right">
-                            <table class="currency-table">
+                        <td class="table-style">
+                            <table>
                                 <tr>
                                     <td>Rp</td>
-                                    <td>{{ isset($pintuItem['harga']) ? number_format($pintuItem['harga'], 0, ',', '.') : '-' }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td>-</td>
-                        <td class="text-right">
-                            <table class="currency-table">
-                                <tr>
-                                    <td>Rp</td>
-                                    <td>{{ isset($pintuItem['harga']) ? number_format($pintuItem['harga'], 0, ',', '.') : '-' }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td class="text-right">
-                            <table class="currency-table">
-                                <tr>
-                                    <td>Rp</td>
-                                    <td>{{ isset($pintuItem['harga']) ? number_format($pintuItem['harga'], 0, ',', '.') : '-' }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td>{{ $pintuItem['jumlah'] ?? '-' }}</td>
-                        <td class="text-right">
-                            <table class="currency-table">
-                                <tr>
-                                    <td>Rp</td>
-                                    <td>{{ number_format($totalHargaPintu, 0, ',', '.') }}</td>
+                                    <td style="text-align: right;">
+                                        {{ number_format(($penawaran->total * ($penawaran->ppn ?? 0)) / 100, 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
-                @endforeach
-            @endif
-
-            {{-- Summary Section --}}
-            <tr class="summary-row">
-                <td colspan="9" class="text-right"><strong>QTY (unit)</strong></td>
-                <td><strong>{{ $totalQty }}</strong></td>
-                <td></td>
-            </tr>
-            <tr class="summary-row">
-                <td colspan="9" class="text-right"><strong>TOTAL</strong></td>
-                <td class="text-right">
-                    <table class="currency-table">
-                        <tr>
-                            <td>Rp</td>
-                            <td>{{ number_format($totalKeseluruhan, 0, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                </td>
-                <td></td>
-            </tr>
-            @if (($penawaran->ppn ?? 0) > 0)
-                <tr class="summary-row">
-                    <td colspan="9" class="text-right"><strong>PPN {{ $penawaran->ppn }}%</strong></td>
-                    <td class="text-right">
-                        <table class="currency-table">
+                @endif
+                <tr>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td colspan="2" class="table-none-grand-total text-right"><strong>GRAND TOTAL</strong></td>
+                    <td class="table-style-grand-total">
+                        <table>
                             <tr>
-                                <td>Rp</td>
-                                <td>{{ number_format(($totalKeseluruhan * ($penawaran->ppn ?? 0)) / 100, 0, ',', '.') }}</td>
+                                <td style="color: white; font-weight: bold;">Rp</td>
+                                <td style="text-align: right; color: white; font-weight: bold;">
+                                    {{ number_format($penawaran->grand_total, 0, ',', '.') }}
+                                </td>
                             </tr>
                         </table>
                     </td>
-                    <td></td>
                 </tr>
-            @endif
-            <tr class="grand-total">
-                <td colspan="9" class="text-right"><strong>GRAND TOTAL</strong></td>
-                <td class="text-right">
-                    <table class="currency-table">
-                        <tr>
-                            <td style="color: white; font-weight: bold;">Rp</td>
-                            <td style="color: white; font-weight: bold;">{{ number_format($totalKeseluruhan + (($totalKeseluruhan * ($penawaran->ppn ?? 0)) / 100), 0, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                </td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    @endif
 
     <!-- Terms & Conditions Section -->
-    @if (is_array($syarat_kondisi) && count($syarat_kondisi) > 0)
-        <div class="terms-section">
-            <p><strong>Syarat & Kondisi:</strong></p>
+    <div style="margin-top: 20px;">
+        <p style="text-decoration: underline;"><strong>Syarat & Kondisi:</strong></p>
+        @if (is_array($syarat_kondisi) && count($syarat_kondisi) > 0)
             <ul style="margin-top: 5px; padding-left: 20px;">
                 @foreach ($syarat_kondisi as $syarat)
                     <li style="margin-bottom: 3px;">{{ $syarat }}</li>
                 @endforeach
             </ul>
-        </div>
-    @endif
+        @else
+            <ul style="margin-top: 5px; padding-left: 20px;">
+                <li style="margin-bottom: 3px;">Harga bisa berubah sewaktu-waktu tanpa pemberitahuan terlebih dahulu
+                </li>
+                <li style="margin-bottom: 3px;">Syarat pembayaran 50% dari total kontrak sebagai uang muka (DP)</li>
+                <li style="margin-bottom: 3px;">Harga diatas SUDAH termasuk PPN 11%</li>
+                <li style="margin-bottom: 3px;">Harga material tersebut Franco JABODETABEK diatas Truk</li>
+                <li style="margin-bottom: 3px;">Pengiriman diluar Area JABODETABEK dikenakan biaya Ekspedisi</li>
+                <li style="margin-bottom: 3px;">Produksi 1 bulan setelah PO diterima</li>
+                <li style="margin-bottom: 3px;">Harga diatas TIDAK termasuk biaya pemasangan</li>
+                <li style="margin-bottom: 3px;">Harga diatas TIDAK termasuk aksesoris Handle Pintu & Silinder Kunci
+                </li>
+                <li style="margin-bottom: 3px;">Pembayaran ditransfer melalui rekening BCA 288 9696 961 a/n PT. MEGA
+                    KOMPOSIT INDONESIA Cab. BCA Puri</li>
+                <li style="margin-bottom: 3px;">Seluruh material adalah milik PT. MEGA KOMPOSIT INDONESIA selama pihak
+                    Customer belum menyelesaikan pembayaran</li>
+            </ul>
+        @endif
+    </div>
 
     <!-- Notes Section -->
     @if ($penawaran->catatan)
-        <div class="terms-section">
+        <div style="margin-top: 20px;">
             <p><strong>Catatan:</strong></p>
             <p style="margin-top: 5px;">{{ $penawaran->catatan }}</p>
         </div>
     @endif
 
     <!-- Footer Section -->
-    <div class="footer-section">
+    <div style="margin-top: 30px;">
         <p>Atas perhatian dan kerjasamanya, kami ucapkan terima kasih.</p>
     </div>
 
     <!-- Signature Section -->
-    <div class="signature-section">
+    <div style="margin-top: 0px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 30%; vertical-align: top;">
                     <p style="margin-bottom: 60px;">Hormat kami,</p>
                     <p style="margin-top: 40px;">{{ $penawaran->user->name ?? 'Sales' }}</p>
                 </td>
-                <td style="width: 70%; vertical-align: bottom; text-align: right;">
+                <td style="width: 70%; vertical-align: bottom; text-align: right; padding-top: 80px;">
                     <div>
                         <p><strong>PT. MEGA KOMPOSIT INDONESIA</strong></p>
                         <p style="margin-top: 5px;">
-                            Ruko Boulevard Tekno E. 1 No 21<br>
-                            Jl. Tekno Widya, Setu, Tangerang Selatan, Banten 15114 Indonesia<br>
-                            Email: megakomposit.indonesia@gmail.com<br>
+                            Ruko Boulevard Tekno Blok B No.21<br>
+                            Jl. Tekno Widya, Setu, Tangerang Selatan<br>
+                            Banten 15114 Indonesia<br>
+                            Email: mega.komposit.indonesia@gmail.com
                             Website: www.megakomposit.com
                         </p>
                     </div>

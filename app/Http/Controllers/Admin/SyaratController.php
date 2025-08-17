@@ -14,7 +14,7 @@ class SyaratController extends Controller
     public function index()
     {
         // Mengambil hanya data dengan status_deleted = false
-        $syaratKetentuan = SyaratKetentuan::where('status_deleted', 0)->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', 0)->where('syarat_pintu', 0)->get();
         
         return view('admin.syarat_ketentuan.index', compact('syaratKetentuan'));
     }

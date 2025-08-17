@@ -12,15 +12,18 @@ use App\Models\Wallpanel;
 use App\Models\Flooring;
 use App\Models\Facade;
 use App\Models\SyaratKetentuan;
+use App\Traits\NomorPenawaranGenerator;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePenawaranRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenawaranController extends Controller
 {
+    use NomorPenawaranGenerator;
+
     public function index()
     {
-        $query = Penawaran::with(['client', 'user'])->where('status_deleted', false);
+        $query = Penawaran::with(['client', 'user'])->where('status_deleted', false)->where('penawaran_pintu', false);
 
         // Search functionality
         if (request('search')) {
@@ -80,18 +83,8 @@ class PenawaranController extends Controller
             $data['syarat_kondisi'] = [];
         }
         
-        // Generate nomor penawaran otomatis
-        $lastPenawaran = Penawaran::latest()->first();
-        $lastNumber = $lastPenawaran ? $lastPenawaran->nomor_penawaran : null;
-
-        // Ambil bulan dan tahun saat ini
-        $month = date('m');
-        $year = date('y');
-
-        // Format nomor penawaran: A/MKI/MM/YY
-        $prefix = 'A/MKI/' . $month . '/' . $year;
-        $number = $lastNumber ? (int)substr($lastNumber, 0, 2) + 1 : 1;
-        $data['nomor_penawaran'] = str_pad($number, 2, '0', STR_PAD_LEFT) . $prefix;
+        // Generate nomor penawaran otomatis berdasarkan bulan
+        $data['nomor_penawaran'] = $this->generateNomorPenawaran();
         
         // Debug: Log data yang akan disimpan
         \Log::info('Penawaran data to be saved:', $data);
@@ -167,6 +160,65 @@ class PenawaranController extends Controller
         $penawaran->update(['status' => $status]);
         
         return redirect()->route('admin.penawaran.show', $penawaran)->with('success', "Status penawaran berhasil diubah menjadi {$statusText}.");
+    }
+
+    /**
+     * Buat revisi penawaran
+     */
+    public function createRevisi(Penawaran $penawaran)
+    {
+        // Cek apakah bisa dibuat revisi
+        if (!$this->canCreateRevisi($penawaran->nomor_penawaran)) {
+            return redirect()->back()->with('error', 'Maksimal revisi hanya 3 kali');
+        }
+
+        // Ambil data penawaran asli
+        $users = User::where('status_deleted', 0)->get();
+        $deckings = Decking::active()->get();
+        $ceilings = Ceiling::active()->get();
+        $wallpanels = Wallpanel::active()->get();
+        $floorings = Flooring::active()->get();
+        $facades = Facade::active()->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
+
+        // Load relasi yang diperlukan
+        $penawaran->load(['client', 'user']);
+
+        return view('admin.penawaran.create-revisi', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
+    }
+
+    /**
+     * Simpan revisi penawaran
+     */
+    public function storeRevisi(StorePenawaranRequest $request, Penawaran $penawaran)
+    {
+        $data = $request->validated();
+        $data['created_by'] = auth()->id();
+        $data['status'] = 0; // Default status 0
+        $data['status_deleted'] = false; // Default status_deleted false
+        $data['is_revisi'] = true; // Set sebagai revisi
+        $data['revisi_from'] = $penawaran->id; // Set referensi ke penawaran asli
+        
+        // Handle syarat_kondisi checkbox
+        if ($request->has('syarat_kondisi') && is_array($request->syarat_kondisi)) {
+            $data['syarat_kondisi'] = $request->syarat_kondisi;
+        } else {
+            $data['syarat_kondisi'] = [];
+        }
+        
+        // Copy data produk dari penawaran asli
+        $data['json_produk'] = $penawaran->json_produk ?? [];
+        
+        // Generate nomor revisi
+        $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
+        $data['nomor_penawaran'] = $this->generateNomorRevisi($nomorAsli);
+        
+        // Debug: Log data yang akan disimpan
+        \Log::info('Revisi Penawaran data to be saved:', $data);
+        
+        $revisiPenawaran = Penawaran::create($data);
+        
+        return redirect()->route('admin.penawaran.show', $revisiPenawaran)->with('success', 'Revisi penawaran berhasil dibuat.');
     }
 
     /**

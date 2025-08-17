@@ -121,6 +121,14 @@ Route::middleware(['auth', 'role:1,3'])->prefix('admin')->group(function () {
     Route::get('syarat-ketentuan/{id}/edit', [SyaratController::class, 'edit'])->name('admin.syarat_ketentuan.edit');
     Route::put('syarat-ketentuan/{id}', [SyaratController::class, 'update'])->name('admin.syarat_ketentuan.update');
     Route::delete('syarat-ketentuan/{id}', [SyaratController::class, 'destroy'])->name('admin.syarat_ketentuan.destroy');
+    
+    // Syarat Pintu Routes
+    Route::get('syarat-pintu', [App\Http\Controllers\Admin\SyaratPintuController::class, 'index'])->name('admin.syarat-pintu.index');
+    Route::get('syarat-pintu/create', [App\Http\Controllers\Admin\SyaratPintuController::class, 'create'])->name('admin.syarat-pintu.create');
+    Route::post('syarat-pintu', [App\Http\Controllers\Admin\SyaratPintuController::class, 'store'])->name('admin.syarat-pintu.store');
+    Route::get('syarat-pintu/{id}/edit', [App\Http\Controllers\Admin\SyaratPintuController::class, 'edit'])->name('admin.syarat-pintu.edit');
+    Route::put('syarat-pintu/{id}', [App\Http\Controllers\Admin\SyaratPintuController::class, 'update'])->name('admin.syarat-pintu.update');
+    Route::delete('syarat-pintu/{id}', [App\Http\Controllers\Admin\SyaratPintuController::class, 'destroy'])->name('admin.syarat-pintu.destroy');
 });
 
 Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->group(function () {
@@ -162,12 +170,16 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');
     Route::get('penawaran/cetak/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetak'])->name('penawaran.cetak');
     Route::patch('penawaran/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranController::class, 'updateStatus'])->name('penawaran.update-status');
+Route::get('penawaran/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranController::class, 'createRevisi'])->name('penawaran.create-revisi');
+Route::post('penawaran/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranController::class, 'storeRevisi'])->name('penawaran.store-revisi');
 
     // Penawaran Pintu Routes
-    Route::resource('penawaran-pintu', App\Http\Controllers\Admin\PenawaranPintuController::class);
+    Route::resource('penawaran-pintu', App\Http\Controllers\Admin\PenawaranPintuController::class)->parameters(['penawaran-pintu' => 'penawaran']);
     Route::get('penawaran-pintu/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'getClientsBySales'])->name('penawaran-pintu.clients');
     Route::get('penawaran-pintu/cetak/{id}', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'cetak'])->name('penawaran-pintu.cetak');
     Route::patch('penawaran-pintu/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'updateStatus'])->name('penawaran-pintu.update-status');
+Route::get('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'createRevisi'])->name('penawaran-pintu.create-revisi');
+Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'storeRevisi'])->name('penawaran-pintu.store-revisi');
 
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');

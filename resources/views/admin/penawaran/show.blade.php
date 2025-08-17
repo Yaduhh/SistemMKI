@@ -107,6 +107,41 @@
                                         </span>
                                     </span>
                                 </div>
+                                
+                                <!-- Informasi Revisi -->
+                                @if($penawaran->is_revisi)
+                                    <div class="col-span-1 md:col-span-2 mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Informasi Revisi</span>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <span class="font-medium text-purple-700 dark:text-purple-300">Revisi dari:</span>
+                                                <span class="text-purple-800 dark:text-purple-200">
+                                                    @if($penawaran->penawaranAsli)
+                                                        <a href="{{ route('admin.penawaran.show', $penawaran->penawaranAsli->id) }}" class="hover:underline">
+                                                            {{ $penawaran->penawaranAsli->nomor_penawaran }}
+                                                        </a>
+                                                    @else
+                                                        {{ $penawaran->revisi_from ?? 'Tidak diketahui' }}
+                                                    @endif
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="font-medium text-purple-700 dark:text-purple-300">Level Revisi:</span>
+                                                <span class="text-purple-800 dark:text-purple-200">
+                                                    @php
+                                                        $revisionLevel = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? $matches[1] : '?';
+                                                    @endphp
+                                                    R{{ $revisionLevel }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center">
@@ -670,6 +705,23 @@
                     </svg>
                     Cetak PDF
                 </a>
+
+                <!-- Tombol Revisi -->
+                @if ($penawaran->canCreateRevisi())
+                    <a href="{{ route('admin.penawaran.create-revisi', $penawaran->id) }}"
+                        class="flex items-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        @if($penawaran->is_revisi)
+                            Buat Revisi Lanjutan
+                        @else
+                            Buat Revisi
+                        @endif
+                    </a>
+                @endif
 
                 <a href="{{ route('admin.penawaran.edit', $penawaran->id) }}"
                     class="flex items-center bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">

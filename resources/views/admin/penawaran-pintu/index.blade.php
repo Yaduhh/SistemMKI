@@ -351,17 +351,11 @@
                                 </svg>
                                 Rincian Harga
                             </h4>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 <div class="text-center">
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
                                     <p class="text-lg font-bold text-gray-900 dark:text-white">Rp
                                         {{ number_format($penawaran->total, 0, ',', '.') }}</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Diskon</p>
-                                    <p class="text-lg font-bold text-red-600 dark:text-red-400">- Rp
-                                        {{ number_format($penawaran->total_diskon + ($penawaran->total_diskon_1 ?? 0) + ($penawaran->total_diskon_2 ?? 0), 0, ',', '.') }}
-                                    </p>
                                 </div>
                                 <div class="text-center">
                                     <p class="text-sm text-gray-600 dark:text-gray-400">PPN</p>

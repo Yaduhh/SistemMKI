@@ -13,12 +13,14 @@ use App\Models\Flooring;
 use App\Models\Facade;
 use App\Models\Pintu;
 use App\Models\SyaratKetentuan;
+use App\Traits\NomorPenawaranGenerator;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePenawaranRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenawaranPintuController extends Controller
 {
+    use NomorPenawaranGenerator;
     public function index()
     {
         $query = Penawaran::with(['client', 'user'])
@@ -61,7 +63,7 @@ class PenawaranPintuController extends Controller
     {
         $users = User::where('status_deleted', 0)->get();
         $pintus = Pintu::where('status_deleted', false)->get();
-        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
         return view('admin.penawaran-pintu.create', compact('users', 'pintus', 'syaratKetentuan'));
     }
 
@@ -80,33 +82,68 @@ class PenawaranPintuController extends Controller
             $data['syarat_kondisi'] = [];
         }
         
-        // Generate nomor penawaran otomatis
-        $lastPenawaran = Penawaran::latest()->first();
-        $lastNumber = $lastPenawaran ? $lastPenawaran->nomor_penawaran : null;
-
-        // Ambil bulan dan tahun saat ini
-        $month = date('m');
-        $year = date('y');
-
-        // Format nomor penawaran: A/MKI/MM/YY
-        $prefix = 'A/MKI/' . $month . '/' . $year;
-        $number = $lastNumber ? (int)substr($lastNumber, 0, 2) + 1 : 1;
-        $data['nomor_penawaran'] = str_pad($number, 2, '0', STR_PAD_LEFT) . $prefix;
+        // Handle json_penawaran_pintu data
+        if ($request->has('json_penawaran_pintu')) {
+            $jsonPenawaranPintu = [];
+            
+            // Proses produk pintu (data langsung)
+            foreach ($request->input('json_penawaran_pintu', []) as $key => $value) {
+                if (is_numeric($key)) {
+                    // Ini adalah produk pintu langsung
+                    $jsonPenawaranPintu[$key] = $value;
+                } elseif (strpos($key, 'section_') === 0) {
+                    // Ini adalah section produk lainnya
+                    $jsonPenawaranPintu[$key] = $value;
+                }
+            }
+            
+            $data['json_penawaran_pintu'] = $jsonPenawaranPintu;
+        } else {
+            $data['json_penawaran_pintu'] = [];
+        }
+        
+        // Generate nomor penawaran otomatis berdasarkan bulan
+        $data['nomor_penawaran'] = $this->generateNomorPenawaran();
         
         // Debug: Log data yang akan disimpan
         \Log::info('Penawaran Pintu data to be saved:', $data);
         
-        $penawaran = Penawaran::create($data);
-        
-        return redirect()->route('admin.penawaran-pintu.index')->with('success', 'Penawaran Pintu berhasil dibuat.');
+        try {
+            $penawaran = Penawaran::create($data);
+            
+            // Jika request AJAX, kembalikan JSON response
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Penawaran Pintu berhasil dibuat.',
+                    'data' => [
+                        'id' => $penawaran->id,
+                        'nomor_penawaran' => $penawaran->nomor_penawaran
+                    ]
+                ]);
+            }
+            
+            // Jika request biasa, redirect
+            return redirect()->route('admin.penawaran-pintu.index')->with('success', 'Penawaran Pintu berhasil dibuat.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error creating Penawaran Pintu: ' . $e->getMessage());
+            
+            // Jika request AJAX, kembalikan JSON error
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            // Jika request biasa, redirect dengan error
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage());
+        }
     }
 
     public function show(Penawaran $penawaran)
     {
-        // Ensure this is a pintu penawaran
-        if (!$penawaran->penawaran_pintu) {
-            abort(404);
-        }
         
         $penawaran->load(['pemasangans', 'rancanganAnggaranBiayas']);
         return view('admin.penawaran-pintu.show', compact('penawaran'));
@@ -141,11 +178,61 @@ class PenawaranPintuController extends Controller
             $data['syarat_kondisi'] = [];
         }
         
+        // Handle json_penawaran_pintu data
+        if ($request->has('json_penawaran_pintu')) {
+            $jsonPenawaranPintu = [];
+            
+            // Proses produk pintu (data langsung)
+            foreach ($request->input('json_penawaran_pintu', []) as $key => $value) {
+                if (is_numeric($key)) {
+                    // Ini adalah produk pintu langsung
+                    $jsonPenawaranPintu[$key] = $value;
+                } elseif (strpos($key, 'section_') === 0) {
+                    // Ini adalah section produk lainnya
+                    $jsonPenawaranPintu[$key] = $value;
+                }
+            }
+            
+            $data['json_penawaran_pintu'] = $jsonPenawaranPintu;
+        } else {
+            $data['json_penawaran_pintu'] = [];
+        }
+        
         // Debug: Log data yang akan diupdate
         \Log::info('Penawaran Pintu data to be updated:', $data);
         
-        $penawaran->update($data);
-        return redirect()->route('admin.penawaran-pintu.index')->with('success', 'Penawaran Pintu berhasil diupdate.');
+        try {
+            $penawaran->update($data);
+            
+            // Jika request AJAX, kembalikan JSON response
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Penawaran Pintu berhasil diupdate.',
+                    'data' => [
+                        'id' => $penawaran->id,
+                        'nomor_penawaran' => $penawaran->nomor_penawaran
+                    ]
+                ]);
+            }
+            
+            // Jika request biasa, redirect
+            return redirect()->route('admin.penawaran-pintu.index')->with('success', 'Penawaran Pintu berhasil diupdate.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error updating Penawaran Pintu: ' . $e->getMessage());
+            
+            // Jika request AJAX, kembalikan JSON error
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat mengupdate: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            // Jika request biasa, redirect dengan error
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mengupdate: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Penawaran $penawaran)
@@ -195,11 +282,23 @@ class PenawaranPintuController extends Controller
      */
     public function getClientsBySales($salesId)
     {
-        $clients = Client::where('created_by', $salesId)
-                        ->where('status_deleted', false)
-                        ->get(['id', 'nama', 'nama_perusahaan']);
-        
-        return response()->json($clients);
+        try {
+            $clients = Client::where('created_by', $salesId)
+                            ->where('status_deleted', false)
+                            ->get(['id', 'nama', 'nama_perusahaan']);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $clients
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error getting clients by sales: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data client: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function cetak(Request $request, $id)
@@ -216,6 +315,14 @@ class PenawaranPintuController extends Controller
         $json_produk = $penawaran->json_produk ?? [];
         $json_penawaran_pintu = $penawaran->json_penawaran_pintu ?? [];
         $syarat_kondisi = $penawaran->syarat_kondisi ?? [];
+        
+        // Debug: Log syarat_kondisi data
+        \Log::info('Syarat & Ketentuan data:', [
+            'raw' => $penawaran->syarat_kondisi,
+            'processed' => $syarat_kondisi,
+            'is_array' => is_array($syarat_kondisi),
+            'count' => is_array($syarat_kondisi) ? count($syarat_kondisi) : 0
+        ]);
 
         $pdf = PDF::loadView('admin.penawaran-pintu.pdf_item', compact('penawaran', 'json_produk', 'json_penawaran_pintu', 'syarat_kondisi'));
 
@@ -224,5 +331,120 @@ class PenawaranPintuController extends Controller
         
         // Download file PDF with sanitized filename
         return $pdf->download('penawaran_pintu_' . $safeFilename . '.pdf');
+    }
+
+    /**
+     * Buat revisi penawaran pintu
+     */
+    public function createRevisi(Penawaran $penawaran)
+    {
+        // Ensure this is a pintu penawaran
+        if (!$penawaran->penawaran_pintu) {
+            abort(404);
+        }
+
+        // Cek apakah bisa dibuat revisi
+        if (!$this->canCreateRevisi($penawaran->nomor_penawaran)) {
+            return redirect()->back()->with('error', 'Maksimal revisi hanya 3 kali');
+        }
+
+        // Ambil data penawaran asli
+        $users = User::where('status_deleted', 0)->get();
+        $pintus = Pintu::where('status_deleted', false)->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
+
+        // Load relasi yang diperlukan
+        $penawaran->load(['client', 'user']);
+
+        return view('admin.penawaran-pintu.create-revisi', compact('penawaran', 'users', 'pintus', 'syaratKetentuan'));
+    }
+
+    /**
+     * Simpan revisi penawaran pintu
+     */
+    public function storeRevisi(StorePenawaranRequest $request, Penawaran $penawaran)
+    {
+        // Ensure this is a pintu penawaran
+        if (!$penawaran->penawaran_pintu) {
+            abort(404);
+        }
+
+        $data = $request->validated();
+        $data['created_by'] = auth()->id();
+        $data['status'] = 0; // Default status 0
+        $data['status_deleted'] = false; // Default status_deleted false
+        $data['penawaran_pintu'] = true; // Set penawaran pintu to true
+        $data['is_revisi'] = true; // Set sebagai revisi
+        $data['revisi_from'] = $penawaran->id; // Set referensi ke penawaran asli
+        
+        // Handle syarat_kondisi checkbox
+        if ($request->has('syarat_kondisi') && is_array($request->syarat_kondisi)) {
+            $data['syarat_kondisi'] = $request->syarat_kondisi;
+        } else {
+            $data['syarat_kondisi'] = [];
+        }
+        
+        // Handle json_penawaran_pintu data
+        if ($request->has('json_penawaran_pintu')) {
+            $jsonPenawaranPintu = [];
+            
+            // Proses produk pintu (data langsung)
+            foreach ($request->input('json_penawaran_pintu', []) as $key => $value) {
+                if (is_numeric($key)) {
+                    // Ini adalah produk pintu langsung
+                    $jsonPenawaranPintu[$key] = $value;
+                } elseif (strpos($key, 'section_') === 0) {
+                    // Ini adalah section produk lainnya
+                    $jsonPenawaranPintu[$key] = $value;
+                }
+            }
+            
+            $data['json_penawaran_pintu'] = $jsonPenawaranPintu;
+        } else {
+            $data['json_penawaran_pintu'] = [];
+        }
+        
+        // Copy data produk dari penawaran asli
+        $data['json_produk'] = $penawaran->json_produk ?? [];
+        
+        // Generate nomor revisi
+        $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
+        $data['nomor_penawaran'] = $this->generateNomorRevisi($nomorAsli);
+        
+        // Debug: Log data yang akan disimpan
+        \Log::info('Revisi Penawaran Pintu data to be saved:', $data);
+        
+        try {
+            $revisiPenawaran = Penawaran::create($data);
+            
+            // Jika request AJAX, kembalikan JSON response
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Revisi Penawaran Pintu berhasil dibuat.',
+                    'data' => [
+                        'id' => $revisiPenawaran->id,
+                        'nomor_penawaran' => $revisiPenawaran->nomor_penawaran
+                    ]
+                ]);
+            }
+            
+            // Jika request biasa, redirect
+            return redirect()->route('admin.penawaran-pintu.show', $revisiPenawaran)->with('success', 'Revisi Penawaran Pintu berhasil dibuat.');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error creating Revisi Penawaran Pintu: ' . $e->getMessage());
+            
+            // Jika request AJAX, kembalikan JSON error
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            // Jika request biasa, redirect dengan error
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage());
+        }
     }
 }

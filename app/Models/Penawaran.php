@@ -29,6 +29,9 @@ class Penawaran extends Model
         'grand_total',
         'json_produk',
         'penawaran_pintu',
+        'is_revisi',
+        'revisi_from',
+        'catatan_revisi',
         'json_penawaran_pintu',
         'syarat_kondisi',
         'catatan',
@@ -50,6 +53,8 @@ class Penawaran extends Model
         'grand_total' => 'double',
         'json_produk' => 'array',
         'penawaran_pintu' => 'boolean',
+        'is_revisi' => 'boolean',
+        'revisi_from' => 'integer',
         'json_penawaran_pintu' => 'array',
         'syarat_kondisi' => 'array',
         'status' => 'integer',
@@ -79,5 +84,62 @@ class Penawaran extends Model
     public function rancanganAnggaranBiayas()
     {
         return $this->hasMany(\App\Models\RancanganAnggaranBiaya::class, 'penawaran_id');
+    }
+
+    /**
+     * Relasi ke penawaran asli (jika ini adalah revisi)
+     */
+    public function penawaranAsli()
+    {
+        return $this->belongsTo(Penawaran::class, 'revisi_from');
+    }
+
+    /**
+     * Relasi ke semua revisi (jika ini adalah penawaran asli)
+     */
+    public function revisi()
+    {
+        return $this->hasMany(Penawaran::class, 'revisi_from');
+    }
+
+    /**
+     * Cek apakah penawaran bisa dibuat revisi
+     */
+    public function canCreateRevisi()
+    {
+        // Hapus suffix revisi jika ada untuk mendapatkan nomor asli
+        $nomorAsli = preg_replace('/\s+R\d+$/', '', $this->nomor_penawaran);
+        
+        // Cari jumlah revisi yang sudah ada untuk nomor asli ini
+        $jumlahRevisi = Penawaran::where('nomor_penawaran', 'like', $nomorAsli . '%')
+            ->where('is_revisi', true)
+            ->count();
+        
+        // Maksimal 3 revisi
+        return $jumlahRevisi < 3;
+    }
+
+    /**
+     * Get nomor penawaran tanpa suffix revisi
+     */
+    public function getNomorAsliAttribute()
+    {
+        return preg_replace('/\s+R\d+$/', '', $this->nomor_penawaran);
+    }
+
+    /**
+     * Get status revisi (R1, R2, R3)
+     */
+    public function getStatusRevisiAttribute()
+    {
+        if (!$this->is_revisi) {
+            return null;
+        }
+
+        if (preg_match('/\s+R(\d+)$/', $this->nomor_penawaran, $matches)) {
+            return 'R' . $matches[1];
+        }
+
+        return null;
     }
 }

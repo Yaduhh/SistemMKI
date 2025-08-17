@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pintu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PintuController extends Controller
 {
@@ -39,7 +40,14 @@ class PintuController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:pintu',
+            'code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('pintu')->where(function ($query) {
+                    return $query->where('status_deleted', false);
+                })
+            ],
             'nama_produk' => 'required|string|max:255',
             'lebar' => 'nullable|numeric|min:0',
             'tebal' => 'nullable|numeric|min:0',
@@ -83,7 +91,14 @@ class PintuController extends Controller
         $pintu = Pintu::findOrFail($id);
         
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:pintu,code,' . $id,
+            'code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('pintu')->where(function ($query) {
+                    return $query->where('status_deleted', false);
+                })->ignore($id)
+            ],
             'nama_produk' => 'required|string|max:255',
             'lebar' => 'nullable|numeric|min:0',
             'tebal' => 'nullable|numeric|min:0',

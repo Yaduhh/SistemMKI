@@ -42,6 +42,7 @@
                 <flux:navlist.group :heading="__('Syarat & Kondisi')" class="mt-10">
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')" :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>{{ __('Syarat & Ketentuan') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('admin.syarat-pemasangan.index')" :current="request()->routeIs('admin.syarat-pemasangan.*')" wire:navigate>{{ __('Syarat Pemasangan') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home-modern" :href="route('admin.syarat-pintu.index')" :current="request()->routeIs('admin.syarat-pintu.*')" wire:navigate>{{ __('Syarat Pintu') }}</flux:navlist.item>
                 
                 </flux:navlist.group>
                     <flux:navlist.group :heading="__('Produk & Aksesoris')" class="mt-10">
