@@ -2,10 +2,12 @@
     <div class="container mx-auto">
         <div class="w-full mx-auto">
             <h1 class="text-2xl font-bold mb-4">RAB {{ $penawaran->nomor_penawaran ?? '-' }}</h1>
-            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
-                <div>
-                    <span class="font-medium">Nomor Penawaran:</span> {{ $penawaran->nomor_penawaran ?? '-' }}<br>
-                    <span class="font-medium">Nomor Pemasangan:</span> {{ $pemasangan->nomor_pemasangan ?? '-' }}
+            <div class="mb-4 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div class="font-medium">Nomor Penawaran:</div>
+                    <div class="font-medium">Nomor Pemasangan:</div>
+                    <div class="font-medium">{{ $penawaran->nomor_penawaran ?? '-' }}</div>
+                    <div class="font-medium">{{ $pemasangan->nomor_pemasangan ?? '-' }}</div>
                 </div>
             </div>
 
@@ -72,10 +74,20 @@
 
                 <div class="mt-8">
                     <h2 class="text-lg font-semibold mb-2">Pengeluaran Material Utama</h2>
-                    <x-rab.material-utama-table :produk="$produkPenawaran" />
-                    <!-- Hidden input untuk menyimpan data material utama -->
-                    <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama"
-                        value="">
+                    
+                    @if(isset($penawaran->json_penawaran_pintu) && !empty($penawaran->json_penawaran_pintu))
+                        <!-- Tampilkan komponen khusus untuk penawaran pintu -->
+                        <x-rab-material-utama-pintu :penawaranPintu="$penawaran->json_penawaran_pintu" />
+                        <!-- Hidden input untuk menyimpan data material utama pintu -->
+                        <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama"
+                            value="{{ json_encode($penawaran->json_penawaran_pintu) }}">
+                    @else
+                        <!-- Tampilkan komponen biasa untuk penawaran non-pintu -->
+                        <x-rab.material-utama-table :produk="$produkPenawaran" />
+                        <!-- Hidden input untuk menyimpan data material utama -->
+                        <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama"
+                            value="">
+                    @endif
 
                     <!-- Validasi Material Utama vs Penawaran -->
                     <div class="mt-4 p-4 rounded-lg border bg-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800"
@@ -269,36 +281,84 @@
         // Calculate total from produk penawaran
         function calculatePenawaranTotal() {
             let total = 0;
-            if (window.produkPenawaran && Array.isArray(window.produkPenawaran)) {
-                window.produkPenawaran.forEach(item => {
-                    total += parseFloat(item.total_harga || 0);
-                });
+            
+            // Check if this is a pintu penawaran
+            const isPintuPenawaran = document.querySelector('input[name="json_pengeluaran_material_utama"]').value.includes('"judul_1"');
+            
+            if (isPintuPenawaran) {
+                // For pintu penawaran, calculate directly from JSON data
+                try {
+                    const jsonData = JSON.parse(document.querySelector('input[name="json_pengeluaran_material_utama"]').value);
+                    Object.values(jsonData).forEach(section => {
+                        if (section.products && Array.isArray(section.products)) {
+                            section.products.forEach(product => {
+                                if (product.total_harga) {
+                                    total += parseFloat(product.total_harga) || 0;
+                                }
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error parsing pintu JSON:', e);
+                }
+            } else {
+                // For regular penawaran, use existing logic
+                if (window.produkPenawaran && Array.isArray(window.produkPenawaran)) {
+                    window.produkPenawaran.forEach(item => {
+                        total += parseFloat(item.total_harga || 0);
+                    });
+                }
             }
+            
             return total;
         }
 
         // Calculate total from current material utama inputs
         function calculateMaterialUtamaTotal() {
             let total = 0;
-            const materialUtamaInputs = document.querySelectorAll('input[name^="material_utama"]');
-            const processedItems = new Set();
-
-            materialUtamaInputs.forEach(input => {
-                const name = input.name;
-                const match = name.match(/material_utama\[(\d+)\]\[(\w+)\]/);
-                if (match) {
-                    const index = match[1];
-                    const field = match[2];
-
-                    if (!processedItems.has(index)) {
-                        const totalInput = document.querySelector(`input[name="material_utama[${index}][total]"]`);
-                        if (totalInput) {
-                            total += parseFloat(totalInput.value) || 0;
+            
+            // Check if this is a pintu penawaran
+            const isPintuPenawaran = document.querySelector('input[name="json_pengeluaran_material_utama"]').value.includes('"judul_1"');
+            
+            if (isPintuPenawaran) {
+                // For pintu penawaran, calculate directly from JSON data (same as penawaran total)
+                try {
+                    const jsonData = JSON.parse(document.querySelector('input[name="json_pengeluaran_material_utama"]').value);
+                    Object.values(jsonData).forEach(section => {
+                        if (section.products && Array.isArray(section.products)) {
+                            section.products.forEach(product => {
+                                if (product.total_harga) {
+                                    total += parseFloat(product.total_harga) || 0;
+                                }
+                            });
                         }
-                        processedItems.add(index);
-                    }
+                    });
+                } catch (e) {
+                    console.error('Error parsing pintu JSON:', e);
                 }
-            });
+            } else {
+                // For regular penawaran, use existing logic
+                const materialUtamaInputs = document.querySelectorAll('input[name^="material_utama"]');
+                const processedItems = new Set();
+
+                materialUtamaInputs.forEach(input => {
+                    const name = input.name;
+                    const match = name.match(/material_utama\[(\d+)\]\[(\w+)\]/);
+                    if (match) {
+                        const index = match[1];
+                        const field = match[2];
+
+                        if (!processedItems.has(index)) {
+                            const totalInput = document.querySelector(`input[name="material_utama[${index}][total]"]`);
+                            if (totalInput) {
+                                total += parseFloat(totalInput.value) || 0;
+                            }
+                            processedItems.add(index);
+                        }
+                    }
+                });
+            }
+            
             return total;
         }
 
@@ -306,6 +366,11 @@
         function validateMaterialUtama() {
             const penawaranTotal = calculatePenawaranTotal();
             const rabTotal = calculateMaterialUtamaTotal();
+
+            // Debug logging
+            console.log('Penawaran Total:', penawaranTotal);
+            console.log('RAB Total:', rabTotal);
+            console.log('Is Pintu Penawaran:', document.querySelector('input[name="json_pengeluaran_material_utama"]').value.includes('"judul_1"'));
 
             // Update totals display
             document.getElementById('penawaran-total').textContent = `Rp ${formatRupiah(penawaranTotal)}`;
@@ -329,7 +394,10 @@
 
         // Initialize validation on page load
         document.addEventListener('DOMContentLoaded', function() {
-            validateMaterialUtama();
+            // Add a small delay to ensure the pintu component is fully rendered
+            setTimeout(() => {
+                validateMaterialUtama();
+            }, 100);
 
             // Add event listeners for satuan and warna inputs
             const satuanInputs = document.querySelectorAll('input[name*="[satuan]"]');

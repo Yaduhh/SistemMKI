@@ -187,7 +187,11 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @forelse ($akomodasis as $akomodasi)
+                        @php
+                            // Sort akomodasis by tanggal descending (terbaru dulu)
+                            $sortedAkomodasis = collect($akomodasis)->sortByDesc('tanggal');
+                        @endphp
+                        @forelse ($sortedAkomodasis as $akomodasi)
                             <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700">
                                 <td class="text-center">
                                     {{ $loop->iteration }}
@@ -218,10 +222,10 @@
                                     {{ $akomodasi['satuan'] }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($akomodasi['harga_satuan'], 0, ',', '.') }}
+                                    Rp {{ number_format((float) $akomodasi['harga_satuan'], 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($akomodasi['sub_total'], 0, ',', '.') }}
+                                    Rp {{ number_format((float) $akomodasi['sub_total'], 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php

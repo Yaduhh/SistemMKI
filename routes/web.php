@@ -216,6 +216,22 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-status', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateStatus'])->name('rancangan-anggaran-biaya.update-status');
     Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-supervisi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateSupervisi'])->name('rancangan-anggaran-biaya.update-supervisi');
     
+    // Routes untuk tambah pengeluaran
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahEntertainment'])->name('rancangan-anggaran-biaya.tambah-entertainment');
+    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeEntertainment'])->name('rancangan-anggaran-biaya.store-entertainment');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-akomodasi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahAkomodasi'])->name('rancangan-anggaran-biaya.tambah-akomodasi');
+    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-akomodasi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeAkomodasi'])->name('rancangan-anggaran-biaya.store-akomodasi');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-lainnya', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahLainnya'])->name('rancangan-anggaran-biaya.tambah-lainnya');
+    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-lainnya', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeLainnya'])->name('rancangan-anggaran-biaya.store-lainnya');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahTukang'])->name('rancangan-anggaran-biaya.tambah-tukang');
+    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeTukang'])->name('rancangan-anggaran-biaya.store-tukang');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahKerjaTambah'])->name('rancangan-anggaran-biaya.tambah-kerja-tambah');
+    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeKerjaTambah'])->name('rancangan-anggaran-biaya.store-kerja-tambah');
+    
     // Entertainment Routes
     Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
     Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');

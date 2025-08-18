@@ -553,77 +553,106 @@
                     return ltrim($exp[2], '0') . ' ' . $bulan[(int) $exp[1]] . ' ' . $exp[0];
                 }
             @endphp
-            @foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [] as $mrGroup)
-                @php
-                    $isFirst = true;
-                    $subtotalMr = 0;
-                    $materialCount = count($mrGroup['materials'] ?? []);
-                    $materialIndex = 0;
-                @endphp
-                @foreach ($mrGroup['materials'] ?? [] as $material)
+            @php
+                $hasApprovedData = false;
+                foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [] as $mrGroup) {
+                    $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                        return isset($material['status']) && $material['status'] === 'Disetujui';
+                    });
+                    if (!empty($approvedMaterials)) {
+                        $hasApprovedData = true;
+                        break;
+                    }
+                }
+            @endphp
+
+            @if ($hasApprovedData)
+                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [] as $mrGroup)
                     @php
-                        if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
-                            echo '<tr>';
-                            for ($i = 0; $i < 10; $i++) {
-                                echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
-                            }
-                            echo '</tr>';
+                        // Filter hanya material dengan status Disetujui
+                        $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                            return isset($material['status']) && $material['status'] === 'Disetujui';
+                        });
+
+                        // Skip MR jika tidak ada material yang disetujui
+                        if (empty($approvedMaterials)) {
+                            continue;
                         }
-                        $lastMr = $mrGroup['mr'] ?? '';
-                        $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
-                            ? $material['harga_satuan']
-                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
-                        $subTotal = is_numeric($material['sub_total'] ?? null)
-                            ? $material['sub_total']
-                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
-                        $itemName = strtolower(trim($material['item'] ?? ''));
-                        if ($itemName === 'diskon') {
-                            $totalAkomodasi -= $subTotal;
-                            $subtotalMr -= $subTotal;
-                        } else {
-                            $totalAkomodasi += $subTotal;
-                            $subtotalMr += $subTotal;
-                        }
-                        $materialIndex++;
+
+                        $isFirst = true;
+                        $subtotalMr = 0;
+                        $materialCount = count($approvedMaterials);
+                        $materialIndex = 0;
                     @endphp
-                    <tr>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo3($mrGroup['tanggal']) : '' }}
-                            @endif
-                        </td>
-                        <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
-                        <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
-                        <td class="text-center">
-                            {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
-                        </td>
-                        <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
-                        <td class="text-right">
-                            @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
-                            @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
-                                {{-- kosong --}}
-                            @else
-                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
-                            @endif
-                        </td>
-                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
-                    </tr>
-                    @php $isFirst = false; @endphp
-                    @if ($materialIndex === $materialCount)
-                        <tr class="highlightTotal">
-                            <td colspan="10" style="text-align:center;">Total: Rp
-                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                    @foreach ($approvedMaterials as $material)
+                        @php
+                            if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
+                                echo '<tr>';
+                                for ($i = 0; $i < 10; $i++) {
+                                    echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
+                                }
+                                echo '</tr>';
+                            }
+                            $lastMr = $mrGroup['mr'] ?? '';
+                            $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
+                                ? $material['harga_satuan']
+                                : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                            $subTotal = is_numeric($material['sub_total'] ?? null)
+                                ? $material['sub_total']
+                                : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                            $itemName = strtolower(trim($material['item'] ?? ''));
+                            if ($itemName === 'diskon') {
+                                $totalAkomodasi -= $subTotal;
+                                $subtotalMr -= $subTotal;
+                            } else {
+                                $totalAkomodasi += $subTotal;
+                                $subtotalMr += $subTotal;
+                            }
+                            $materialIndex++;
+                        @endphp
+                        <tr>
+                            <td class="text-center">
+                                @if ($isFirst)
+                                    {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if ($isFirst)
+                                    {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo3($mrGroup['tanggal']) : '' }}
+                                @endif
+                            </td>
+                            <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
+                            <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
+                            <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
+                            <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
+                            <td class="text-center">
+                                {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
+                            </td>
+                            <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
+                            <td class="text-right">
+                                @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
+                                @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
+                                    {{-- kosong --}}
+                                @else
+                                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                                @endif
+                            </td>
+                            <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
                         </tr>
-                    @endif
+                        @php $isFirst = false; @endphp
+                        @if ($materialIndex === $materialCount)
+                            <tr class="highlightTotal">
+                                <td colspan="10" style="text-align:center;">Total: Rp
+                                    {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
+                    @endforeach
                 @endforeach
-            @endforeach
+            @else
+                <tr>
+                    <td colspan="10" class="text-center">-</td>
+                </tr>
+            @endif
             <tr class="highlight">
                 <td colspan="9" class="text-right">GRAND TOTAL</td>
                 <td class="text-right">Rp {{ number_format($totalAkomodasi, 0, ',', '.') }}</td>

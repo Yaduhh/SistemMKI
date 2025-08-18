@@ -39,7 +39,7 @@
         </div>
     </template>
     <template id="entertaiment-material-row-template">
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
             <div>
                 <label class="block text-xs font-medium mb-1">Supplier</label>
                 <input type="text" data-material-field="supplier" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][supplier]" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
@@ -59,6 +59,10 @@
             <div>
                 <label class="block text-xs font-medium mb-1">Harga Satuan</label>
                 <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium mb-1">Status</label>
+                <input type="text" data-material-field="status" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][status]" value="Disetujui" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium" readonly />
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
@@ -148,11 +152,22 @@
             }
             
             function renumberMR() {
+                let mrCounter = 1;
                 mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIdx) => {
                     const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
-                    if (mrInput) {
-                        const mrNumber = mrIdx + 1;
-                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                    if (mrInput && !mrInput.readOnly) {
+                        // Hanya update MR untuk yang bukan readonly (data baru)
+                        mrInput.value = 'MR ' + String(mrCounter).padStart(3, '0');
+                        mrCounter++;
+                    } else if (mrInput && mrInput.readOnly) {
+                        // Untuk data existing, hitung counter untuk MR berikutnya
+                        const currentMr = mrInput.value;
+                        if (currentMr && currentMr.startsWith('MR ')) {
+                            const currentNumber = parseInt(currentMr.replace('MR ', ''));
+                            if (currentNumber >= mrCounter) {
+                                mrCounter = currentNumber + 1;
+                            }
+                        }
                     }
                 });
             }
@@ -166,10 +181,19 @@
                             // Format Rupiah untuk field harga
                             const numericValue = parseInt(data[key]) || 0;
                             input.value = numericValue > 0 ? formatRupiah(numericValue) : '';
+                        } else if (key === 'status') {
+                            // Status selalu Disetujui untuk material baru
+                            input.value = 'Disetujui';
                         } else {
                             input.value = data[key];
                         }
                     }
+                }
+                
+                // Pastikan status selalu Disetujui
+                const statusInput = row.querySelector('[data-material-field="status"]');
+                if (statusInput) {
+                    statusInput.value = 'Disetujui';
                 }
             }
             
@@ -182,7 +206,22 @@
                 }
             }
 
-            function addMrGroup(data) {
+            function fillMaterialRow(row, data) {
+                if (!data) return;
+                for (const key in data) {
+                    const input = row.querySelector(`[data-material-field="${key}"]`);
+                    if (input) {
+                        if (key === 'harga_satuan' || key === 'sub_total') {
+                            input.value = formatRupiah(data[key]);
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
+                }
+            }
+
+            function addMrGroup(data, isReadonly = false) {
+                console.log('addMrGroup called with:', { data, isReadonly });
                 const mrIdx = mrList.querySelectorAll('.mr-group').length;
                 const html = mrGroupTemplate.innerHTML.replace(/__MRIDX__/g, mrIdx);
                 const temp = document.createElement('div');
@@ -201,14 +240,24 @@
                 
                 fillMrGroup(mrGroup, data);
                 if (data && Array.isArray(data.materials) && data.materials.length) {
-                    data.materials.forEach((mat, i) => addMaterialRow(mrGroup, mat));
+                    console.log('Adding materials:', data.materials);
+                    data.materials.forEach((mat, i) => addMaterialRow(mrGroup, mat, isReadonly));
                 } else {
-                    addMaterialRow(mrGroup);
+                    console.log('No materials data, adding empty row');
+                    addMaterialRow(mrGroup, null, isReadonly);
                 }
+                
+                // Set readonly untuk data existing
+                if (isReadonly) {
+                    console.log('Setting MR group readonly');
+                    setMrGroupReadonly(mrGroup);
+                }
+                
                 renderAllNames();
             }
 
-            function addMaterialRow(mrGroup, data) {
+            function addMaterialRow(mrGroup, data, isReadonly = false) {
+                console.log('addMaterialRow called with:', { data, isReadonly });
                 const mrIdx = Array.from(mrList.children).indexOf(mrGroup);
                 const matList = mrGroup.querySelector('.entertaiment-material-list');
                 const matIdx = matList.querySelectorAll('.entertaiment-material-row').length;
@@ -223,6 +272,12 @@
                 const hargaInput = row.querySelector('.harga-input');
                 if (hargaInput) {
                     setupRupiahFormat(hargaInput);
+                }
+                
+                // Set readonly untuk data existing
+                if (isReadonly) {
+                    console.log('Setting material row readonly');
+                    setMaterialRowReadonly(row);
                 }
                 
                 renderAllNames();
@@ -255,12 +310,43 @@
                 updateGrandTotal();
             }
 
-            // Inisialisasi dari old input jika ada
-            if (window.oldEntertaiment && Array.isArray(window.oldEntertaiment) && window.oldEntertaiment.length) {
-                window.oldEntertaiment.forEach(mr => addMrGroup(mr));
-            } else if (mrList.querySelectorAll('.mr-group').length === 0) {
-                addMrGroup();
+            // Set readonly untuk MR group (data existing)
+            function setMrGroupReadonly(mrGroup) {
+                // Set readonly untuk input MR dan tanggal
+                mrGroup.querySelectorAll('[data-mr-field]').forEach(input => {
+                    input.readOnly = true;
+                    input.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
+                
+                // Sembunyikan tombol hapus MR
+                const removeMrBtn = mrGroup.querySelector('.remove-mr');
+                if (removeMrBtn) {
+                    removeMrBtn.style.display = 'none';
+                }
+                
+                // Sembunyikan tombol tambah material
+                const addMaterialBtn = mrGroup.querySelector('.add-entertaiment-material-row');
+                if (addMaterialBtn) {
+                    addMaterialBtn.style.display = 'none';
+                }
             }
+
+            // Set readonly untuk material row (data existing)
+            function setMaterialRowReadonly(row) {
+                // Set readonly untuk semua input material
+                row.querySelectorAll('input').forEach(input => {
+                    input.readOnly = true;
+                    input.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
+                
+                // Sembunyikan tombol hapus material
+                const removeMaterialBtn = row.querySelector('.remove-material');
+                if (removeMaterialBtn) {
+                    removeMaterialBtn.style.display = 'none';
+                }
+            }
+
+            // Inisialisasi akan dilakukan setelah DOM ready
 
             addMrBtn.addEventListener('click', function () {
                 addMrGroup();
@@ -307,11 +393,57 @@
                 }
             });
 
-            // Setup format Rupiah untuk input yang sudah ada
-            document.addEventListener('DOMContentLoaded', function() {
+            // Setup format Rupiah untuk input yang sudah ada dan inisialisasi data
+            function initializeEntertainmentTable() {
+                console.log('Initializing Entertainment Table');
+                console.log('Existing Entertainment:', window.existingEntertaiment);
+                console.log('Old Entertainment:', window.oldEntertaiment);
+                
+                // Inisialisasi dari data existing RAB jika ada
+                if (window.existingEntertaiment && Array.isArray(window.existingEntertaiment) && window.existingEntertaiment.length) {
+                    console.log('Loading existing entertainment data...');
+                    // Tampilkan data existing sebagai readonly
+                    window.existingEntertaiment.forEach(mr => addMrGroup(mr, true));
+                }
+                
+                // Inisialisasi dari old input jika ada (untuk validation error)
+                if (window.oldEntertaiment && Array.isArray(window.oldEntertaiment) && window.oldEntertaiment.length) {
+                    console.log('Loading old entertainment data...');
+                    window.oldEntertaiment.forEach(mr => addMrGroup(mr, false));
+                } else if (mrList.querySelectorAll('.mr-group').length === 0) {
+                    console.log('No existing data, adding empty MR group');
+                    addMrGroup();
+                }
+                
+                // Setup format Rupiah untuk input yang sudah ada
                 mrList.querySelectorAll('.harga-input').forEach(input => {
                     setupRupiahFormat(input);
                 });
+            }
+
+            // Coba inisialisasi langsung jika data sudah tersedia
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeEntertainmentTable);
+            } else {
+                // DOM sudah ready, inisialisasi langsung
+                setTimeout(initializeEntertainmentTable, 100);
+            }
+
+            // Convert format Rupiah ke angka sebelum form submit
+            document.addEventListener('submit', function(e) {
+                if (e.target.closest('form')) {
+                    // Convert harga satuan
+                    mrList.querySelectorAll('.harga-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                    
+                    // Convert sub total
+                    mrList.querySelectorAll('.sub-total-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                }
             });
         })();
     </script>

@@ -652,7 +652,7 @@ class RancanganAnggaranBiayaController extends Controller
     public function updateStatus(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
         $request->validate([
-            'status' => 'required|in:draft,approved,rejected'
+            'status' => 'required|in:draft,on_progress,selesai'
         ]);
 
         $status = $request->status;
@@ -662,11 +662,11 @@ class RancanganAnggaranBiayaController extends Controller
             case 'draft':
                 $statusText = 'Draft';
                 break;
-            case 'approved':
-                $statusText = 'Disetujui';
+            case 'on_progress':
+                $statusText = 'On Progress';
                 break;
-            case 'rejected':
-                $statusText = 'Ditolak';
+            case 'selesai':
+                $statusText = 'Selesai';
                 break;
         }
 
@@ -740,5 +740,214 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
         return $cleanedData;
+    }
+
+    // ==================== METHODS UNTUK TAMBAH PENGELUARAN ====================
+
+    /**
+     * Show form tambah entertainment
+     */
+    public function tambahEntertainment(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.tambah-entertainment', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Store entertainment data
+     */
+    public function storeEntertainment(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_entertaiment' => 'required|array'
+        ]);
+
+        // Ambil data existing entertainment
+        $existingEntertainment = $rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? [];
+        
+        // Process data baru - pastikan harga dan sub total dalam format angka murni
+        $processedEntertainment = $request->json_pengeluaran_entertaiment;
+        foreach ($processedEntertainment as &$mr) {
+            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                foreach ($mr['materials'] as &$material) {
+                    // Pastikan harga satuan dalam format angka murni
+                    if (isset($material['harga_satuan'])) {
+                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan']);
+                    }
+                    
+                    // Pastikan sub total dalam format angka murni
+                    if (isset($material['sub_total'])) {
+                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total']);
+                    }
+                }
+            }
+        }
+        
+        // Merge dengan data existing
+        $mergedEntertainment = array_merge($existingEntertainment, $processedEntertainment);
+        
+        // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_entertaiment' => $mergedEntertainment
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran entertainment berhasil ditambahkan.');
+    }
+
+    /**
+     * Show form tambah akomodasi
+     */
+    public function tambahAkomodasi(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.tambah-akomodasi', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Store akomodasi data
+     */
+    public function storeAkomodasi(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_akomodasi' => 'required|array'
+        ]);
+
+        // Ambil data existing akomodasi
+        $existingAkomodasi = $rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [];
+        
+        // Process data baru - pastikan harga dan sub total dalam format angka murni
+        $processedAkomodasi = $request->json_pengeluaran_akomodasi;
+        foreach ($processedAkomodasi as &$mr) {
+            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                foreach ($mr['materials'] as &$material) {
+                    // Pastikan harga satuan dalam format angka murni
+                    if (isset($material['harga_satuan'])) {
+                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan']);
+                    }
+                    
+                    // Pastikan sub total dalam format angka murni
+                    if (isset($material['sub_total'])) {
+                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total']);
+                    }
+                }
+            }
+        }
+        
+        // Merge dengan data existing
+        $mergedAkomodasi = array_merge($existingAkomodasi, $processedAkomodasi);
+        
+        // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_akomodasi' => $mergedAkomodasi
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran akomodasi berhasil ditambahkan.');
+    }
+
+    /**
+     * Show form tambah lainnya
+     */
+    public function tambahLainnya(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.tambah-lainnya', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Store lainnya data
+     */
+    public function storeLainnya(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_lainnya' => 'required|array'
+        ]);
+
+        // Ambil data existing lainnya
+        $existingLainnya = $rancanganAnggaranBiaya->json_pengeluaran_lainnya ?? [];
+        
+        // Merge dengan data baru
+        $mergedLainnya = array_merge($existingLainnya, $request->json_pengeluaran_lainnya);
+        
+        // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_lainnya' => $mergedLainnya
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran lainnya berhasil ditambahkan.');
+    }
+
+    /**
+     * Show form tambah tukang
+     */
+    public function tambahTukang(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.tambah-tukang', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Store tukang data
+     */
+    public function storeTukang(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_tukang' => 'required|array'
+        ]);
+
+        // Ambil data existing tukang
+        $existingTukang = $rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [];
+        
+        // Merge dengan data baru
+        $mergedTukang = array_merge($existingTukang, $request->json_pengeluaran_tukang);
+        
+        // Update RAB
+        $mergedTukang = $this->cleanOldDataFormat($mergedTukang);
+        
+        // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_tukang' => $mergedTukang
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran tukang berhasil ditambahkan.');
+    }
+
+    /**
+     * Show form tambah kerja tambah
+     */
+    public function tambahKerjaTambah(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.tambah-kerja-tambah', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Store kerja tambah data
+     */
+    public function storeKerjaTambah(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_kerja_tambah' => 'required|array'
+        ]);
+
+        // Ambil data existing kerja tambah
+        $existingKerjaTambah = $rancanganAnggaranBiaya->json_kerja_tambah ?? [];
+        
+        // Merge dengan data baru
+        $mergedKerjaTambah = array_merge($existingKerjaTambah, $request->json_kerja_tambah);
+        
+        // Clean data format untuk tukang dan kerja tambah
+        $mergedKerjaTambah = $this->cleanOldDataFormat($mergedKerjaTambah);
+        
+        // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_kerja_tambah' => $mergedKerjaTambah
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran kerja tambah berhasil ditambahkan.');
     }
 }
