@@ -279,6 +279,7 @@ Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->
 
                     // RAB Routes
                 Route::resource('rab', App\Http\Controllers\Supervisi\RabController::class)->only(['index', 'show']);
+                Route::get('rab/{rab}/edit-entertainment', [App\Http\Controllers\Supervisi\RabController::class, 'editEntertainment'])->name('rab.edit-entertainment');
                 Route::patch('rab/{rab}/update-entertainment', [App\Http\Controllers\Supervisi\RabController::class, 'updateEntertainment'])->name('rab.update-entertainment');
 
     // Settings Route

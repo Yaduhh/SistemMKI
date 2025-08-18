@@ -5,14 +5,16 @@
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     {{ __('Detail RAB') }}
                 </h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p class=" text-gray-600 dark:text-gray-400 mt-1">
                     {{ $rab->proyek }} • {{ $rab->pekerjaan }}
                 </p>
             </div>
             <div class="flex items-center space-x-3">
-                <a href="{{ route('supervisi.rab.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-zinc-700 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-200 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-zinc-600 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-900 disabled:opacity-25 transition">
+                <a href="{{ route('supervisi.rab.index') }}"
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-zinc-700 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-200 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-zinc-600 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-900 disabled:opacity-25 transition">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                     Kembali
                 </a>
@@ -20,34 +22,36 @@
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full">
+        <div class="max-w-7xl mx-auto">
             <!-- Informasi Proyek -->
-            <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-zinc-700 mb-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
+            <div class="mb-6">
+                <div class="uppercase">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Informasi Proyek</h3>
                 </div>
-                <div class="px-6 py-4">
+                <div class="w-full pt-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Nama Proyek</label>
-                            <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $rab->proyek }}</p>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Nama Proyek</label>
+                            <p class="mt-1  text-zinc-900 dark:text-white">{{ $rab->proyek }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Pekerjaan</label>
-                            <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $rab->pekerjaan }}</p>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Pekerjaan</label>
+                            <p class="mt-1  text-zinc-900 dark:text-white">{{ $rab->pekerjaan }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Lokasi</label>
-                            <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $rab->lokasi }}</p>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Lokasi</label>
+                            <p class="mt-1  text-zinc-900 dark:text-white">{{ $rab->lokasi }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Status</label>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Status</label>
                             <div class="mt-1">
                                 @php
                                     $statusColors = [
-                                        'draft' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                        'approved' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                        'draft' =>
+                                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                        'approved' =>
+                                            'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
                                         'rejected' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
                                     ];
                                     $statusText = [
@@ -55,454 +59,470 @@
                                         'approved' => 'Disetujui',
                                         'rejected' => 'Ditolak',
                                     ];
-                                    $color = $statusColors[$rab->status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                                    $color =
+                                        $statusColors[$rab->status] ??
+                                        'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
                                     $text = $statusText[$rab->status] ?? $rab->status;
                                 @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
                                     {{ $text }}
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Dibuat Oleh</label>
-                            <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $rab->user->name ?? 'Unknown' }}</p>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Dibuat Oleh</label>
+                            <p class="mt-1  text-zinc-900 dark:text-white">{{ $rab->user->name ?? 'Unknown' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Tanggal Dibuat</label>
-                            <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $rab->created_at->format('d M Y H:i') }}</p>
+                            <label class="block  font-medium text-zinc-700 dark:text-zinc-300">Tanggal Dibuat</label>
+                            <p class="mt-1  text-zinc-900 dark:text-white">{{ $rab->created_at->format('d M Y H:i') }}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Pengeluaran Entertainment -->
-            <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-zinc-700">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Kelola pengeluaran entertainment untuk proyek ini
-                    </p>
+            <div class="w-full">
+                                 <div class="py-4">
+                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
+                     <p class=" text-gray-600 dark:text-gray-400 mt-1">
+                         Kelola pengeluaran entertainment untuk proyek ini
+                     </p>
+                     
+                     @php
+                         // Filter entertainment data to remove empty/null entries
+                         $filteredEntertainment = [];
+                         if (isset($rab->json_pengeluaran_entertaiment) && is_array($rab->json_pengeluaran_entertaiment)) {
+                             foreach ($rab->json_pengeluaran_entertaiment as $mr) {
+                                 // Check if MR has valid data
+                                 if (!empty($mr['mr']) || !empty($mr['tanggal'])) {
+                                     $validMaterials = [];
+                                     
+                                     if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                         foreach ($mr['materials'] as $material) {
+                                             // Only include material if it has at least one non-null field
+                                             if (!empty($material['supplier']) || !empty($material['item']) || 
+                                                 !empty($material['qty']) || !empty($material['satuan']) || 
+                                                 !empty($material['harga_satuan']) || !empty($material['sub_total'])) {
+                                                 $validMaterials[] = $material;
+                                             }
+                                         }
+                                     }
+                                     
+                                     // Only include MR if it has valid materials or valid MR data
+                                     if (!empty($validMaterials) || !empty($mr['mr']) || !empty($mr['tanggal'])) {
+                                         $filteredEntertainment[] = [
+                                             'mr' => $mr['mr'] ?? '',
+                                             'tanggal' => $mr['tanggal'] ?? '',
+                                             'materials' => $validMaterials
+                                         ];
+                                     }
+                                 }
+                             }
+                         }
+                         
+                         // Check if any material has approved/rejected status
+                         $hasApprovedMaterial = false;
+                         $hasRejectedMaterial = false;
+                         foreach ($filteredEntertainment as $mr) {
+                             if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                 foreach ($mr['materials'] as $material) {
+                                     if (($material['status'] ?? '') === 'Disetujui') {
+                                         $hasApprovedMaterial = true;
+                                     }
+                                     if (($material['status'] ?? '') === 'Ditolak') {
+                                         $hasRejectedMaterial = true;
+                                     }
+                                 }
+                             }
+                         }
+                     @endphp
+
+                    @if ($hasApprovedMaterial)
+                        <div
+                            class="mt-2 p-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg">
+                            <div class="flex lg:items-center">
+                                <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class=" text-green-800 dark:text-green-200 font-medium">
+                                    Ada material yang sudah disetujui. Material tersebut tidak dapat diubah atau
+                                    dihapus.
+                                </span>
+                            </div>
+                        </div>
+                    @elseif($hasRejectedMaterial)
+                        <div
+                            class="mt-2 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span class=" text-red-800 dark:text-red-200 font-medium">
+                                    Ada material yang ditolak. Material tersebut tidak dapat diubah atau dihapus.
+                                </span>
+                            </div>
+                        </div>
+                    @else
+                        <div
+                            class="mt-2 p-3 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class=" text-blue-800 dark:text-blue-200 font-medium">
+                                    Semua material dalam status pengajuan. Data dapat diubah dan dihapus.
+                                </span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
-                <div class="px-6 py-4">
-                    <form action="{{ route('supervisi.rab.update-entertainment', $rab) }}" method="POST" id="entertainmentForm">
-                        @csrf
-                        @method('PATCH')
-                        
-                        <div>
-                            <div id="entertaiment-mr-list" class="space-y-8">
-                                @if(isset($rab->json_pengeluaran_entertaiment) && is_array($rab->json_pengeluaran_entertaiment) && count($rab->json_pengeluaran_entertaiment) > 0)
-                                    @foreach($rab->json_pengeluaran_entertaiment as $mrIndex => $mr)
-                                        <div class="w-full relative mr-group">
-                                            <div class="flex flex-col md:flex-row md:items-end gap-4 mb-4">
-                                                <div class="w-full">
-                                                    <label class="block text-sm font-medium mb-1">MR</label>
-                                                    <input type="text" data-mr-field="mr" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][mr]" value="{{ $mr['mr'] ?? '' }}" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                 <div class="py-4">
+                     <!-- Tampilan Data Entertainment yang Sudah Ada -->
+                    
+                    @if (count($filteredEntertainment) > 0)
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Data Entertainment
+                                yang Sudah Ada</h4>
+                            <div class="space-y-6">
+                                @foreach ($filteredEntertainment as $mrIndex => $mr)
+                                    <div
+                                        class="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg overflow-hidden">
+                                        <!-- Header MR -->
+                                        <div class="bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-3">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-4">
+                                                    <div class="bg-white/20 rounded-full p-2">
+                                                        <svg class="w-5 h-5 text-white" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                            </path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}
+                                                        </h5>
+                                                        <p class="text-teal-100 ">
+                                                            {{ $mr['tanggal'] ?? 'Tanggal tidak tersedia' }}</p>
+                                                    </div>
                                                 </div>
-                                                <div class="w-full">
-                                                    <label class="block text-sm font-medium mb-1">Tanggal</label>
-                                                    <input type="date" data-mr-field="tanggal" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][tanggal]" value="{{ $mr['tanggal'] ?? '' }}" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                                </div>
-                                                <div class="flex items-end">
-                                                    <button type="button" class="dark:bg-teal-600 bg-teal-600 text-white px-4 py-2 rounded-xl add-entertaiment-material truncate" data-mr-index="{{ $mrIndex }}">+ Material</button>
-                                                </div>
-                                                <div class="flex items-end">
-                                                    <button type="button" class="dark:bg-red-600 bg-red-600 text-white px-4 py-2 rounded-xl remove-entertaiment-mr-group truncate">Hapus MR</button>
+                                                <div class="text-right">
+                                                    <span class="text-white ">Total:
+                                                        {{ count($mr['materials'] ?? []) }} Material</span>
                                                 </div>
                                             </div>
-                                            
-                                            @if(isset($mr['materials']) && is_array($mr['materials']))
-                                                @foreach($mr['materials'] as $matIndex => $material)
-                                                    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Supplier</label>
-                                                            <input type="text" data-material-field="supplier" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][supplier]" value="{{ $material['supplier'] ?? '' }}" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Item</label>
-                                                            <input type="text" data-material-field="item" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][item]" value="{{ $material['item'] ?? '' }}" placeholder="Item" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Qty</label>
-                                                            <input type="number" min="0" data-material-field="qty" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][qty]" value="{{ $material['qty'] ?? '' }}" placeholder="Qty" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white qty-input" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Satuan</label>
-                                                            <input type="text" data-material-field="satuan" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][satuan]" value="{{ $material['satuan'] ?? '' }}" placeholder="Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Harga Satuan</label>
-                                                            <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan]" value="{{ $material['harga_satuan'] ?? '' }}" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
-                                                            <input type="hidden" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan_raw]" value="{{ $material['harga_satuan'] ?? '' }}" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Status</label>
-                                                            <input type="text" data-material-field="status" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][status]" value="{{ $material['status'] ?? 'Pengajuan' }}" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-gray-100 dark:bg-zinc-600" readonly />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-xs font-medium mb-1">Sub Total</label>
-                                                            <input type="text" data-material-field="sub_total" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][sub_total]" value="{{ $material['sub_total'] ?? '' }}" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
-                                                            <input type="hidden" name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][sub_total_raw]" value="{{ $material['sub_total'] ?? '' }}" />
-                                                        </div>
-                                                        <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
-                                                    </div>
-                                                @endforeach
-                                            @endif
                                         </div>
-                                    @endforeach
-                                @endif
-                            </div>
-                            <button type="button" class="dark:bg-teal-900 bg-teal-600 text-white w-full py-2 uppercase mt-4" id="add-entertaiment-mr-group">Tambah MR</button>
-                            <div class="flex justify-end bg-teal-600/10 py-2 px-4">
-                                <div class="font-semibold mr-2">Grand Total:</div>
-                                <div class="font-bold text-teal-700 dark:text-teal-400" id="grand-total-entertainment">0</div>
+
+                                        <!-- Tabel Material -->
+                                        @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                                                    <thead class="bg-gray-50 dark:bg-zinc-800">
+                                                        <tr>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                                Supplier</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                                Item</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                                Qty</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                                Satuan</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
+                                                                Harga Satuan</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
+                                                                Sub Total</th>
+                                                            <th
+                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                                Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody
+                                                        class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
+                                                        @foreach ($mr['materials'] as $matIndex => $material)
+                                                            <tr
+                                                                class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100">
+                                                                    {{ $material['supplier'] ?? '-' }}
+                                                                </td>
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 font-medium">
+                                                                    {{ $material['item'] ?? '-' }}
+                                                                </td>
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
+                                                                    {{ $material['qty'] ?? '-' }}
+                                                                </td>
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
+                                                                    {{ $material['satuan'] ?? '-' }}
+                                                                </td>
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
+                                                                    @if (isset($material['harga_satuan']) && $material['harga_satuan'])
+                                                                        Rp
+                                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
+                                                                    @else
+                                                                        -
+                                                                    @endif
+                                                                </td>
+                                                                <td
+                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 font-semibold truncate">
+                                                                    @if (isset($material['sub_total']) && $material['sub_total'])
+                                                                        Rp
+                                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
+                                                                    @else
+                                                                        -
+                                                                    @endif
+                                                                </td>
+                                                                <td class="px-4 py-3 ">
+                                                                    @php
+                                                                        $statusColors = [
+                                                                            'Pengajuan' =>
+                                                                                'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                                            'Disetujui' =>
+                                                                                'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                                            'Ditolak' =>
+                                                                                'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                                        ];
+                                                                        $status = $material['status'] ?? 'Pengajuan';
+                                                                        $color =
+                                                                            $statusColors[$status] ??
+                                                                            'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                                    @endphp
+                                                                    <span
+                                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                                        {{ $status }}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Total per MR -->
+                                            @php
+                                                $totalMR = 0;
+                                                if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                                    foreach ($mr['materials'] as $material) {
+                                                        if (isset($material['sub_total']) && $material['sub_total']) {
+                                                            $totalMR += (float) preg_replace(
+                                                                '/[^\d]/',
+                                                                '',
+                                                                $material['sub_total'],
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                            <div
+                                                class="bg-gray-50 dark:bg-zinc-800/50 px-4 py-3 border-t border-gray-200 dark:border-zinc-600">
+                                                <div class="flex justify-between items-center">
+                                                    <span class=" font-medium text-gray-700 dark:text-gray-300">Total
+                                                        {{ $mr['mr'] ?? '-' }}:</span>
+                                                    <span
+                                                        class="text-lg font-bold text-orange-600 dark:text-orange-400">
+                                                        Rp {{ number_format($totalMR, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                <svg class="mx-auto h-8 w-8 mb-2" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                                    </path>
+                                                </svg>
+                                                <p>Belum ada material untuk MR ini</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+
+                                <!-- Grand Total -->
+                                @php
+                                    $grandTotal = 0;
+                                    foreach ($filteredEntertainment as $mr) {
+                                        if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                            foreach ($mr['materials'] as $material) {
+                                                if (
+                                                    isset($material['sub_total']) &&
+                                                    $material['sub_total'] &&
+                                                    ($material['status'] ?? '') === 'Disetujui'
+                                                ) {
+                                                    $grandTotal += (float) preg_replace(
+                                                        '/[^\d]/',
+                                                        '',
+                                                        $material['sub_total'],
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <div class="bg-gradient-to-r from-teal-600 to-teal-700 rounded-lg p-6 text-white">
+                                    <div class="flex flex-col md:flex-row items-center justify-between">
+                                        <div class="flex items-center lg:space-x-3">
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                                </path>
+                                            </svg>
+                                            <div>
+                                                <h3 class="text-xl font-bold">Total Entertainment</h3>
+                                            </div>
+                                        </div>
+                                        <div class="text-center lg:text-right">
+                                            <div class="text-2xl font-bold truncate">Rp
+                                                {{ number_format($grandTotal, 0, ',', '.') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-zinc-700">
-                            <div class="flex justify-end space-x-3">
-                                <button type="button" onclick="resetForm()" class="inline-flex items-center px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md font-semibold text-xs text-zinc-700 dark:text-zinc-300 uppercase tracking-widest bg-white dark:bg-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-600 focus:outline-none focus:border-zinc-400 focus:ring focus:ring-zinc-200 active:bg-zinc-100 disabled:opacity-25 transition">
-                                    Reset
-                                </button>
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-amber-600 dark:bg-amber-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-amber-700 dark:hover:bg-amber-600 focus:outline-none focus:border-amber-700 focus:ring focus:ring-amber-200 active:bg-amber-900 disabled:opacity-25 transition">
-                                    Simpan Perubahan
-                                </button>
+                        @if (count($filteredEntertainment) > 0)
+                            <div class="border-t border-gray-200 dark:border-zinc-600 pt-6">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Data Entertainment</h4>
+                                    <a href="{{ route('supervisi.rab.edit-entertainment', $rab) }}"
+                                        class="inline-flex items-center px-4 py-2 bg-teal-600 dark:bg-teal-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-teal-700 dark:hover:bg-teal-600 focus:outline-none focus:border-teal-700 focus:ring focus:ring-teal-200 active:bg-teal-900 disabled:opacity-25 transition">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        Edit Entertainment
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        @endif
+                    @endif
                 </div>
             </div>
 
             <!-- Pengeluaran Material Pendukung -->
-            @if(isset($rab->json_pengeluaran_material_pendukung) && is_array($rab->json_pengeluaran_material_pendukung) && count($rab->json_pengeluaran_material_pendukung) > 0)
-            <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-zinc-700 mt-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Material Pendukung</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            @if (isset($rab->json_pengeluaran_material_pendukung) &&
+                    is_array($rab->json_pengeluaran_material_pendukung) &&
+                    count($rab->json_pengeluaran_material_pendukung) > 0)
+                <div class="mt-8">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Material
+                        Pendukung</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
                         Data material pendukung untuk proyek ini
                     </p>
-                </div>
-                <div class="px-6 py-4">
+
                     <div class="space-y-6">
-                        @foreach($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
-                            <div class="w-full">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-100 dark:bg-zinc-900/50 p-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ $mr['mr'] ?? '-' }}</label>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Tanggal : {{ $mr['tanggal'] ?? '-' }}</label>
+                        @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
+                            <div
+                                class="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg overflow-hidden shadow-sm">
+                                <!-- Header MR -->
+                                <div class="bg-white dark:bg-zinc-900/30 px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-white/20 rounded-full p-2">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}</h5>
+                                                <p class="text-orange-100 ">
+                                                    {{ $mr['tanggal'] ?? 'Tanggal tidak tersedia' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-white ">{{ count($mr['materials'] ?? []) }}
+                                                Material</span>
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                @if(isset($mr['materials']) && is_array($mr['materials']))
+
+                                <!-- Tabel Material -->
+                                @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
                                     <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
-                                            <thead class="bg-gray-50 dark:bg-zinc-700">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                                            <thead class="bg-gray-50 dark:bg-zinc-800">
                                                 <tr>
-                                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">Supplier</th>
-                                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">Item</th>
-                                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">Qty</th>
-                                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">Satuan</th>
+                                                    <th
+                                                        class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Supplier</th>
+                                                    <th
+                                                        class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Item</th>
+                                                    <th
+                                                        class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
+                                                        Qty</th>
+                                                    <th
+                                                        class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
+                                                        Satuan</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-700">
-                                                @foreach($mr['materials'] as $material)
-                                                    <tr>
-                                                        <td class="px-3 py-2 text-sm text-zinc-900 dark:text-white">{{ $material['supplier'] ?? '-' }}</td>
-                                                        <td class="px-3 py-2 text-sm text-zinc-900 dark:text-white">{{ $material['item'] ?? '-' }}</td>
-                                                        <td class="px-3 py-2 text-sm text-zinc-900 dark:text-white">{{ $material['qty'] ?? '-' }}</td>
-                                                        <td class="px-3 py-2 text-sm text-zinc-900 dark:text-white">{{ $material['satuan'] ?? '-' }}</td>
+                                            <tbody
+                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
+                                                @foreach ($mr['materials'] as $material)
+                                                    <tr
+                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
+                                                        <td class="px-4 py-3  text-gray-900 dark:text-gray-100">
+                                                            {{ $material['supplier'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 font-medium">
+                                                            {{ $material['item'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
+                                                            {{ $material['qty'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
+                                                            {{ $material['satuan'] ?? '-' }}
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                    </div>
+                                @else
+                                    <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                            </path>
+                                        </svg>
+                                        <p>Belum ada material untuk MR ini</p>
                                     </div>
                                 @endif
                             </div>
                         @endforeach
                     </div>
                 </div>
-            </div>
             @endif
         </div>
     </div>
 
-    <!-- Templates -->
-    <template id="entertaiment-mr-group-template">
-        <div class="w-full relative mr-group">
-            <div class="flex flex-col md:flex-row md:items-end gap-4 mb-4">
-                <div class="w-full">
-                    <label class="block text-sm font-medium mb-1">MR</label>
-                    <input type="text" data-mr-field="mr" name="json_pengeluaran_entertaiment[__MRIDX__][mr]" placeholder="MR 001" class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                </div>
-                <div class="w-full">
-                    <label class="block text-sm font-medium mb-1">Tanggal</label>
-                    <input type="date" data-mr-field="tanggal" name="json_pengeluaran_entertaiment[__MRIDX__][tanggal]" class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                </div>
-                <div class="flex items-end">
-                    <button type="button" class="dark:bg-teal-600 bg-teal-600 text-white px-4 py-2 rounded-xl add-entertaiment-material truncate" data-mr-index="__MRIDX__">+ Material</button>
-                </div>
-                <div class="flex items-end">
-                    <button type="button" class="dark:bg-red-600 bg-red-600 text-white px-4 py-2 rounded-xl remove-entertaiment-mr-group truncate">Hapus MR</button>
-                </div>
-            </div>
-        </div>
-    </template>
 
-    <template id="entertaiment-material-row-template">
-        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
-            <div>
-                <label class="block text-xs font-medium mb-1">Supplier</label>
-                <input type="text" data-material-field="supplier" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][supplier]" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Item</label>
-                <input type="text" data-material-field="item" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][item]" placeholder="Item" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Qty</label>
-                <input type="number" min="0" data-material-field="qty" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][qty]" placeholder="Qty" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white qty-input" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Satuan</label>
-                <input type="text" data-material-field="satuan" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][satuan]" placeholder="Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Harga Satuan</label>
-                <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
-                <input type="hidden" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][harga_satuan_raw]" value="" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Status</label>
-                <input type="text" data-material-field="status" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-gray-100 dark:bg-zinc-600" readonly />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Sub Total</label>
-                <input type="text" data-material-field="sub_total" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-700 dark:text-white sub-total-input" readonly />
-                <input type="hidden" name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][sub_total_raw]" value="" />
-            </div>
-            <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
-        </div>
-    </template>
-
-    <script>
-        let mrIndex = {{ isset($rab->json_pengeluaran_entertaiment) ? count($rab->json_pengeluaran_entertaiment) : 0 }};
-        let materialIndex = 0;
-
-        // Add MR Group
-        document.getElementById('add-entertaiment-mr-group').addEventListener('click', function() {
-            const template = document.getElementById('entertaiment-mr-group-template');
-            const mrList = document.getElementById('entertaiment-mr-list');
-            const newMrGroup = template.content.cloneNode(true);
-            
-            // Update all placeholders
-            newMrGroup.querySelectorAll('[name*="__MRIDX__"]').forEach(input => {
-                input.name = input.name.replace('__MRIDX__', mrIndex);
-            });
-            newMrGroup.querySelectorAll('.add-entertaiment-material').forEach(button => {
-                button.setAttribute('data-mr-index', mrIndex);
-            });
-            
-            mrList.appendChild(newMrGroup);
-            mrIndex++;
-        });
-
-        // Add Material Row
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('add-entertaiment-material')) {
-                const mrIndex = e.target.getAttribute('data-mr-index');
-                const template = document.getElementById('entertaiment-material-row-template');
-                const mrGroup = e.target.closest('.mr-group');
-                
-                // Count existing materials in this MR group to get next index
-                const existingMaterials = mrGroup.querySelectorAll('.entertaiment-material-row');
-                const nextMaterialIndex = existingMaterials.length;
-                
-                const newMaterialRow = template.content.cloneNode(true);
-                
-                // Update all placeholders
-                newMaterialRow.querySelectorAll('[name*="__MRIDX__"]').forEach(input => {
-                    input.name = input.name.replace('__MRIDX__', mrIndex);
-                });
-                newMaterialRow.querySelectorAll('[name*="__MATIDX__"]').forEach(input => {
-                    input.name = input.name.replace('__MATIDX__', nextMaterialIndex);
-                });
-                
-                // Insert before the "Tambah Material" button
-                const addButton = mrGroup.querySelector('.add-entertaiment-material').parentElement.parentElement;
-                addButton.parentNode.insertBefore(newMaterialRow, addButton.nextSibling);
-            }
-        });
-
-        // Remove MR Group
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-entertaiment-mr-group')) {
-                if (confirm('Apakah Anda yakin ingin menghapus MR group ini?')) {
-                    e.target.closest('.mr-group').remove();
-                }
-            }
-        });
-
-        // Remove Material Row
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-material')) {
-                const materialRow = e.target.closest('.entertaiment-material-row');
-                const mrGroup = materialRow.closest('.mr-group');
-                materialRow.remove();
-                
-                // Reindex remaining materials in this MR group
-                const remainingMaterials = mrGroup.querySelectorAll('.entertaiment-material-row');
-                remainingMaterials.forEach((material, index) => {
-                    const mrIndex = mrGroup.querySelector('.add-entertaiment-material').getAttribute('data-mr-index');
-                    
-                    // Update all input names with new index
-                    material.querySelectorAll('input[name*="[materials]"]').forEach(input => {
-                        const oldName = input.name;
-                        const newName = oldName.replace(/\[materials\]\[\d+\]/, `[materials][${index}]`);
-                        input.name = newName;
-                    });
-                });
-                
-                // Update grand total after reindexing
-                updateGrandTotal();
-            }
-        });
-
-        // Format harga input to currency format
-        document.addEventListener('blur', function(e) {
-            if (e.target.classList.contains('harga-input')) {
-                const value = e.target.value.replace(/[^\d]/g, '');
-                if (value) {
-                    e.target.value = parseInt(value).toLocaleString('id-ID');
-                }
-            }
-        });
-
-        // Remove formatting when focusing on harga input
-        document.addEventListener('focus', function(e) {
-            if (e.target.classList.contains('harga-input')) {
-                const value = e.target.value.replace(/[^\d]/g, '');
-                if (value) {
-                    e.target.value = value;
-                }
-            }
-        });
-
-        // Calculate sub total on input change
-        document.addEventListener('input', function(e) {
-            if (e.target.classList.contains('qty-input') || e.target.classList.contains('harga-input')) {
-                const row = e.target.closest('.entertaiment-material-row');
-                const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-                const hargaInput = row.querySelector('.harga-input');
-                
-                // Parse harga satuan - handle both formatted and unformatted values
-                let harga = 0;
-                if (hargaInput.value.includes('.')) {
-                    // If formatted (e.g., "9.000"), parse it correctly
-                    harga = parseFloat(hargaInput.value.replace(/\./g, '')) || 0;
-                } else {
-                    // If unformatted (e.g., "9000"), parse normally
-                    harga = parseFloat(hargaInput.value) || 0;
-                }
-                
-                const subTotal = qty * harga;
-                row.querySelector('.sub-total-input').value = subTotal.toLocaleString('id-ID');
-                
-                // Update hidden inputs with raw values
-                const hiddenHargaInput = row.querySelector('input[name*="[harga_satuan_raw]"]');
-                const hiddenSubTotalInput = row.querySelector('input[name*="[sub_total_raw]"]');
-                if (hiddenHargaInput) {
-                     hiddenHargaInput.value = harga;
-                }
-                if (hiddenSubTotalInput) {
-                     hiddenSubTotalInput.value = subTotal;
-                }
-                
-                updateGrandTotal();
-            }
-        });
-
-        // Also calculate when harga input loses focus (after formatting)
-        document.addEventListener('blur', function(e) {
-            if (e.target.classList.contains('harga-input')) {
-                const row = e.target.closest('.entertaiment-material-row');
-                if (row) {
-                    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-                    
-                    // Parse harga satuan - handle both formatted and unformatted values
-                    let harga = 0;
-                    if (e.target.value.includes('.')) {
-                        // If formatted (e.g., "9.000"), parse it correctly
-                        harga = parseFloat(e.target.value.replace(/\./g, '')) || 0;
-                    } else {
-                        // If unformatted (e.g., "9000"), parse normally
-                        harga = parseFloat(e.target.value) || 0;
-                    }
-                    
-                    const subTotal = qty * harga;
-                    row.querySelector('.sub-total-input').value = subTotal.toLocaleString('id-ID');
-                    
-                    // Update hidden inputs with raw values
-                    const hiddenHargaInput = row.querySelector('input[name*="[harga_satuan_raw]"]');
-                    const hiddenSubTotalInput = row.querySelector('input[name*="[sub_total_raw]"]');
-                    if (hiddenHargaInput) {
-                        hiddenHargaInput.value = harga;
-                    }
-                    if (hiddenSubTotalInput) {
-                        hiddenSubTotalInput.value = subTotal;
-                    }
-                    
-                    updateGrandTotal();
-                }
-            }
-        });
-
-        // Update grand total
-        function updateGrandTotal() {
-            let total = 0;
-            document.querySelectorAll('.sub-total-input').forEach(input => {
-                // Parse sub total - handle both formatted and unformatted values
-                let value = 0;
-                if (input.value.includes('.')) {
-                    // If formatted (e.g., "25.000"), parse it correctly
-                    value = parseFloat(input.value.replace(/\./g, '')) || 0;
-                } else {
-                    // If unformatted (e.g., "25000"), parse normally
-                    value = parseFloat(input.value) || 0;
-                }
-                total += value;
-            });
-            document.getElementById('grand-total-entertainment').textContent = total.toLocaleString('id-ID');
-        }
-
-        // Initialize grand total
-        updateGrandTotal();
-
-        // Handle form submission
-        document.getElementById('entertainmentForm').addEventListener('submit', function(e) {
-            // Update all inputs with raw values before submit
-            document.querySelectorAll('.harga-input').forEach((input, index) => {
-                const row = input.closest('.entertaiment-material-row');
-                const hiddenHargaInput = row.querySelector('input[name*="[harga_satuan_raw]"]');
-                const hiddenSubTotalInput = row.querySelector('input[name*="[sub_total_raw]"]');
-                
-                if (hiddenHargaInput && hiddenHargaInput.value) {
-                    input.value = hiddenHargaInput.value;
-                }
-                
-                // Also update sub total input with raw value
-                const subTotalInput = row.querySelector('.sub-total-input');
-                if (hiddenSubTotalInput && hiddenSubTotalInput.value && subTotalInput) {
-                    subTotalInput.value = hiddenSubTotalInput.value;
-                }
-            });
-        });
-
-        function resetForm() {
-            if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
-                document.getElementById('entertainmentForm').reset();
-                updateGrandTotal();
-            }
-        }
-    </script>
 </x-layouts.supervisi>

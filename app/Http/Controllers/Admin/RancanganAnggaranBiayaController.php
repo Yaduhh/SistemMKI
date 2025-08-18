@@ -95,32 +95,42 @@ class RancanganAnggaranBiayaController extends Controller
             'json_kerja_tambah' => 'nullable|array',
         ]);
         
-        // Handle material utama from form inputs
+        // Handle material utama - check if this is a pintu penawaran first
         $materialUtama = [];
-        if ($request->has('material_utama') && is_array($request->material_utama)) {
-            foreach ($request->material_utama as $item) {
-                if (!empty($item['item']) && !empty($item['satuan'])) {
-                    $materialUtama[] = [
-                        'item' => $item['item'],
-                        'type' => $item['type'] ?? '',
-                        'dimensi' => $item['dimensi'] ?? '',
-                        'panjang' => $item['panjang'] ?? '',
-                        'qty' => floatval($item['qty'] ?? 0),
-                        'satuan' => $item['satuan'],
-                        'warna' => $item['warna'] ?? '',
-                        'harga_satuan' => floatval($item['harga_satuan'] ?? 0),
-                        'total' => floatval($item['total'] ?? 0)
-                    ];
+        
+        // Get penawaran data to check if it's a pintu penawaran
+        $penawaran = Penawaran::find($request->penawaran_id);
+        
+        if ($penawaran && !empty($penawaran->json_penawaran_pintu)) {
+            // This is a pintu penawaran - automatically copy from json_penawaran_pintu
+            $materialUtama = $penawaran->json_penawaran_pintu;
+        } else {
+            // This is a regular penawaran - handle from form inputs
+            if ($request->has('material_utama') && is_array($request->material_utama)) {
+                foreach ($request->material_utama as $item) {
+                    if (!empty($item['item']) && !empty($item['satuan'])) {
+                        $materialUtama[] = [
+                            'item' => $item['item'],
+                            'type' => $item['type'] ?? '',
+                            'dimensi' => $item['dimensi'] ?? '',
+                            'panjang' => $item['panjang'] ?? '',
+                            'qty' => floatval($item['qty'] ?? 0),
+                            'satuan' => $item['satuan'],
+                            'warna' => $item['warna'] ?? '',
+                            'harga_satuan' => floatval($item['harga_satuan'] ?? 0),
+                            'total' => floatval($item['total'] ?? 0)
+                        ];
+                    }
                 }
-            }
-        } elseif ($request->has('json_pengeluaran_material_utama')) {
-            // Fallback for JSON string
-            if (is_array($request->json_pengeluaran_material_utama)) {
-                $materialUtama = $request->json_pengeluaran_material_utama;
-            } elseif (is_string($request->json_pengeluaran_material_utama)) {
-                $decoded = json_decode($request->json_pengeluaran_material_utama, true);
-                if (is_array($decoded)) {
-                    $materialUtama = $decoded;
+            } elseif ($request->has('json_pengeluaran_material_utama')) {
+                // Fallback for JSON string
+                if (is_array($request->json_pengeluaran_material_utama)) {
+                    $materialUtama = $request->json_pengeluaran_material_utama;
+                } elseif (is_string($request->json_pengeluaran_material_utama)) {
+                    $decoded = json_decode($request->json_pengeluaran_material_utama, true);
+                    if (is_array($decoded)) {
+                        $materialUtama = $decoded;
+                    }
                 }
             }
         }
@@ -390,6 +400,7 @@ class RancanganAnggaranBiayaController extends Controller
         $validated['created_by'] = auth()->id();
         $validated['penawaran_id'] = $request->penawaran_id ?? null;
         $validated['pemasangan_id'] = $request->pemasangan_id ?? null;
+        $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         
         $rab = RancanganAnggaranBiaya::create($validated);
         return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', 'RAB berhasil dibuat.');
@@ -463,32 +474,42 @@ class RancanganAnggaranBiayaController extends Controller
             'json_kerja_tambah' => 'nullable|array',
         ]);
         
-        // Handle material utama from form inputs
+        // Handle material utama - check if this is a pintu penawaran first
         $materialUtama = [];
-        if ($request->has('material_utama') && is_array($request->material_utama)) {
-            foreach ($request->material_utama as $item) {
-                if (!empty($item['item']) && !empty($item['satuan'])) {
-                    $materialUtama[] = [
-                        'item' => $item['item'],
-                        'type' => $item['type'] ?? '',
-                        'dimensi' => $item['dimensi'] ?? '',
-                        'panjang' => $item['panjang'] ?? '',
-                        'qty' => floatval($item['qty'] ?? 0),
-                        'satuan' => $item['satuan'],
-                        'warna' => $item['warna'] ?? '',
-                        'harga_satuan' => floatval($item['harga_satuan'] ?? 0),
-                        'total' => floatval($item['total'] ?? 0)
-                    ];
+        
+        // Get penawaran data to check if it's a pintu penawaran
+        $penawaran = Penawaran::find($request->penawaran_id);
+        
+        if ($penawaran && !empty($penawaran->json_penawaran_pintu)) {
+            // This is a pintu penawaran - automatically copy from json_penawaran_pintu
+            $materialUtama = $penawaran->json_penawaran_pintu;
+        } else {
+            // This is a regular penawaran - handle from form inputs
+            if ($request->has('material_utama') && is_array($request->material_utama)) {
+                foreach ($request->material_utama as $item) {
+                    if (!empty($item['item']) && !empty($item['satuan'])) {
+                        $materialUtama[] = [
+                            'item' => $item['item'],
+                            'type' => $item['type'] ?? '',
+                            'dimensi' => $item['dimensi'] ?? '',
+                            'panjang' => $item['panjang'] ?? '',
+                            'qty' => floatval($item['qty'] ?? 0),
+                            'satuan' => $item['satuan'],
+                            'warna' => $item['warna'] ?? '',
+                            'harga_satuan' => floatval($item['harga_satuan'] ?? 0),
+                            'total' => floatval($item['total'] ?? 0)
+                        ];
+                    }
                 }
-            }
-        } elseif ($request->has('json_pengeluaran_material_utama')) {
-            // Fallback for JSON string
-            if (is_array($request->json_pengeluaran_material_utama)) {
-                $materialUtama = $request->json_pengeluaran_material_utama;
-            } elseif (is_string($request->json_pengeluaran_material_utama)) {
-                $decoded = json_decode($request->json_pengeluaran_material_utama, true);
-                if (is_array($decoded)) {
-                    $materialUtama = $decoded;
+            } elseif ($request->has('json_pengeluaran_material_utama')) {
+                // Fallback for JSON string
+                if (is_array($request->json_pengeluaran_material_utama)) {
+                    $materialUtama = $request->json_pengeluaran_material_utama;
+                } elseif (is_string($request->json_pengeluaran_material_utama)) {
+                    $decoded = json_decode($request->json_pengeluaran_material_utama, true);
+                    if (is_array($decoded)) {
+                        $materialUtama = $decoded;
+                    }
                 }
             }
         }
@@ -639,6 +660,7 @@ class RancanganAnggaranBiayaController extends Controller
         $validated['json_pengeluaran_lainnya'] = $lainnyaData;
         $validated['json_pengeluaran_tukang'] = $tukangData;
         $validated['json_kerja_tambah'] = $kerjaTambahData;
+        $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         $rancanganAnggaranBiaya->update($validated);
         return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', 'RAB berhasil diupdate.');
     }

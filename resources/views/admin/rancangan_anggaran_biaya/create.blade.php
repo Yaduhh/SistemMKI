@@ -271,6 +271,56 @@
 
             // Set the hidden input value
             document.getElementById('json_pengeluaran_material_utama').value = JSON.stringify(materialUtamaData);
+
+            // Clean up entertainment data - set to null if no data entered
+            cleanupEntertainmentData();
+            
+            // Clean up akomodasi data - set to null if no data entered
+            cleanupAkomodasiData();
+        }
+
+        // Function to clean up entertainment data
+        function cleanupEntertainmentData() {
+            const entertainmentInputs = document.querySelectorAll('input[name*="json_pengeluaran_entertaiment"]');
+            if (entertainmentInputs.length === 0) return;
+
+            // Check if any entertainment data has been entered
+            let hasData = false;
+            entertainmentInputs.forEach(input => {
+                if (input.value && input.value.trim() !== '') {
+                    hasData = true;
+                }
+            });
+
+            // If no data entered, set the hidden input to null
+            if (!hasData) {
+                const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
+                if (hiddenInput) {
+                    hiddenInput.value = 'null';
+                }
+            }
+        }
+
+        // Function to clean up akomodasi data
+        function cleanupAkomodasiData() {
+            const akomodasiInputs = document.querySelectorAll('input[name*="json_pengeluaran_akomodasi"]');
+            if (akomodasiInputs.length === 0) return;
+
+            // Check if any akomodasi data has been entered
+            let hasData = false;
+            akomodasiInputs.forEach(input => {
+                if (input.value && input.value.trim() !== '') {
+                    hasData = true;
+                }
+            });
+
+            // If no data entered, set the hidden input to null
+            if (!hasData) {
+                const hiddenInput = document.querySelector('input[name="json_pengeluaran_akomodasi"]');
+                if (hiddenInput) {
+                    hiddenInput.value = 'null';
+                }
+            }
         }
 
         // Function to format number to Indonesian Rupiah format

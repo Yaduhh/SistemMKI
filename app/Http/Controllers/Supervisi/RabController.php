@@ -37,6 +37,21 @@ class RabController extends Controller
     }
 
     /**
+     * Show the form for editing entertainment expenses.
+     */
+    public function editEntertainment(RancanganAnggaranBiaya $rab)
+    {
+        // Check if the RAB is assigned to this supervisi
+        if ($rab->supervisi_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this RAB.');
+        }
+
+        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
+        
+        return view('supervisi.entertaiment.edit-entertaiment', compact('rab'));
+    }
+
+    /**
      * Update entertainment expenses for the specified RAB.
      */
     public function updateEntertainment(Request $request, RancanganAnggaranBiaya $rab)

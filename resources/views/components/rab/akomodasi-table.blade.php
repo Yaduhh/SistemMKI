@@ -399,10 +399,12 @@
                 if (window.oldAkomodasi && Array.isArray(window.oldAkomodasi) && window.oldAkomodasi.length) {
                     console.log('Loading old akomodasi data...');
                     window.oldAkomodasi.forEach(mr => addMrGroup(mr, false));
-                } else if (mrList.querySelectorAll('.mr-group').length === 0) {
-                    console.log('No existing data, adding empty MR group');
-                    addMrGroup();
                 }
+                // HAPUS: Tidak lagi menambahkan MR group kosong secara otomatis
+                // else if (mrList.querySelectorAll('.mr-group').length === 0) {
+                //     console.log('No existing data, adding empty MR group');
+                //     addMrGroup();
+                // }
                 
                 // Setup format Rupiah untuk input yang sudah ada
                 mrList.querySelectorAll('.harga-input').forEach(input => {

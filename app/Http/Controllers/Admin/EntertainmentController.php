@@ -20,6 +20,13 @@ class EntertainmentController extends Controller
                     foreach ($rab->json_pengeluaran_entertaiment as $mrIndex => $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $materialIndex => $material) {
+                                // Skip data yang semua field-nya null atau kosong
+                                if (empty($material['supplier']) && empty($material['item']) && 
+                                    empty($material['qty']) && empty($material['satuan']) && 
+                                    empty($material['harga_satuan']) && empty($material['sub_total'])) {
+                                    continue;
+                                }
+                                
                                 $entertainmentData[] = [
                                     'rab_id' => $rab->id,
                                     'rab_proyek' => $rab->proyek,

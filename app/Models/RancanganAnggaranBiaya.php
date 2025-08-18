@@ -28,6 +28,7 @@ class RancanganAnggaranBiaya extends Model
         'created_by',
         'penawaran_id',
         'pemasangan_id',
+        'penawaran_pintu',
         'supervisi_id',
     ];
 
@@ -40,6 +41,7 @@ class RancanganAnggaranBiaya extends Model
         'json_pengeluaran_tukang' => 'array',
         'json_kerja_tambah' => 'array',
         'status_deleted' => 'boolean',
+        'penawaran_pintu' => 'boolean',
     ];
 
     // Mutators to ensure arrays are never null

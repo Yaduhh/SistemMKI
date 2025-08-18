@@ -26,11 +26,8 @@
 
         <flux:navbar class="-mb-px max-lg:hidden space-x-4">
             <flux:navbar.item icon="home" href="{{ route('supervisi.dashboard') }}" :current="request()->routeIs('supervisi.dashboard')">Dashboard</flux:navbar.item>
-            <flux:navbar.item icon="users" href="#" :current="request()->routeIs('supervisi.client.*')">Client</flux:navbar.item>
-            <flux:navbar.item icon="clipboard-document-list" href="#" :current="request()->routeIs('supervisi.daily-activity.*')">Aktivitas</flux:navbar.item>
-            <flux:navbar.item icon="document-text" href="#" :current="request()->routeIs('supervisi.pengajuan.*')">Pengajuan</flux:navbar.item>
-            <flux:navbar.item icon="cube" href="#" :current="request()->routeIs('supervisi.produk.*')">Produk</flux:navbar.item>
-            <flux:navbar.item icon="calendar-days" href="#" :current="request()->routeIs('supervisi.events.*')">Event</flux:navbar.item>
+            <flux:navbar.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">RAB</flux:navbar.item>
+            <flux:navbar.item icon="clipboard-document-list" href="{{ route('supervisi.logs') }}" :current="request()->routeIs('supervisi.logs')">Log</flux:navbar.item>
 
             <flux:separator vertical variant="subtle" class="my-2"/>
         </flux:navbar>
@@ -82,20 +79,12 @@
         
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="{{ route('supervisi.dashboard') }}" :current="request()->routeIs('supervisi.dashboard')">Dashboard</flux:navlist.item>
-            <flux:navlist.item icon="users" href="#" :current="request()->routeIs('supervisi.client.*')">Client</flux:navlist.item>
-            <flux:navlist.item icon="clipboard-document-list" href="#" :current="request()->routeIs('supervisi.daily-activity.*')">Aktivitas Harian</flux:navlist.item>
             
-            <flux:navlist.group :heading="__('Manajemen')" class="grid mt-10">
-                <flux:navlist.item icon="document-text" href="#" :current="request()->routeIs('supervisi.pengajuan.*')">Pengajuan</flux:navlist.item>
-                <flux:navlist.item icon="cube" href="#" :current="request()->routeIs('supervisi.produk.*')">Produk</flux:navlist.item>
-                <flux:navlist.item icon="currency-dollar" href="#" :current="request()->routeIs('supervisi.penawaran.*')">Penawaran</flux:navlist.item>
-                <flux:navlist.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">RAB</flux:navlist.item>
-            </flux:navlist.group>
-
-            <flux:navlist.group :heading="__('Event')" class="grid mt-10">
-                <flux:navlist.item icon="calendar-days" href="#" :current="request()->routeIs('supervisi.events.*')">Semua Event</flux:navlist.item>
-                <flux:navlist.item icon="clock" href="#" :current="request()->routeIs('supervisi.events.upcoming')">Event Mendatang</flux:navlist.item>
-                <flux:navlist.item icon="check-circle" href="#" :current="request()->routeIs('supervisi.events.past')">Event Selesai</flux:navlist.item>
+            <flux:navlist.group :heading="__('Rancangan Anggaran Biaya')" class="grid mt-10">
+                <flux:navlist.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">Daftar RAB</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="#" :current="request()->routeIs('supervisi.rab.pending')">RAB Pending</flux:navlist.item>
+                <flux:navlist.item icon="clock" href="#" :current="request()->routeIs('supervisi.rab.on-progress')">RAB On Progress</flux:navlist.item>
+                <flux:navlist.item icon="check-circle" href="#" :current="request()->routeIs('supervisi.rab.completed')">RAB Selesai</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Sistem')" class="grid mt-10">

@@ -192,67 +192,172 @@
                         </div>
                     </div>
                 @endif
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                        <thead class="bg-zinc-50 dark:bg-zinc-700">
-                            <tr>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Item</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Type</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Dimensi</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Panjang</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Qty</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Satuan</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Warna</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Harga Satuan</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
-                                    Total</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                            @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $item)
+
+                @php
+                    // Check if this is a pintu penawaran by looking for section structure
+                    $isPintuPenawaran = false;
+                    if (is_array($rancanganAnggaranBiaya->json_pengeluaran_material_utama)) {
+                        foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $key => $value) {
+                            if (strpos($key, 'section_') === 0 && isset($value['products'])) {
+                                $isPintuPenawaran = true;
+                                break;
+                            }
+                        }
+                    }
+                @endphp
+
+                @if($isPintuPenawaran)
+                    <!-- Tampilan untuk Penawaran Pintu -->
+                    @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $sectionKey => $section)
+                        @if(isset($section['judul_1']) && isset($section['products']))
+                            <div class="mb-6">
+                                <div class="mb-4">
+                                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">{{ $section['judul_1'] }}</h3>
+                                    <div class="grid grid-cols-2">
+                                        @if(isset($section['judul_2']))
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $section['judul_2'] }}</p>
+                                        @endif
+                                        @if(isset($section['jumlah']))
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400">Jumlah: {{ $section['jumlah'] }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-zinc-50 dark:bg-zinc-700">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Item</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Nama Produk</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Lebar</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Tebal</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Tinggi</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Warna</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Harga</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Jumlah</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Diskon</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">Total Harga</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            @foreach ($section['products'] as $product)
+                                                <tr>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">{{ $product['item'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">{{ $product['nama_produk'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        @if(isset($product['lebar']) && $product['lebar'] > 0)
+                                                            {{ $product['lebar'] }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        @if(isset($product['tebal']) && $product['tebal'] > 0)
+                                                            {{ $product['tebal'] }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        @if(isset($product['tinggi']) && $product['tinggi'] > 0)
+                                                            {{ $product['tinggi'] }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">{{ $product['warna'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        Rp {{ number_format((float) preg_replace('/[^\d]/', '', $product['harga'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        @if(isset($product['jumlah_individual']) && $product['jumlah_individual'] > 1)
+                                                            {{ $product['jumlah_individual'] }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        @if(isset($product['diskon']) && $product['diskon'] > 0)
+                                                            {{ number_format($product['diskon'], 0, ',', '.') }}%
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        Rp {{ number_format((float) preg_replace('/[^\d]/', '', $product['total_harga'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                @else
+                    <!-- Tampilan untuk Penawaran Biasa (tidak diubah) -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                            <thead class="bg-zinc-50 dark:bg-zinc-700">
                                 <tr>
-                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                        {{ $item['item'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['type'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['dimensi'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['panjang'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['qty'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['satuan'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ $item['warna'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                        {{ number_format((float) preg_replace('/[^\d]/', '', $item['total'] ?? 0), 0, ',', '.') }}
-                                    </td>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Item</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Type</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Dimensi</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Panjang</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Qty</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Warna</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Harga Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Total</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $item)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                            {{ $item['item'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['type'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['dimensi'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['panjang'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['qty'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['satuan'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['warna'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ number_format((float) preg_replace('/[^\d]/', '', $item['total'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         @endif
 

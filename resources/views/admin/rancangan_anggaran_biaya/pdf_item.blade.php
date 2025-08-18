@@ -177,51 +177,196 @@
 
     {{-- I. Pengeluaran Material Utama --}}
     <div class="section-title">I. PENGELUARAN MATERIAL UTAMA</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 4%" class="text-center">No</th>
-                <th style="width: 18%" class="text-center">Item Barang</th>
-                <th style="width: 10%" class="text-center">Kode</th>
-                <th style="width: 10%" class="text-center">Dimensi</th>
-                <th style="width: 10%" class="text-center">Panjang</th>
-                <th style="width: 6%" class="text-center">Qty</th>
-                <th style="width: 6%" class="text-center">Satuan</th>
-                <th style="width: 10%" class="text-center">Sub Total</th>
-                <th style="width: 10%" class="text-center">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama ?? [] as $i => $item)
-                <tr>
-                    <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ !empty($item['item']) ? $item['item'] : '' }}</td>
-                    <td class="text-center">{{ !empty($item['type']) ? $item['type'] : '' }}</td>
-                    <td class="text-center">{{ !empty($item['dimensi']) ? $item['dimensi'] : '' }}</td>
-                    <td class="text-center">{{ !empty($item['panjang']) ? $item['panjang'] : '' }}</td>
-                    <td class="text-center">
-                        {{ isset($item['qty']) && $item['qty'] !== null && $item['qty'] !== '' ? $item['qty'] : '' }}
-                    </td>
-                    <td class="text-center">{{ !empty($item['satuan']) ? $item['satuan'] : '' }}</td>
-                    <td class="text-right"></td>
-                    <td class="text-right"></td>
-                </tr>
-            @endforeach
-            <tr class="highlightTotal">
-                <td colspan="8" class="text-right">GRAND TOTAL MATERIAL UTAMA</td>
-                <td class="text-right">
-                    <table width="100%" height="100%">
+
+    @php
+        // Check if this is a pintu penawaran by looking for section structure
+        $isPintuPenawaran = false;
+        if (is_array($rancanganAnggaranBiaya->json_pengeluaran_material_utama)) {
+            foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $key => $value) {
+                if (strpos($key, 'section_') === 0 && isset($value['products'])) {
+                    $isPintuPenawaran = true;
+                    break;
+                }
+            }
+        }
+    @endphp
+
+    @if ($isPintuPenawaran)
+        <!-- Tampilan untuk Penawaran Pintu -->
+        @php
+            $totalPintuPenawaran = 0; // Untuk menghitung total dari semua section
+        @endphp
+        
+        @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $sectionKey => $section)
+            @if (isset($section['judul_1']) && isset($section['products']))
+                <!-- Header Section -->
+                <div
+                    style="padding: 8px; background: #f0f0f0; border-left: 4px solid #567CBA; font-weight: bold; font-size: 10px;">
+                    {{ $section['judul_1'] }}
+                    @if (isset($section['judul_2']))
+                        - {{ $section['judul_2'] }}
+                    @endif
+                    @if (isset($section['jumlah']))
+                        (Jumlah: {{ $section['jumlah'] }})
+                    @endif
+                </div>
+
+                <table>
+                    <thead>
                         <tr>
-                            <td class="table-none" style="width: 50%;">Rp</td>
-                            <td class="table-none" style="width: 50%; text-align: right;">
-                                {{ number_format($totalUtama, 0, ',', '.') }}
+                            <th style="width: 4%" class="text-center">No</th>
+                            <th style="width: 15%" class="text-center">Item</th>
+                            <th style="width: 20%" class="text-center">Nama Produk</th>
+                            <th style="width: 8%" class="text-center">Lebar</th>
+                            <th style="width: 8%" class="text-center">Tebal</th>
+                            <th style="width: 8%" class="text-center">Tinggi</th>
+                            <th style="width: 10%" class="text-center">Warna</th>
+                            <th style="width: 12%" class="text-center">Harga</th>
+                            <th style="width: 6%" class="text-center">Jumlah</th>
+                            <th style="width: 9%" class="text-center">Total Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $subtotalSection = 0; // Untuk subtotal per section
+                        @endphp
+                        @foreach ($section['products'] as $i => $product)
+                            @php
+                                $totalHarga = (float) preg_replace('/[^\d]/', '', $product['total_harga'] ?? 0);
+                                $jumlahPintu = (int) ($section['jumlah'] ?? 1);
+                                $totalHargaDenganJumlah = $totalHarga * $jumlahPintu;
+                                $subtotalSection += $totalHargaDenganJumlah;
+                                $totalPintuPenawaran += $totalHargaDenganJumlah;
+                            @endphp
+                            <tr>
+                                <td class="text-center">{{ $i + 1 }}</td>
+                                <td class="text-center">{{ $product['item'] ?? '-' }}</td>
+                                <td>{{ $product['nama_produk'] ?? '-' }}</td>
+                                <td class="text-center">
+                                    @if (isset($product['lebar']) && $product['lebar'] > 0)
+                                        {{ $product['lebar'] }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if (isset($product['tebal']) && $product['tebal'] > 0)
+                                        {{ $product['tebal'] }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if (isset($product['tinggi']) && $product['tinggi'] > 0)
+                                        {{ $product['tinggi'] }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-center">{{ $product['warna'] ?? '-' }}</td>
+                                <td class="text-right">
+                                    Rp
+                                    {{ number_format((float) preg_replace('/[^\d]/', '', $product['harga'] ?? 0), 0, ',', '.') }}
+                                </td>
+                                <td class="text-center">
+                                    @if (isset($product['jumlah_individual']) && $product['jumlah_individual'] > 1)
+                                        {{ $product['jumlah_individual'] }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-right">
+                                    Rp
+                                    {{ number_format($totalHargaDenganJumlah, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endforeach
+                        
+                        <!-- Subtotal per section -->
+                        <tr class="highlightTotal">
+                            <td colspan="9" class="text-right">SUBTOTAL {{ $section['judul_1'] }}</td>
+                            <td class="text-right">
+                                <table height="100%">
+                                    <tr>
+                                        <td class="table-none" style="width: 10%;">Rp</td>
+                                        <td class="table-none" style="width: 50%; text-align: right;">
+                                            {{ number_format($subtotalSection, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            @endif
+        @endforeach
+        
+        <!-- Grand Total untuk semua section penawaran pintu -->
+        <table>
+            <tbody>
+                <tr class="highlightTotal">
+                    <td colspan="9" class="text-right">GRAND TOTAL MATERIAL UTAMA</td>
+                    <td class="text-right">
+                        <table height="100%">
+                            <tr>
+                                <td class="table-none" style="width: 10%;">Rp</td>
+                                <td class="table-none" style="width: 50%; text-align: right;">
+                                    {{ number_format($totalPintuPenawaran, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @else
+        <!-- Tampilan untuk Penawaran Biasa (tidak diubah) -->
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 4%" class="text-center">No</th>
+                    <th style="width: 18%" class="text-center">Item Barang</th>
+                    <th style="width: 10%" class="text-center">Kode</th>
+                    <th style="width: 10%" class="text-center">Dimensi</th>
+                    <th style="width: 10%" class="text-center">Panjang</th>
+                    <th style="width: 6%" class="text-center">Qty</th>
+                    <th style="width: 6%" class="text-center">Satuan</th>
+                    <th style="width: 10%" class="text-center">Sub Total</th>
+                    <th style="width: 10%" class="text-center">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama ?? [] as $i => $item)
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ !empty($item['item']) ? $item['item'] : '' }}</td>
+                        <td class="text-center">{{ !empty($item['type']) ? $item['type'] : '' }}</td>
+                        <td class="text-center">{{ !empty($item['dimensi']) ? $item['dimensi'] : '' }}</td>
+                        <td class="text-center">{{ !empty($item['panjang']) ? $item['panjang'] : '' }}</td>
+                        <td class="text-center">
+                            {{ isset($item['qty']) && $item['qty'] !== null && $item['qty'] !== '' ? $item['qty'] : '' }}
+                        </td>
+                        <td class="text-center">{{ !empty($item['satuan']) ? $item['satuan'] : '' }}</td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                    </tr>
+                @endforeach
+                <tr class="highlightTotal">
+                    <td colspan="8" class="text-right">GRAND TOTAL MATERIAL UTAMA</td>
+                    <td class="text-right">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td class="table-none" style="width: 50%;">Rp</td>
+                                <td class="table-none" style="width: 50%; text-align: right;">
+                                    {{ number_format($totalUtama, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 
     {{-- II. Pengeluaran Material Pendukung --}}
     <div class="section-title">II. PENGELUARAN MATERIAL PENDUKUNG</div>
@@ -624,7 +769,8 @@
                             <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
                             <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
                             <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
-                            <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
+                            <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}
+                            </td>
                             <td class="text-center">
                                 {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
                             </td>
