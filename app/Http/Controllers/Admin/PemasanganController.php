@@ -46,7 +46,20 @@ class PemasanganController extends Controller
         $penawaran = Penawaran::with(['client', 'user'])->findOrFail($penawaranId);
         $client = $penawaran->client;
         $sales = $penawaran->user;
-        $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)->get();
+        
+        // Filter syarat pemasangan berdasarkan jenis penawaran
+        if ($penawaran->penawaran_pintu) {
+            // Jika penawaran pintu, ambil syarat pemasangan pintu
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 1)
+                ->get();
+        } else {
+            // Jika penawaran biasa, ambil syarat pemasangan biasa
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 0)
+                ->get();
+        }
+        
         return view('admin.pemasangan.create', compact('penawaran', 'client', 'sales', 'syaratPemasangan'));
     }
 
@@ -99,17 +112,51 @@ class PemasanganController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $pemasangan = Pemasangan::with(['penawaran', 'client', 'sales'])->findOrFail($id);
+        $penawaran = $pemasangan->penawaran;
+        $client = $pemasangan->client;
+        $sales = $pemasangan->sales;
+        
+        // Filter syarat pemasangan berdasarkan jenis penawaran
+        if ($penawaran->penawaran_pintu) {
+            // Jika penawaran pintu, ambil syarat pemasangan pintu
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 1)
+                ->get();
+        } else {
+            // Jika penawaran biasa, ambil syarat pemasangan biasa
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 0)
+                ->get();
+        }
+        
+        return view('admin.pemasangan.edit', compact('pemasangan', 'penawaran', 'client', 'sales', 'syaratPemasangan'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'tanggal_pemasangan' => 'required|date',
+            'judul_pemasangan' => 'required|string|max:255',
+            'json_pemasangan' => 'required|array',
+            'total' => 'required|numeric',
+            'diskon' => 'nullable|numeric',
+            'grand_total' => 'required|numeric',
+            'json_syarat_kondisi' => 'nullable|array',
+            'logo' => 'nullable|string|max:100',
+        ]);
+
+        $pemasangan = Pemasangan::findOrFail($id);
+        $data = $request->all();
+        
+        $pemasangan->update($data);
+        
+        return redirect()->route('admin.pemasangan.show', $pemasangan->id)->with('success', 'Pemasangan berhasil diupdate.');
     }
 
     /**

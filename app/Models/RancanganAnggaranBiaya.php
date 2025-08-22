@@ -83,12 +83,12 @@ class RancanganAnggaranBiaya extends Model
     // Relationships
     public function penawaran()
     {
-        return $this->belongsTo(Penawaran::class);
+        return $this->belongsTo(Penawaran::class)->where('status_deleted', 0);
     }
 
     public function pemasangan()
     {
-        return $this->belongsTo(Pemasangan::class);
+        return $this->belongsTo(Pemasangan::class)->where('status_deleted', 0);
     }
 
     public function user()

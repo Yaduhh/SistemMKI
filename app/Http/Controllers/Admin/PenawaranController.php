@@ -108,7 +108,7 @@ class PenawaranController extends Controller
         $wallpanels = Wallpanel::active()->get();
         $floorings = Flooring::active()->get();
         $facades = Facade::active()->get();
-        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
         return view('admin.penawaran.edit', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
     }
 
@@ -236,7 +236,34 @@ class PenawaranController extends Controller
     public function cetak(Request $request, $id)
     {
         // Ambil data penawaran berdasarkan ID
-        $penawaran = Penawaran::with(['client', 'user'])->findOrFail($id);
+        $penawaran = Penawaran::with(['client', 'user.tandaTangan'])->findOrFail($id);
+        
+        // Debug: Log data tanda tangan
+        \Log::info('Penawaran cetak - User data:', [
+            'user_id' => $penawaran->user->id ?? 'null',
+            'user_name' => $penawaran->user->name ?? 'null',
+            'tanda_tangan' => $penawaran->user->tandaTangan ?? 'null',
+            'tanda_tangan_ttd' => $penawaran->user->tandaTangan->ttd ?? 'null'
+        ]);
+        
+        // Copy tanda tangan ke public folder jika ada
+        if ($penawaran->user && $penawaran->user->tandaTangan) {
+            $sourcePath = storage_path('app/public/' . $penawaran->user->tandaTangan->ttd);
+            $publicPath = public_path('assets/images/tanda-tangan/');
+            
+            // Buat folder jika belum ada
+            if (!file_exists($publicPath)) {
+                mkdir($publicPath, 0755, true);
+            }
+            
+            $filename = basename($penawaran->user->tandaTangan->ttd);
+            $destinationPath = $publicPath . $filename;
+            
+            if (file_exists($sourcePath)) {
+                copy($sourcePath, $destinationPath);
+                \Log::info('Tanda tangan copied to public:', ['destination' => $destinationPath]);
+            }
+        }
         
         // Decode JSON fields to arrays
         $json_produk = $penawaran->json_produk ?? [];

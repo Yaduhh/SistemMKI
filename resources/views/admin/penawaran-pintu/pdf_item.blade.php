@@ -482,8 +482,13 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 30%; vertical-align: top;">
-                    <p style="margin-bottom: 60px;">Hormat kami,</p>
-                    <p style="margin-top: 40px;">{{ $penawaran->user->name ?? 'Sales' }}</p>
+                    <p>Hormat kami,</p>
+                    @if($penawaran->user && $penawaran->user->tandaTangan)
+                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}" 
+                             alt="Tanda Tangan" 
+                             style="width: 140px; height: 100px; object-fit: contain;">
+                    @endif
+                    <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
                 </td>
                 <td style="width: 70%; vertical-align: bottom; text-align: right; padding-top: 80px;">
                     <div>

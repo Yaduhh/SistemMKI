@@ -28,7 +28,6 @@
                                     <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                     <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                     <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                    <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                     <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
@@ -38,14 +37,13 @@
                                         <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $decking->code }}</td>
                                         <td class="px-6 py-4">{{ $decking->nama_produk ?? '-' }}</td>
-                                        <td class="px-6 py-4">
-                                            {{ $decking->lebar }} mm x {{ $decking->tebal }} mm x {{ $decking->panjang }} cm/btg
+                                        <td class="px-6 py-4 truncate">
+                                            {{ $decking->lebar }} x {{ $decking->tebal }} x {{ $decking->panjang }} cm/btg
                                         </td>
-                                        <td class="px-6 py-4">
-                                            {{ $decking->luas_btg }} m2 | {{ $decking->luas_m2 }} btg
+                                        <td class="px-6 py-4 truncate">
+                                            {{ $decking->luas_btg }} m2 | {{ $decking->luas_m2 }}btg
                                         </td>
-                                        <td class="px-6 py-4">Rp {{ number_format($decking->harga ?? 0, 0, ',', '.') }}</td>
-                                        <td class="px-6 py-4">{{ $decking->creator->name ?? '-' }}</td>
+                                        <td class="px-6 py-4 truncate">Rp {{ number_format($decking->harga ?? 0, 0, ',', '.') }}</td>
                                         <td class="px-6 py-4">
                                             <div class="flex space-x-2">
                                                 <x-button href="{{ route('admin.decking.edit', $decking) }}" size="sm" variant="secondary">

@@ -31,7 +31,6 @@
                                 <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -40,15 +39,22 @@
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $wallpanel->code }}</td>
-                                    <td class="px-6 py-4">{{ $wallpanel->nama_produk ?? '-' }}</td>
                                     <td class="px-6 py-4">
-                                        {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
+                                        <p class="truncate">{{ $wallpanel->nama_produk ?? '-' }}</p>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
+                                        <p class="truncate">
+                                            {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
+                                        </p>
                                     </td>
-                                    <td class="px-6 py-4">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">{{ $wallpanel->creator->name ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <p class="truncate">
+                                            {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="truncate">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</p>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <x-button href="{{ route('admin.wallpanel.edit', $wallpanel) }}" size="sm" variant="secondary">
@@ -93,7 +99,6 @@
                                 <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -102,15 +107,22 @@
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $wallpanel->code }}</td>
-                                    <td class="px-6 py-4">{{ $wallpanel->nama_produk ?? '-' }}</td>
                                     <td class="px-6 py-4">
-                                        {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
+                                        <p class="truncate">{{ $wallpanel->nama_produk ?? '-' }}</p>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
+                                        <p class="truncate">
+                                            {{ $wallpanel->lebar }} {{ $wallpanel->satuan }} x {{ $wallpanel->tebal }} {{ $wallpanel->satuan }} x {{ $wallpanel->panjang }} cm/btg
+                                        </p>
                                     </td>
-                                    <td class="px-6 py-4">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">{{ $wallpanel->creator->name ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <p class="truncate">
+                                            {{ $wallpanel->luas_btg }} m2 | {{ $wallpanel->luas_m2 }} btg
+                                        </p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="truncate">Rp {{ number_format($wallpanel->harga ?? 0, 0, ',', '.') }}</p>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <x-button href="{{ route('admin.wallpanel.edit', $wallpanel) }}" size="sm" variant="secondary">

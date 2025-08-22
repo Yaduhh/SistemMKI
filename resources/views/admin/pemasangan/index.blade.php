@@ -8,6 +8,11 @@
                     </p>
                 </div>
             </div>
+
+        <x-flash-message type="success" :message="session('success')" />
+        <x-flash-message type="error" :message="session('error')" />
+
+
             <form method="GET"
                 class="sticky top-0 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-lg shadow-sm border border-gray-100 dark:border-zinc-800 p-4 mb-6 flex flex-col md:flex-row md:items-end gap-4">
                 <div class="flex-1">
@@ -32,17 +37,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="flex-1">
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Periode
-                        Tanggal</label>
-                    <div class="flex gap-2">
-                        <input type="date" name="start" value="{{ request('start') }}"
-                            class="w-full py-2 px-3 rounded-lg border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-                        <span class="text-gray-400 dark:text-gray-500 flex items-center">-</span>
-                        <input type="date" name="end" value="{{ request('end') }}"
-                            class="w-full py-2 px-3 rounded-lg border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-                    </div>
-                </div>
+
                 <div>
                     <button type="submit"
                         class="inline-flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-700 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
@@ -92,7 +87,7 @@
                                                             : 'Draft')) }}
                                             </span>
                                         </div>
-                                        <div class="text-sm text-gray-800 dark:text-gray-400 font-medium line-clamp-2">
+                                        <div class="text-sm text-gray-800 dark:text-gray-400 font-medium line-clamp-1">
                                             {{ $pemasangan->judul_pemasangan }}
                                         </div>
                                     </div>
@@ -126,7 +121,8 @@
                                     <div class="truncate">{{ $pemasangan->sales->name ?? '-' }}</div>
                                 </div>
                             </div>
-                            <div class="flex-1 text-center flex flex-col items-center gap-1 bg-zinc-100 dark:bg-zinc-900/40 py-2 border-b border-gray-100 dark:border-zinc-800">
+                            <div
+                                class="flex-1 text-center flex flex-col items-center gap-1 bg-zinc-100 dark:bg-zinc-900/40 py-2 border-b border-gray-100 dark:border-zinc-800">
                                 <div class="flex flex-row items-center gap-2">
                                     <svg class="w-4 h-4 text-yellow-400 mb-0.5" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -136,10 +132,10 @@
                                     <div class="font-semibold">Total</div>
                                 </div>
                                 <div class="text-gray-900 dark:text-white font-bold">Rp
-                                    {{ number_format((float) ($pemasangan->total ?? 0), 0, ',', '.') }}</div>
+                                    {{ number_format((float) ($pemasangan->grand_total ?? 0), 0, ',', '.') }}</div>
                             </div>
-                            <!-- Tombol detail -->
-                            <div class="p-6 flex flex-col flex-1 justify-end">
+                            <!-- Tombol detail, edit, dan delete -->
+                            <div class="p-6 flex flex-col flex-1 justify-end space-y-2">
                                 <a href="{{ route('admin.pemasangan.show', $pemasangan->id) }}"
                                     class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-lg font-semibold text-sm text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800 focus:outline-none transition">
                                     <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor"
@@ -150,6 +146,34 @@
                                     </svg>
                                     Detail
                                 </a>
+                                @if ($pemasangan->status == 0)
+                                    <a href="{{ route('admin.pemasangan.edit', $pemasangan->id) }}"
+                                        class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded-lg font-semibold text-sm text-indigo-700 dark:text-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:outline-none transition">
+                                        <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Edit
+                                    </a>
+                                @endif
+                                @if ($pemasangan->status == 0)
+                                    <form action="{{ route('admin.pemasangan.destroy', $pemasangan->id) }}"
+                                        method="POST" class="w-full"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pemasangan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="w-full inline-flex items-center justify-center px-4 py-2 bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800 rounded-lg font-semibold text-sm text-red-700 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-800 focus:outline-none transition">
+                                            <svg class="w-4 h-4 mr-2 text-red-500" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     @endforeach

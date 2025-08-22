@@ -76,6 +76,7 @@
                     <flux:navlist.item icon="user-circle" :href="route('admin.akun.index')" :current="request()->routeIs('admin.akun.index')" wire:navigate>{{ __('Akun') }}</flux:navlist.item>
                     @if(auth()->user()->role === 1)
                         <flux:navlist.item icon="user-plus" :href="route('admin.akun.create')" :current="request()->routeIs('admin.akun.create')" wire:navigate>{{ __('Tambah User') }}</flux:navlist.item>
+                        <flux:navlist.item icon="document-duplicate" :href="route('admin.tanda-tangan.index')" :current="request()->routeIs('admin.tanda-tangan.*')" wire:navigate>{{ __('Tanda Tangan') }}</flux:navlist.item>
                     @endif
                 </flux:navlist.group>
             </flux:navlist>

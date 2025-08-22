@@ -21,12 +21,34 @@
                     @csrf
                     @method('PUT')
 
+                    <!-- Jenis Syarat -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Syarat Pemasangan</label>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <input type="radio" id="syarat_pintu_0" name="syarat_pintu" value="0" 
+                                    {{ old('syarat_pintu', $syaratPemasangan->syarat_pintu) == 0 ? 'checked' : '' }}
+                                    class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="syarat_pintu_0" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Syarat Pemasangan Biasa</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="syarat_pintu_1" name="syarat_pintu" value="1" 
+                                    {{ old('syarat_pintu', $syaratPemasangan->syarat_pintu) == 1 ? 'checked' : '' }}
+                                    class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="syarat_pintu_1" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Syarat Pemasangan Pintu</label>
+                            </div>
+                        </div>
+                        @error('syarat_pintu')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Syarat -->
                     <div>
                         <label for="syarat" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Syarat Pemasangan</label>
                         <textarea id="syarat" name="syarat" rows="8" 
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-600 dark:focus:border-emerald-600 font-mono text-sm"
-                            placeholder="Masukkan syarat pemasangan...
+                            placeholder="Masukkan syarat pemasangan..."
                             required>{{ old('syarat', $syaratPemasangan->syarat) }}</textarea>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Gunakan Enter untuk membuat baris baru</p>
                         @error('syarat')

@@ -774,16 +774,14 @@
                     Edit
                 </a>
 
-                @if ($penawaran->status == 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
-                    <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
-                        class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                            </path>
-                        </svg>
-                        Buat Pemasangan
-                    </a>
-                @endif
+                <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
+                    class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                        </path>
+                    </svg>
+                    Buat Pemasangan
+                </a>
 
                 @if ($penawaran->status == 1)
                     <a href="{{ route('admin.rancangan-anggaran-biaya.create', ['penawaran_id' => $penawaran->id]) }}"

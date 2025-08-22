@@ -13,6 +13,7 @@ class AkomodasiController extends Controller
     {
         $akomodasis = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_akomodasi')
             ->where('json_pengeluaran_akomodasi', '!=', '[]')
+            ->with('supervisi')
             ->get()
             ->map(function ($rab) {
                 $akomodasiData = [];
@@ -39,6 +40,9 @@ class AkomodasiController extends Controller
                                     'rab_id' => $rab->id,
                                     'rab_proyek' => $rab->proyek,
                                     'rab_pekerjaan' => $rab->pekerjaan,
+                                    'rab_status' => $rab->status,
+                                    'supervisi_id' => $rab->supervisi_id,
+                                    'supervisi_nama' => $rab->supervisi ? $rab->supervisi->name : '-',
                                     'mr' => $mrGroup['mr'] ?? '-',
                                     'tanggal' => !empty($mrGroup['tanggal']) && $mrGroup['tanggal'] !== '-' ? $mrGroup['tanggal'] : null,
                                     'supplier' => $material['supplier'] ?? '-',
@@ -67,7 +71,7 @@ class AkomodasiController extends Controller
             });
         }
 
-        $akomodasis = $akomodasis->sortByDesc('created_at');
+        $akomodasis = $akomodasis->sortByDesc('tanggal')->values();
 
         return view('admin.akomodasi.index', compact('akomodasis'));
     }

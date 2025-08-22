@@ -86,10 +86,10 @@
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
                                  <div class="py-4">
-                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
-                     <p class=" text-gray-600 dark:text-gray-400 mt-1">
-                         Kelola pengeluaran entertainment untuk proyek ini
-                     </p>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
+                    <p class=" text-gray-600 dark:text-gray-400 mt-1">
+                        Kelola pengeluaran entertainment untuk proyek ini
+                    </p>
                      
                      @php
                          // Filter entertainment data to remove empty/null entries
@@ -154,7 +154,7 @@
                                     dihapus.
                                 </span>
                             </div>
-                        </div>
+                </div>
                     @elseif($hasRejectedMaterial)
                         <div
                             class="mt-2 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
@@ -167,8 +167,8 @@
                                 <span class=" text-red-800 dark:text-red-200 font-medium">
                                     Ada material yang ditolak. Material tersebut tidak dapat diubah atau dihapus.
                                 </span>
-                            </div>
-                        </div>
+                                                </div>
+                                                </div>
                     @else
                         <div
                             class="mt-2 p-3 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
@@ -181,8 +181,8 @@
                                 <span class=" text-blue-800 dark:text-blue-200 font-medium">
                                     Semua material dalam status pengajuan. Data dapat diubah dan dihapus.
                                 </span>
-                            </div>
-                        </div>
+                                                </div>
+                                            </div>
                     @endif
                 </div>
                                  <div class="py-4">
@@ -208,8 +208,8 @@
                                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                                             </path>
                                                         </svg>
-                                                    </div>
-                                                    <div>
+                                                        </div>
+                                                        <div>
                                                         <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}
                                                         </h5>
                                                         <p class="text-teal-100 ">
@@ -219,9 +219,9 @@
                                                 <div class="text-right">
                                                     <span class="text-white ">Total:
                                                         {{ count($mr['materials'] ?? []) }} Material</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                        </div>
+                                                        </div>
+                                                        </div>
 
                                         <!-- Tabel Material -->
                                         @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
@@ -315,7 +315,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
-                                            </div>
+                                                        </div>
 
                                             <!-- Total per MR -->
                                             @php
@@ -341,8 +341,8 @@
                                                         class="text-lg font-bold text-orange-600 dark:text-orange-400">
                                                         Rp {{ number_format($totalMR, 0, ',', '.') }}
                                                     </span>
-                                                </div>
-                                            </div>
+                                                        </div>
+                                                        </div>
                                         @else
                                             <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                                 <svg class="mx-auto h-8 w-8 mb-2" fill="none"
@@ -353,10 +353,10 @@
                                                     </path>
                                                 </svg>
                                                 <p>Belum ada material untuk MR ini</p>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endforeach
+                                                    </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
 
                                 <!-- Grand Total -->
                                 @php
@@ -397,7 +397,7 @@
                                                 {{ number_format($grandTotal, 0, ',', '.') }}</div>
                                         </div>
                                     </div>
-                                </div>
+                            </div>
                             </div>
                         </div>
 
@@ -412,8 +412,8 @@
                                         </svg>
                                         Edit Entertainment
                                     </a>
-                                </div>
                             </div>
+                        </div>
                         @endif
                     @endif
                 </div>
@@ -427,11 +427,11 @@
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Material
                         Pendukung</h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-6">
-                        Data material pendukung untuk proyek ini
-                    </p>
+                            Data material pendukung untuk proyek ini
+                        </p>
 
-                    <div class="space-y-6">
-                        @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
+                        <div class="space-y-6">
+                            @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
                             <div
                                 class="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg overflow-hidden shadow-sm">
                                 <!-- Header MR -->
@@ -446,8 +446,8 @@
                                                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                                     </path>
                                                 </svg>
-                                            </div>
-                                            <div>
+                                        </div>
+                                        <div>
                                                 <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}</h5>
                                                 <p class="text-orange-100 ">
                                                     {{ $mr['tanggal'] ?? 'Tanggal tidak tersedia' }}</p>
@@ -457,32 +457,32 @@
                                             <span class="text-white ">{{ count($mr['materials'] ?? []) }}
                                                 Material</span>
                                         </div>
+                                        </div>
                                     </div>
-                                </div>
 
                                 <!-- Tabel Material -->
                                 @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
-                                    <div class="overflow-x-auto">
+                                        <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                                             <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                <tr>
-                                                    <th
+                                                    <tr>
+                                                        <th
                                                         class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Supplier</th>
-                                                    <th
+                                                            Supplier</th>
+                                                        <th
                                                         class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Item</th>
-                                                    <th
+                                                            Item</th>
+                                                        <th
                                                         class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                        Qty</th>
-                                                    <th
+                                                            Qty</th>
+                                                        <th
                                                         class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                        Satuan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
+                                                            Satuan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody
                                                 class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                @foreach ($mr['materials'] as $material)
+                                                    @foreach ($mr['materials'] as $material)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
                                                         <td class="px-4 py-3  text-gray-900 dark:text-gray-100">
@@ -500,11 +500,11 @@
                                                             class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
                                                             {{ $material['satuan'] ?? '-' }}
                                                         </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                 @else
                                     <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                         <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
@@ -515,9 +515,9 @@
                                         </svg>
                                         <p>Belum ada material untuk MR ini</p>
                                     </div>
-                                @endif
-                            </div>
-                        @endforeach
+                                    @endif
+                                </div>
+                            @endforeach
                     </div>
                 </div>
             @endif

@@ -32,10 +32,12 @@ class SyaratPemasanganController extends Controller
     {
         $request->validate([
             'syarat' => 'required|string',
+            'syarat_pintu' => 'required|in:0,1',
         ]);
 
         SyaratPemasangan::create([
             'syarat' => $request->syarat,
+            'syarat_pintu' => $request->syarat_pintu,
             'status_deleted' => false,
         ]);
 
@@ -68,11 +70,13 @@ class SyaratPemasanganController extends Controller
     {
         $request->validate([
             'syarat' => 'required|string',
+            'syarat_pintu' => 'required|in:0,1',
         ]);
 
         $syaratPemasangan = SyaratPemasangan::findOrFail($id);
         $syaratPemasangan->update([
             'syarat' => $request->syarat,
+            'syarat_pintu' => $request->syarat_pintu,
         ]);
 
         return redirect()->route('admin.syarat-pemasangan.index')

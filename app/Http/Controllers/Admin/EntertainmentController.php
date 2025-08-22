@@ -13,6 +13,7 @@ class EntertainmentController extends Controller
     {
         $entertainments = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_entertaiment')
             ->where('json_pengeluaran_entertaiment', '!=', '[]')
+            ->with('supervisi')
             ->get()
             ->map(function ($rab) {
                 $entertainmentData = [];
@@ -31,6 +32,9 @@ class EntertainmentController extends Controller
                                     'rab_id' => $rab->id,
                                     'rab_proyek' => $rab->proyek,
                                     'rab_pekerjaan' => $rab->pekerjaan,
+                                    'rab_status' => $rab->status,
+                                    'supervisi_id' => $rab->supervisi_id,
+                                    'supervisi_nama' => $rab->supervisi ? $rab->supervisi->name : '-',
                                     'mr' => $mrGroup['mr'] ?? '-',
                                     'tanggal' => !empty($mrGroup['tanggal']) && $mrGroup['tanggal'] !== '-' ? $mrGroup['tanggal'] : null,
                                     'supplier' => $material['supplier'] ?? '-',
@@ -59,7 +63,7 @@ class EntertainmentController extends Controller
             });
         }
 
-        $entertainments = $entertainments->sortByDesc('created_at');
+        $entertainments = $entertainments->sortByDesc('tanggal')->values();
 
         return view('admin.entertainment.index', compact('entertainments'));
     }

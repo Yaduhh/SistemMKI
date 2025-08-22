@@ -27,7 +27,8 @@ class User extends Authenticatable
         'notelp',
         'profile',
         'status',
-        'status_deleted', 
+        'status_deleted',
+        'master',
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => 'integer',
+            'master' => 'boolean',
         ];
     }
 
@@ -78,5 +80,10 @@ class User extends Authenticatable
     public function rancanganAnggaranBiaya()
     {
         return $this->hasMany(RancanganAnggaranBiaya::class, 'supervisi_id');
+    }
+
+    public function tandaTangan()
+    {
+        return $this->hasOne(TandaTangan::class, 'id_user');
     }
 }

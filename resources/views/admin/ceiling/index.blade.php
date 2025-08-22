@@ -31,7 +31,6 @@
                                 <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -48,7 +47,6 @@
                                         {{ $ceiling->luas_btg }} m2 | {{ $ceiling->luas_m2 }} btg
                                     </td>
                                     <td class="px-6 py-4">Rp {{ number_format($ceiling->harga ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">{{ $ceiling->creator->name ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <x-button href="{{ route('admin.ceiling.edit', $ceiling) }}" size="sm" variant="secondary">

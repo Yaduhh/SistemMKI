@@ -46,4 +46,9 @@ class Pemasangan extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'id_sales');
     }
+
+    public function penawaran()
+    {
+        return $this->belongsTo(\App\Models\Penawaran::class, 'id_penawaran');
+    }
 }

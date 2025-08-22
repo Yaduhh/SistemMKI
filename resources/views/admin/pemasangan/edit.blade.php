@@ -1,18 +1,18 @@
-<x-layouts.app :title="__('Buat Pemasangan')">
+<x-layouts.app :title="__('Edit Pemasangan')">
     <div class="container mx-auto">
         <div class="w-full mx-auto">
             <div class="mb-6">
                 <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center">
                     <div class="mb-4 lg:mb-0">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Buat Pemasangan</h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Formulir pemasangan untuk penawaran <span class="font-semibold">{{ $penawaran->nomor_penawaran }}</span></p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Edit Pemasangan</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Edit pemasangan untuk penawaran <span class="font-semibold">{{ $penawaran->nomor_penawaran }}</span></p>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Sales: <span class="font-semibold">{{ $sales->name }}</span></p>
                     </div>
-                    <a href="{{ route('admin.penawaran.show', $penawaran->id) }}" class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 dark:focus:bg-gray-600 active:bg-gray-900 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                    <a href="{{ route('admin.pemasangan.show', $pemasangan->id) }}" class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 dark:focus:bg-gray-600 active:bg-gray-900 dark:active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
-                        Kembali ke Penawaran
+                        Kembali ke Detail Pemasangan
                     </a>
                 </div>
             </div>
@@ -29,19 +29,20 @@
                 </div>
             @endif
             
-            <form action="{{ route('admin.pemasangan.store') }}" method="POST" class="space-y-8" enctype="multipart/form-data" x-data="pemasanganForm()">
+            <form action="{{ route('admin.pemasangan.update', $pemasangan->id) }}" method="POST" class="space-y-8" enctype="multipart/form-data" x-data="pemasanganForm()">
                 @csrf
+                @method('PUT')
                 <input type="hidden" name="id_penawaran" value="{{ $penawaran->id }}">
                 <input type="hidden" name="id_client" value="{{ $client->id }}">
                 <input type="hidden" name="id_sales" value="{{ $sales->id }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal Pemasangan</label>
-                        <input name="tanggal_pemasangan" type="date" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" value="{{ date('Y-m-d') }}" readonly required>
+                        <input name="tanggal_pemasangan" type="date" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" value="{{ $pemasangan->tanggal_pemasangan ? $pemasangan->tanggal_pemasangan->format('Y-m-d') : '' }}" required>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Judul Pemasangan</label>
-                        <input name="judul_pemasangan" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="Judul pemasangan" required>
+                        <input name="judul_pemasangan" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" placeholder="Judul pemasangan" value="{{ $pemasangan->judul_pemasangan }}" required>
                     </div>
                 </div>
                 <div class="w-full">
@@ -135,8 +136,8 @@
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Logo</label>
                     <select name="logo" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-                        <option value="MEGA KOMPOSIT INDONESIA">MEGA KOMPOSIT INDONESIA</option>
-                        <option value="WPC MAKMUR ABADI">WPC MAKMUR ABADI</option>
+                        <option value="MEGA KOMPOSIT INDONESIA" {{ $pemasangan->logo == 'MEGA KOMPOSIT INDONESIA' ? 'selected' : '' }}>MEGA KOMPOSIT INDONESIA</option>
+                        <option value="WPC MAKMUR ABADI" {{ $pemasangan->logo == 'WPC MAKMUR ABADI' ? 'selected' : '' }}>WPC MAKMUR ABADI</option>
                     </select>
                 </div>
                 <div class="mt-6">
@@ -156,14 +157,16 @@
                         @if($penawaran->penawaran_pintu)
                             Menampilkan syarat pemasangan khusus untuk produk pintu
                         @else
-                            Menampilkan syarat pemasangan untuk produk WPC
+                            Menampilkan syarat pemasangan untuk produk non-pintu
                         @endif
                     </p>
                     <div class="space-y-2">
                         @if($syaratPemasangan->count() > 0)
                             @foreach($syaratPemasangan as $syarat)
                                 <div class="flex items-center">
-                                    <input type="checkbox" name="json_syarat_kondisi[]" value="{{ $syarat->syarat }}" class="mr-2">
+                                    <input type="checkbox" name="json_syarat_kondisi[]" value="{{ $syarat->syarat }}" 
+                                        {{ in_array($syarat->syarat, $pemasangan->json_syarat_kondisi ?? []) ? 'checked' : '' }} 
+                                        class="mr-2">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">{{ $syarat->syarat }}</span>
                                 </div>
                             @endforeach
@@ -184,9 +187,9 @@
                 <div class="mt-8 flex justify-end">
                     <button type="submit" class="inline-flex items-center px-6 py-2 bg-emerald-600 dark:bg-emerald-600 border border-transparent rounded-lg font-semibold text-base text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
-                        Simpan Pemasangan
+                        Update Pemasangan
                     </button>
                 </div>
             </form>
@@ -194,11 +197,13 @@
     </div>
     <script>
         function pemasanganForm() {
+            let sections = @json($pemasangan->json_pemasangan ?? []);
+            if (sections.length === 0) {
+                sections = [{ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] }];
+            }
             return {
-                sections: [
-                    { sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] }
-                ],
-                diskon: 0,
+                sections: sections,
+                diskon: {{ $pemasangan->diskon ?? 0 }},
                 addSection() {
                     this.sections.push({ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] });
                 },

@@ -107,41 +107,6 @@
                                         </span>
                                     </span>
                                 </div>
-                                
-                                <!-- Informasi Revisi -->
-                                @if($penawaran->is_revisi)
-                                    <div class="col-span-1 md:col-span-2 mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                            </svg>
-                                            <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Informasi Revisi</span>
-                                        </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                            <div>
-                                                <span class="font-medium text-purple-700 dark:text-purple-300">Revisi dari:</span>
-                                                <span class="text-purple-800 dark:text-purple-200">
-                                                    @if($penawaran->penawaranAsli)
-                                                        <a href="{{ route('admin.penawaran.show', $penawaran->penawaranAsli->id) }}" class="hover:underline">
-                                                            {{ $penawaran->penawaranAsli->nomor_penawaran }}
-                                                        </a>
-                                                    @else
-                                                        {{ $penawaran->revisi_from ?? 'Tidak diketahui' }}
-                                                    @endif
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium text-purple-700 dark:text-purple-300">Level Revisi:</span>
-                                                <span class="text-purple-800 dark:text-purple-200">
-                                                    @php
-                                                        $revisionLevel = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? $matches[1] : '?';
-                                                    @endphp
-                                                    R{{ $revisionLevel }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center">
@@ -192,6 +157,56 @@
                                 <span
                                     class="ml-2 text-sm text-gray-900 dark:text-white">{{ $penawaran->judul_penawaran ?? '-' }}</span>
                             </div>
+
+                            <!-- Informasi Revisi -->
+                            @if ($penawaran->is_revisi)
+                                <div
+                                    class="col-span-1 md:col-span-2 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                            </path>
+                                        </svg>
+                                        <span
+                                            class="text-sm font-medium text-purple-700 dark:text-purple-300">Informasi
+                                            Revisi</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="font-medium text-purple-700 dark:text-purple-300">Revisi
+                                                dari:</span>
+                                            <span class="text-purple-800 dark:text-purple-200">
+                                                @if ($penawaran->penawaranAsli)
+                                                    <a href="{{ route('admin.penawaran.show', $penawaran->penawaranAsli->id) }}"
+                                                        class="hover:underline">
+                                                        {{ $penawaran->penawaranAsli->nomor_penawaran }}
+                                                    </a>
+                                                @else
+                                                    {{ $penawaran->revisi_from ?? 'Tidak diketahui' }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-purple-700 dark:text-purple-300">Level
+                                                Revisi:</span>
+                                            <span class="text-purple-800 dark:text-purple-200">
+                                                @php
+                                                    $revisionLevel = preg_match(
+                                                        '/R(\d+)$/',
+                                                        $penawaran->nomor_penawaran,
+                                                        $matches,
+                                                    )
+                                                        ? $matches[1]
+                                                        : '?';
+                                                @endphp
+                                                R{{ $revisionLevel }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -643,8 +658,50 @@
             </h3>
 
             <div class="flex flex-wrap gap-3">
-                <!-- Status Action Buttons -->
+                <!-- Tombol Cetak PDF - Selalu tampil -->
+                <a href="{{ route('admin.penawaran.cetak', $penawaran) }}"
+                    class="flex items-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        </path>
+                    </svg>
+                    Cetak PDF
+                </a>
+
+                <!-- Tombol Revisi - Hanya tampil jika bukan WIN -->
+                @if ($penawaran->status != 1 && $penawaran->canCreateRevisi())
+                    <a href="{{ route('admin.penawaran.create-revisi', $penawaran->id) }}"
+                        class="flex items-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        @if ($penawaran->is_revisi)
+                            Buat Revisi Lanjutan
+                        @else
+                            Buat Revisi
+                        @endif
+                    </a>
+                @endif
+
+                <!-- Tombol Edit - Hanya tampil jika bukan WIN -->
                 @if ($penawaran->status != 1)
+                    <a href="{{ route('admin.penawaran.edit', $penawaran->id) }}"
+                        class="flex items-center bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                        Edit
+                    </a>
+                @endif
+
+                <!-- Tombol Status - Hanya tampil jika bukan WIN dan belum ada pemasangan -->
+                @if ($penawaran->status != 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
+                    <!-- Tombol WIN -->
                     <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
                         class="inline">
                         @csrf
@@ -654,31 +711,32 @@
                             class="flex items-center bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    d="M5 13l4 4L19 7"></path>
                             </svg>
                             WIN
                         </button>
                     </form>
+
+                    <!-- Tombol LOSE - Hanya tampil jika bukan LOSE -->
+                    @if ($penawaran->status != 2)
+                        <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
+                            class="inline">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="2">
+                            <button type="submit"
+                                class="flex items-center bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                LOSE
+                            </button>
+                        </form>
+                    @endif
                 @endif
 
-                @if ($penawaran->status != 2 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
-                    <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
-                        class="inline">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="status" value="2">
-                        <button type="submit"
-                            class="flex items-center bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            LOSE
-                        </button>
-                    </form>
-                @endif
-
-                @if ($penawaran->status != 0 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
+                @if ($penawaran->status != 0)
                     <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
                         class="inline">
                         @csrf
@@ -694,56 +752,16 @@
                         </button>
                     </form>
                 @endif
-
-                <!-- Action Buttons -->
-                <a href="{{ route('admin.penawaran.cetak', $penawaran) }}"
-                    class="flex items-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
+                    class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
                         </path>
                     </svg>
-                    Cetak PDF
+                    Buat Pemasangan
                 </a>
 
-                <!-- Tombol Revisi -->
-                @if ($penawaran->canCreateRevisi())
-                    <a href="{{ route('admin.penawaran.create-revisi', $penawaran->id) }}"
-                        class="flex items-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                            </path>
-                        </svg>
-                        @if($penawaran->is_revisi)
-                            Buat Revisi Lanjutan
-                        @else
-                            Buat Revisi
-                        @endif
-                    </a>
-                @endif
-
-                <a href="{{ route('admin.penawaran.edit', $penawaran->id) }}"
-                    class="flex items-center bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                        </path>
-                    </svg>
-                    Edit
-                </a>
-
-                @if ($penawaran->status == 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
-                    <a href="{{ route('admin.pemasangan.create', ['penawaran_id' => $penawaran->id]) }}"
-                        class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                            </path>
-                        </svg>
-                        Buat Pemasangan
-                    </a>
-                @endif
-
+                <!-- Tombol Buat RAB - Hanya tampil jika status WIN -->
                 @if ($penawaran->status == 1)
                     <a href="{{ route('admin.rancangan-anggaran-biaya.create', ['penawaran_id' => $penawaran->id]) }}"
                         class="flex items-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">

@@ -197,6 +197,11 @@
                                     {{ $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
+                                    <div class="mb-4 border-b border-zinc-200 dark:border-zinc-700 pb-2">
+                                        <p>
+                                            {{ $akomodasi['supervisi_nama'] ?? '-' }}
+                                        </p>
+                                    </div>
                                     <div>
                                         <div class="font-medium">{{ $akomodasi['rab_proyek'] }}</div>
                                         <div class="text-zinc-500 dark:text-zinc-400">{{ $akomodasi['rab_pekerjaan'] }}</div>
@@ -247,6 +252,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
+                                        @if($akomodasi['rab_status'] !== 'selesai')
                                         <button
                                             onclick="openStatusModal({{ $akomodasi['rab_id'] }}, {{ $akomodasi['mr_index'] }}, {{ $akomodasi['material_index'] }}, '{{ $akomodasi['status'] }}')"
                                             class="hover:cursor-pointer bg-zinc-100 dark:bg-indigo-700 px-4 py-2 rounded-md text-indigo-600 hover:text-indigo-900 dark:text-indigo-50 dark:hover:text-indigo-300 flex items-center gap-2">
@@ -256,6 +262,7 @@
                                             </svg>
                                             Update Status
                                         </button>
+                                        @endif
                                         <a href="{{ route('admin.rancangan-anggaran-biaya.show', $akomodasi['rab_id']) }}"
                                             class="hover:cursor-pointer bg-zinc-100 dark:bg-emerald-700 px-4 py-2 rounded-md text-emerald-600 hover:text-emerald-900 dark:text-emerald-50 dark:hover:text-emerald-300 flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +278,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="px-6 py-4 text-center text-zinc-500 dark:text-zinc-400">
+                                <td colspan="12" class="px-6 py-4 text-center text-zinc-500 dark:text-zinc-400">
                                     Tidak ada data akomodasi
                                 </td>
                             </tr>

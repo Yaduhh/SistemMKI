@@ -14,6 +14,9 @@
         </div>
     </x-slot>
 
+    <x-flash-message type="success" :message="session('success')" />
+    <x-flash-message type="error" :message="session('error')" />
+
     <div class="pb-6 space-y-6">
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -26,7 +29,7 @@
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                 </path>
                             </svg>
-                            Penawaran Pintu Aktif
+                            Pintu Aktif
                         </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $penawarans->total() }}</p>
                     </div>
@@ -49,7 +52,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Penawaran Pintu WIN
+                            Pintu WIN
                         </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $penawarans->where('status', 1)->count() }}</p>
@@ -72,7 +75,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
-                            Penawaran Pintu LOSE
+                            Pintu LOSE
                         </p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $penawarans->where('status', 2)->count() }}</p>

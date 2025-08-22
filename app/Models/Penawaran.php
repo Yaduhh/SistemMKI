@@ -78,12 +78,12 @@ class Penawaran extends Model
 
     public function pemasangans()
     {
-        return $this->hasMany(\App\Models\Pemasangan::class, 'id_penawaran');
+        return $this->hasMany(\App\Models\Pemasangan::class, 'id_penawaran')->where('status_deleted', 0);
     }
 
     public function rancanganAnggaranBiayas()
     {
-        return $this->hasMany(\App\Models\RancanganAnggaranBiaya::class, 'penawaran_id');
+        return $this->hasMany(\App\Models\RancanganAnggaranBiaya::class, 'penawaran_id')->where('status_deleted', 0);
     }
 
     /**

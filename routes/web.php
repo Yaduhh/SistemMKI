@@ -159,6 +159,7 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     
     // Arsip File Routes
     Route::resource('arsip-file', ArsipFileController::class);
+    Route::resource('tanda-tangan', App\Http\Controllers\Admin\TandaTanganController::class);
     Route::resource('decking', DeckingController::class);
     Route::resource('facade', FacadeController::class);
     Route::resource('flooring', FlooringController::class);

@@ -14,6 +14,9 @@
         </div>
     </x-slot>
 
+    <x-flash-message type="success" :message="session('success')" />
+    <x-flash-message type="error" :message="session('error')" />
+
     <div class="pb-6 space-y-6">
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -408,20 +411,22 @@
                                 </svg>
                                 Cetak
                             </x-button>
-                            <form action="{{ route('admin.penawaran.destroy', $penawaran) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus penawaran ini?')">
-                                @csrf @method('DELETE')
-                                <x-button type="submit"
-                                    class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                        </path>
-                                    </svg>
-                                    Hapus
-                                </x-button>
-                            </form>
+                            @if ($penawaran->status != 1)
+                                <form action="{{ route('admin.penawaran.destroy', $penawaran) }}" method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus penawaran ini?')">
+                                    @csrf @method('DELETE')
+                                    <x-button type="submit"
+                                        class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                        Hapus
+                                    </x-button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>

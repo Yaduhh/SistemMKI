@@ -31,7 +31,6 @@
                                 <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -42,13 +41,16 @@
                                     <td class="px-6 py-4">{{ $flooring->code }}</td>
                                     <td class="px-6 py-4">{{ $flooring->nama_produk ?? '-' }}</td>
                                     <td class="px-6 py-4">
-                                        {{ $flooring->lebar }} mm x {{ $flooring->tebal }} mm x {{ $flooring->panjang }} cm/btg
+                                        <p class="truncate">
+                                            {{ $flooring->lebar }}x{{ $flooring->tebal }}x{{ $flooring->panjang }} cm/btg
+                                        </p>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ $flooring->luas_btg }} m2 | {{ $flooring->luas_m2 }} btg
+                                        <p class="truncate">{{ $flooring->luas_btg }} m2 | {{ $flooring->luas_m2 }} btg</p>
                                     </td>
-                                    <td class="px-6 py-4">Rp {{ number_format($flooring->harga ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">{{ $flooring->creator->name ?? '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <p class="truncate">Rp {{ number_format($flooring->harga ?? 0, 0, ',', '.') }}</p>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <x-button href="{{ route('admin.flooring.edit', $flooring) }}" size="sm" variant="secondary">
@@ -90,10 +92,9 @@
                                 <th scope="col" class="px-6 py-3 text-center">{{ __('NO') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Code') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Nama Produk') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Dimensions') }}</th>
+                                <th scope="col" class="px-6 py-3 truncate">{{ __('Dimensions') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Luas/btg') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Harga') }}</th>
-                                <th scope="col" class="px-6 py-3">{{ __('Created By') }}</th>
                                 <th scope="col" class="px-6 py-3">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
@@ -103,14 +104,13 @@
                                     <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $flooring->code }}</td>
                                     <td class="px-6 py-4">{{ $flooring->nama_produk ?? '-' }}</td>
-                                    <td class="px-6 py-4">
-                                        {{ $flooring->lebar }} mm x {{ $flooring->tebal }} mm x {{ $flooring->panjang }} cm/btg
+                                    <td class="px-6 py-4 truncate">
+                                        {{ $flooring->lebar }}x{{ $flooring->tebal }}x{{ $flooring->panjang }}cm/btg
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ $flooring->luas_btg }} m2 | {{ $flooring->luas_m2 }} btg
                                     </td>
-                                    <td class="px-6 py-4">Rp {{ number_format($flooring->harga ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">{{ $flooring->creator->name ?? '-' }}</td>
+                                    <td class="px-6 py-4 truncate">Rp {{ number_format($flooring->harga ?? 0, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
                                             <x-button href="{{ route('admin.flooring.edit', $flooring) }}" size="sm" variant="secondary">

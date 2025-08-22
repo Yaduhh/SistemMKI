@@ -95,7 +95,7 @@
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
             Tgl:
-            {{ $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('d-m-Y') : 'Belum ditentukan' }}
+            {{ $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('j-F-Y') : 'Belum ditentukan' }}
         </p>
     </div>
 
@@ -131,21 +131,30 @@
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th width="3%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">NO
+                    <th width="3%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                        NO
                     </th>
-                    <th width="10%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="10%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         PRODUK</th>
-                    <th width="10%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="10%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         TYPE</th>
-                    <th width="5%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="5%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         DIMENSI (mm)</th>
-                    <th width="5%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="5%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         PANJANG (m)</th>
-                    <th width="6%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="6%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         FINISHING</th>
-                    <th width="4%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="4%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         VOL<br>(m²)</th>
-                    <th width="5%" style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
+                    <th width="5%"
+                        style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         QTY</th>
                     <th width="12.5%"
                         style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
@@ -176,20 +185,25 @@
                                         $totalQty += isset($item['qty']) ? (int) $item['qty'] : 0;
                                     @endphp
                                     <tr>
-                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $no++ }}</td>
-                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $item['item'] ?? '-' }}
+                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                            {{ $no++ }}</td>
+                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                            {{ $item['item'] ?? '-' }}
                                         </td>
-                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $item['type'] ?? '-' }}
+                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                            {{ $item['type'] ?? '-' }}
                                         </td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['dimensi'] ?? '-' }}</td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                            {{ $item['panjang'] ?? '-' }}</td>
+                                            {{ $item['panjang'] ? rtrim(rtrim(number_format($item['panjang'] / 100, 2), '0'), '.') : '-' }}
+                                        </td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['finishing'] ?? '-' }}</td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['qty_area'] ?? '-' }}</td>
-                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $item['qty'] ?? '-' }}
+                                        <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
+                                            {{ $item['qty'] ?? '-' }}
                                         </td>
                                         <td style="padding: 5px; border: 1px solid #000000;">
                                             <table>
@@ -225,8 +239,8 @@
                     <td class="table-style"></td>
                     <td class="table-style"></td>
                     <td class="table-style"></td>
-                    <td class="table-style" style="text-align: center;"><strong>{{ $totalQty }}</strong></td>
                     <td class="table-style"></td>
+                    <td class="table-style" style="text-align: center;"><strong>{{ $totalQty }}</strong></td>
                     <td class="table-style"></td>
                     <td class="table-style"></td>
                 </tr>
@@ -331,7 +345,8 @@
                                 <tr>
                                     <td>Rp</td>
                                     <td style="text-align: right;">
-                                        {{ number_format($penawaran->total_diskon_2 ?? 0, 0, ',', '.') }}</td>
+                                        {{ number_format($penawaran->total_diskon_2 ?? 0, 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             </table>
                         </td>
@@ -339,9 +354,14 @@
                 @endif
                 @if ($penawaran->ppn > 0)
                     <tr>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
+                        <td colspan="3" rowspan="3" class="table-none">
+                            @if ($penawaran->catatan)
+                                <div>
+                                    <p><strong>Catatan :</strong></p>
+                                    <p>{{ $penawaran->catatan }}</p>
+                                </div>
+                            @endif
+                        </td>
                         <td class="table-none"></td>
                         <td class="table-none"></td>
                         <td class="table-none"></td>
@@ -362,9 +382,7 @@
                 @endif
                 @if ($penawaran->ppn > 0)
                     <tr>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
+
                         <td class="table-none"></td>
                         <td class="table-none"></td>
                         <td class="table-none"></td>
@@ -391,9 +409,7 @@
                     </tr>
                 @endif
                 <tr>
-                    <td class="table-none"></td>
-                    <td class="table-none"></td>
-                    <td class="table-none"></td>
+
                     <td class="table-none"></td>
                     <td class="table-none"></td>
                     <td class="table-none"></td>
@@ -489,14 +505,6 @@
             @endforeach
         </ul>
     @endif
-
-    @if ($penawaran->catatan)
-        <div>
-            <p><strong>Catatan :</strong></p>
-            <p style="margin-top: 5px;">{{ $penawaran->catatan }}</p>
-        </div>
-    @endif
-
     <div>
         <p>Atas Perhatian dan kerjasamanya, kami ucapkan terimakasih.</p>
     </div>
@@ -505,11 +513,16 @@
         <tr>
             <td style="width: 30%; vertical-align: top;">
                 <div>
-                    <p style="margin-bottom: 65px;">Hormat Kami,</p>
-                    <p>{{ $penawaran->user->name ?? 'Sales' }}</p>
+                    <p>Hormat Kami,</p>
+                    @if ($penawaran->user && $penawaran->user->tandaTangan)
+                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}"
+                            alt="Tanda Tangan"
+                            style="width: 140px; height: 100px; object-fit: contain;">
+                    @endif
+                    <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
                 </div>
             </td>
-            <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:100px;">
+            <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:140px;">
                 <div>
                     <p><span style="font-weight: bold; text-decoration: underline; color: #000000;">PT. MEGA KOMPOSIT
                             INDONESIA</span></p>

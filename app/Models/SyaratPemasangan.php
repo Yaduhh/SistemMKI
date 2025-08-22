@@ -11,11 +11,13 @@ class SyaratPemasangan extends Model
     
     protected $fillable = [
         'syarat',
+        'syarat_pintu',
         'status_deleted'
     ];
 
     protected $casts = [
         'status_deleted' => 'boolean',
+        'syarat_pintu' => 'integer',
     ];
 
     /**
@@ -32,5 +34,21 @@ class SyaratPemasangan extends Model
     public function scopeDeleted(Builder $query): void
     {
         $query->where('status_deleted', true);
+    }
+
+    /**
+     * Scope untuk syarat pemasangan biasa (bukan pintu)
+     */
+    public function scopeRegular(Builder $query): void
+    {
+        $query->where('syarat_pintu', 0);
+    }
+
+    /**
+     * Scope untuk syarat pemasangan pintu
+     */
+    public function scopeDoor(Builder $query): void
+    {
+        $query->where('syarat_pintu', 1);
     }
 }
