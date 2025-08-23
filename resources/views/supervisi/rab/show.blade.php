@@ -85,60 +85,68 @@
 
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
-                                 <div class="py-4">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
+                <div class="py-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Non Material</h3>
                     <p class=" text-gray-600 dark:text-gray-400 mt-1">
-                        Kelola pengeluaran entertainment untuk proyek ini
+                        Kelola pengeluaran non material untuk proyek ini
                     </p>
-                     
-                     @php
-                         // Filter entertainment data to remove empty/null entries
-                         $filteredEntertainment = [];
-                         if (isset($rab->json_pengeluaran_entertaiment) && is_array($rab->json_pengeluaran_entertaiment)) {
-                             foreach ($rab->json_pengeluaran_entertaiment as $mr) {
-                                 // Check if MR has valid data
-                                 if (!empty($mr['mr']) || !empty($mr['tanggal'])) {
-                                     $validMaterials = [];
-                                     
-                                     if (isset($mr['materials']) && is_array($mr['materials'])) {
-                                         foreach ($mr['materials'] as $material) {
-                                             // Only include material if it has at least one non-null field
-                                             if (!empty($material['supplier']) || !empty($material['item']) || 
-                                                 !empty($material['qty']) || !empty($material['satuan']) || 
-                                                 !empty($material['harga_satuan']) || !empty($material['sub_total'])) {
-                                                 $validMaterials[] = $material;
-                                             }
-                                         }
-                                     }
-                                     
-                                     // Only include MR if it has valid materials or valid MR data
-                                     if (!empty($validMaterials) || !empty($mr['mr']) || !empty($mr['tanggal'])) {
-                                         $filteredEntertainment[] = [
-                                             'mr' => $mr['mr'] ?? '',
-                                             'tanggal' => $mr['tanggal'] ?? '',
-                                             'materials' => $validMaterials
-                                         ];
-                                     }
-                                 }
-                             }
-                         }
-                         
-                         // Check if any material has approved/rejected status
-                         $hasApprovedMaterial = false;
-                         $hasRejectedMaterial = false;
-                         foreach ($filteredEntertainment as $mr) {
-                             if (isset($mr['materials']) && is_array($mr['materials'])) {
-                                 foreach ($mr['materials'] as $material) {
-                                     if (($material['status'] ?? '') === 'Disetujui') {
-                                         $hasApprovedMaterial = true;
-                                     }
-                                     if (($material['status'] ?? '') === 'Ditolak') {
-                                         $hasRejectedMaterial = true;
-                                     }
-                                 }
-                             }
-                         }
-                     @endphp
+
+                    @php
+                        // Filter entertainment data to remove empty/null entries
+                        $filteredEntertainment = [];
+                        if (
+                            isset($rab->json_pengeluaran_entertaiment) &&
+                            is_array($rab->json_pengeluaran_entertaiment)
+                        ) {
+                            foreach ($rab->json_pengeluaran_entertaiment as $mr) {
+                                // Check if MR has valid data
+                                if (!empty($mr['mr']) || !empty($mr['tanggal'])) {
+                                    $validMaterials = [];
+
+                                    if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                        foreach ($mr['materials'] as $material) {
+                                            // Only include material if it has at least one non-null field
+                                            if (
+                                                !empty($material['supplier']) ||
+                                                !empty($material['item']) ||
+                                                !empty($material['qty']) ||
+                                                !empty($material['satuan']) ||
+                                                !empty($material['harga_satuan']) ||
+                                                !empty($material['sub_total'])
+                                            ) {
+                                                $validMaterials[] = $material;
+                                            }
+                                        }
+                                    }
+
+                                    // Only include MR if it has valid materials or valid MR data
+                                    if (!empty($validMaterials) || !empty($mr['mr']) || !empty($mr['tanggal'])) {
+                                        $filteredEntertainment[] = [
+                                            'mr' => $mr['mr'] ?? '',
+                                            'tanggal' => $mr['tanggal'] ?? '',
+                                            'materials' => $validMaterials,
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check if any material has approved/rejected status
+                        $hasApprovedMaterial = false;
+                        $hasRejectedMaterial = false;
+                        foreach ($filteredEntertainment as $mr) {
+                            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                foreach ($mr['materials'] as $material) {
+                                    if (($material['status'] ?? '') === 'Disetujui') {
+                                        $hasApprovedMaterial = true;
+                                    }
+                                    if (($material['status'] ?? '') === 'Ditolak') {
+                                        $hasRejectedMaterial = true;
+                                    }
+                                }
+                            }
+                        }
+                    @endphp
 
                     @if ($hasApprovedMaterial)
                         <div
@@ -154,7 +162,7 @@
                                     dihapus.
                                 </span>
                             </div>
-                </div>
+                        </div>
                     @elseif($hasRejectedMaterial)
                         <div
                             class="mt-2 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
@@ -167,8 +175,8 @@
                                 <span class=" text-red-800 dark:text-red-200 font-medium">
                                     Ada material yang ditolak. Material tersebut tidak dapat diubah atau dihapus.
                                 </span>
-                                                </div>
-                                                </div>
+                            </div>
+                        </div>
                     @else
                         <div
                             class="mt-2 p-3 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
@@ -181,16 +189,16 @@
                                 <span class=" text-blue-800 dark:text-blue-200 font-medium">
                                     Semua material dalam status pengajuan. Data dapat diubah dan dihapus.
                                 </span>
-                                                </div>
-                                            </div>
+                            </div>
+                        </div>
                     @endif
                 </div>
-                                 <div class="py-4">
-                     <!-- Tampilan Data Entertainment yang Sudah Ada -->
-                    
+                <div class="py-4">
+                    <!-- Tampilan Data Entertainment yang Sudah Ada -->
+
                     @if (count($filteredEntertainment) > 0)
                         <div class="mb-8">
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Data Entertainment
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Data Non Material
                                 yang Sudah Ada</h4>
                             <div class="space-y-6">
                                 @foreach ($filteredEntertainment as $mrIndex => $mr)
@@ -208,8 +216,8 @@
                                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                                             </path>
                                                         </svg>
-                                                        </div>
-                                                        <div>
+                                                    </div>
+                                                    <div>
                                                         <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}
                                                         </h5>
                                                         <p class="text-teal-100 ">
@@ -219,9 +227,9 @@
                                                 <div class="text-right">
                                                     <span class="text-white ">Total:
                                                         {{ count($mr['materials'] ?? []) }} Material</span>
-                                                        </div>
-                                                        </div>
-                                                        </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <!-- Tabel Material -->
                                         @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
@@ -315,7 +323,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
-                                                        </div>
+                                            </div>
 
                                             <!-- Total per MR -->
                                             @php
@@ -341,8 +349,8 @@
                                                         class="text-lg font-bold text-orange-600 dark:text-orange-400">
                                                         Rp {{ number_format($totalMR, 0, ',', '.') }}
                                                     </span>
-                                                        </div>
-                                                        </div>
+                                                </div>
+                                            </div>
                                         @else
                                             <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                                 <svg class="mx-auto h-8 w-8 mb-2" fill="none"
@@ -353,10 +361,10 @@
                                                     </path>
                                                 </svg>
                                                 <p>Belum ada material untuk MR ini</p>
-                                                    </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
 
                                 <!-- Grand Total -->
                                 @php
@@ -389,7 +397,7 @@
                                                 </path>
                                             </svg>
                                             <div>
-                                                <h3 class="text-xl font-bold">Total Entertainment</h3>
+                                                <h3 class="text-xl font-bold">Total Pengeluaran Non Material</h3>
                                             </div>
                                         </div>
                                         <div class="text-center lg:text-right">
@@ -397,25 +405,25 @@
                                                 {{ number_format($grandTotal, 0, ',', '.') }}</div>
                                         </div>
                                     </div>
-                            </div>
+                                </div>
                             </div>
                         </div>
 
-                        @if (count($filteredEntertainment) > 0)
-                            <div class="border-t border-gray-200 dark:border-zinc-600 pt-6">
-                                <div class="flex justify-between items-center">
-                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Data Entertainment</h4>
-                                    <a href="{{ route('supervisi.rab.edit-entertainment', $rab) }}"
-                                        class="inline-flex items-center px-4 py-2 bg-teal-600 dark:bg-teal-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-teal-700 dark:hover:bg-teal-600 focus:outline-none focus:border-teal-700 focus:ring focus:ring-teal-200 active:bg-teal-900 disabled:opacity-25 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                        Edit Entertainment
-                                    </a>
-                            </div>
-                        </div>
-                        @endif
                     @endif
+                    <div class="border-t border-gray-200 dark:border-zinc-600 pt-6">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Data</h4>
+                            <a href="{{ route('supervisi.rab.edit-entertainment', $rab) }}"
+                                class="inline-flex items-center px-4 py-2 bg-teal-600 dark:bg-teal-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-teal-700 dark:hover:bg-teal-600 focus:outline-none focus:border-teal-700 focus:ring focus:ring-teal-200 active:bg-teal-900 disabled:opacity-25 transition">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                                Edit Non Material
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -427,11 +435,11 @@
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Material
                         Pendukung</h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Data material pendukung untuk proyek ini
-                        </p>
+                        Data material pendukung untuk proyek ini
+                    </p>
 
-                        <div class="space-y-6">
-                            @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
+                    <div class="space-y-6">
+                        @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
                             <div
                                 class="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg overflow-hidden shadow-sm">
                                 <!-- Header MR -->
@@ -446,8 +454,8 @@
                                                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                                     </path>
                                                 </svg>
-                                        </div>
-                                        <div>
+                                            </div>
+                                            <div>
                                                 <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}</h5>
                                                 <p class="text-orange-100 ">
                                                     {{ $mr['tanggal'] ?? 'Tanggal tidak tersedia' }}</p>
@@ -457,32 +465,32 @@
                                             <span class="text-white ">{{ count($mr['materials'] ?? []) }}
                                                 Material</span>
                                         </div>
-                                        </div>
                                     </div>
+                                </div>
 
                                 <!-- Tabel Material -->
                                 @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
-                                        <div class="overflow-x-auto">
+                                    <div class="overflow-x-auto">
                                         <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
                                             <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                    <tr>
-                                                        <th
+                                                <tr>
+                                                    <th
                                                         class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                            Supplier</th>
-                                                        <th
+                                                        Supplier</th>
+                                                    <th
                                                         class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                            Item</th>
-                                                        <th
+                                                        Item</th>
+                                                    <th
                                                         class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                            Qty</th>
-                                                        <th
+                                                        Qty</th>
+                                                    <th
                                                         class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                            Satuan</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody
+                                                        Satuan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
                                                 class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                    @foreach ($mr['materials'] as $material)
+                                                @foreach ($mr['materials'] as $material)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
                                                         <td class="px-4 py-3  text-gray-900 dark:text-gray-100">
@@ -500,11 +508,11 @@
                                                             class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
                                                             {{ $material['satuan'] ?? '-' }}
                                                         </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 @else
                                     <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                         <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
@@ -515,9 +523,9 @@
                                         </svg>
                                         <p>Belum ada material untuk MR ini</p>
                                     </div>
-                                    @endif
-                                </div>
-                            @endforeach
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @endif

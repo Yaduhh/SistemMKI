@@ -1,11 +1,11 @@
 <x-layouts.app :title="__('File Purchase Order')">
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto">
         <!-- Header Section -->
         <div class="mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ __('File Purchase Order') }}</h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">{{ __('Kelola semua file arsip pelanggan dalam satu tempat') }}</p>
+                    <h1 class="text-xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ __('File Purchase Order') }}</h1>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base mt-2">{{ __('Kelola semua file arsip pelanggan dalam satu tempat') }}</p>
                 </div>
                 <div class="flex items-center space-x-3 mt-4 lg:mt-0">
                     <flux:modal.trigger name="arsip-file-modal">
@@ -74,8 +74,8 @@
 
         <!-- Main Content -->
         <div class="w-full">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-zinc-800">
-                <div class="flex items-center justify-between">
+            <div class="bg-white dark:bg-zinc-800">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Daftar File Arsip') }}</h2>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('Semua file arsip pelanggan yang tersedia') }}</p>

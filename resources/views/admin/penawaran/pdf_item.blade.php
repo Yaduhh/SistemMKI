@@ -95,7 +95,20 @@
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
             Tgl:
-            {{ $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('j-F-Y') : 'Belum ditentukan' }}
+            @if($penawaran->updated_at)
+                @php
+                    $bulanIndonesia = [
+                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                    ];
+                    $tanggal = $penawaran->updated_at;
+                    $bulan = $bulanIndonesia[$tanggal->month];
+                    echo $tanggal->day . '-' . $bulan . '-' . $tanggal->year;
+                @endphp
+            @else
+                Belum ditentukan
+            @endif
         </p>
     </div>
 

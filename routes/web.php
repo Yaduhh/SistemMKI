@@ -221,11 +221,7 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahEntertainment'])->name('rancangan-anggaran-biaya.tambah-entertainment');
     Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeEntertainment'])->name('rancangan-anggaran-biaya.store-entertainment');
     
-    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-akomodasi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahAkomodasi'])->name('rancangan-anggaran-biaya.tambah-akomodasi');
-    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-akomodasi', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeAkomodasi'])->name('rancangan-anggaran-biaya.store-akomodasi');
-    
-    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-lainnya', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahLainnya'])->name('rancangan-anggaran-biaya.tambah-lainnya');
-    Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-lainnya', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeLainnya'])->name('rancangan-anggaran-biaya.store-lainnya');
+
     
     Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahTukang'])->name('rancangan-anggaran-biaya.tambah-tukang');
     Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeTukang'])->name('rancangan-anggaran-biaya.store-tukang');
@@ -236,6 +232,14 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     // Entertainment Routes
     Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
     Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');
+    
+    // Tukang Routes
+    Route::get('tukang', [App\Http\Controllers\Admin\TukangController::class, 'index'])->name('tukang.index');
+    Route::patch('tukang/{id}/update-status', [App\Http\Controllers\Admin\TukangController::class, 'updateStatus'])->name('tukang.update-status');
+    
+    // Kerja Tambah Routes
+    Route::get('kerja-tambah', [App\Http\Controllers\Admin\KerjaTambahController::class, 'index'])->name('kerja-tambah.index');
+    Route::patch('kerja-tambah/{id}/update-status', [App\Http\Controllers\Admin\KerjaTambahController::class, 'updateStatus'])->name('kerja-tambah.update-status');
     
     // Akomodasi Routes
     Route::get('akomodasi', [App\Http\Controllers\Admin\AkomodasiController::class, 'index'])->name('akomodasi.index');

@@ -1,18 +1,18 @@
 <x-layouts.app :title="__('Detail Rancangan Anggaran Biaya')">
     <div class="container mx-auto">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
             <h1 class="text-2xl font-bold">Detail Rancangan Anggaran Biaya (RAB)</h1>
-            <div class="flex space-x-2">
+            <div class="flex space-x-2 mt-4 lg:mt-0">
                 <a href="{{ route('admin.rancangan-anggaran-biaya.export-pdf', $rancanganAnggaranBiaya) }}"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    class="px-4 py-2 bg-green-50 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-md hover:bg-green-100 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                     Cetak PDF
                 </a>
                 <a href="{{ route('admin.rancangan-anggaran-biaya.edit', $rancanganAnggaranBiaya) }}"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Edit
                 </a>
                 <a href="{{ route('admin.rancangan-anggaran-biaya.index') }}"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    class="px-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                     Kembali
                 </a>
             </div>
@@ -131,7 +131,7 @@
         <!-- Material Utama -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_material_utama)
             <div
-                class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mb-6">
+                class="bg-white dark:bg-zinc-800 lg:dark:bg-zinc-900/30 rounded-lg shadow-sm lg:border border-zinc-200 dark:border-zinc-700 p-0 lg:p-6 mb-6">
                 <h2 class="text-lg font-semibold mb-4">Pengeluaran Material Utama</h2>
 
                 <!-- Informasi Penawaran Terkait -->
@@ -442,7 +442,7 @@
                 <div class="flex items-center justify-between gap-4">
                     <h2
                         class="text-lg font-semibold w-full text-center bg-teal-600 dark:bg-teal-600/30 py-2 uppercase text-white">
-                        Pengeluaran Entertaiment
+                        Pengeluaran Non Material
                     </h2>
                 </div>
                 @php
@@ -530,188 +530,15 @@
                     @endforeach
                 @else
                     <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <p>Tidak ada material entertainment yang disetujui</p>
+                        <p>Tidak ada material non material yang disetujui</p>
                     </div>
                 @endif
             </div>
         @endif
 
-        <!-- Akomodasi -->
-        @if ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi)
-            <div class="w-full mb-6  border border-yellow-200 dark:border-yellow-700">
-                <div class="flex items-center justify-between gap-4">
-                    <h2
-                        class="text-lg font-semibold w-full text-center bg-yellow-600 dark:bg-yellow-600/30 py-2 uppercase text-white">
-                        Pengeluaran Akomodasi
-                    </h2>
-                </div>
-                @php
-                    // Filter hanya material yang statusnya "Disetujui"
-                    $filteredAkomodasi = [];
-                    foreach($rancanganAnggaranBiaya->json_pengeluaran_akomodasi as $mrIndex => $mrGroup) {
-                        if(isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
-                            $approvedMaterials = array_filter($mrGroup['materials'], function($material) {
-                                return ($material['status'] ?? '') === 'Disetujui';
-                            });
-                            
-                            if(!empty($approvedMaterials)) {
-                                $filteredMR = $mrGroup;
-                                $filteredMR['materials'] = array_values($approvedMaterials);
-                                $filteredAkomodasi[] = $filteredMR;
-                            }
-                        }
-                    }
-                @endphp
-                
-                @if(count($filteredAkomodasi) > 0)
-                    @foreach ($filteredAkomodasi as $mrIndex => $mrGroup)
-                        <div class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-yellow-700 dark:text-yellow-300">MR</label>
-                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $mrGroup['mr'] ?? '-' }}</p>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-yellow-700 dark:text-yellow-300">Tanggal</label>
-                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">@formatTanggalIndonesia($mrGroup['tanggal'] ?? null)</p>
-                                </div>
-                            </div>
-                            @if (isset($mrGroup['materials']) && is_array($mrGroup['materials']))
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        <thead class="bg-yellow-50 dark:bg-yellow-900/20">
-                                            <tr>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Supplier</th>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Item</th>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Qty</th>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Satuan</th>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Harga Satuan</th>
-                                                <th
-                                                    class="px-4 py-3 text-left text-xs font-medium text-yellow-700 dark:text-yellow-300 uppercase">
-                                                    Sub Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody
-                                            class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                            @foreach ($mrGroup['materials'] as $material)
-                                                <tr>
-                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                        {{ $material['supplier'] ?? '-' }}</td>
-                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                        {{ $material['item'] ?? '-' }}</td>
-                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                        {{ $material['qty'] ?? '-' }}</td>
-                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                        {{ $material['satuan'] ?? '-' }}</td>
-                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan'] ?? 0), 0, ',', '.') }}
-                                                    </td>
-                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
-                        </div>
-                    @endforeach
-                @else
-                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <p>Tidak ada material akomodasi yang disetujui</p>
-                    </div>
-                @endif
-            </div>
-        @endif
 
-        <!-- Lainnya -->
-        @if ($rancanganAnggaranBiaya->json_pengeluaran_lainnya)
-            <div class="w-full mb-6  border border-pink-200 dark:border-pink-700">
-                <div class="flex items-center justify-between gap-4">
-                    <h2
-                        class="text-lg font-semibold w-full text-center bg-pink-600 dark:bg-pink-600/30 py-2 uppercase text-white">
-                        Pengeluaran Lainnya
-                    </h2>
-                </div>
-                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_lainnya as $mrIndex => $mrGroup)
-                    <div class="p-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-pink-700 dark:text-pink-300">MR</label>
-                                <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $mrGroup['mr'] ?? '-' }}</p>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-pink-700 dark:text-pink-300">Tanggal</label>
-                                <p class="mt-1 text-sm text-zinc-900 dark:text-white">@formatTanggalIndonesia($mrGroup['tanggal'] ?? null)</p>
-                            </div>
-                        </div>
-                        @if (isset($mrGroup['materials']) && is_array($mrGroup['materials']))
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-pink-50 dark:bg-pink-900/20">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Supplier</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Item</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Qty</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Satuan</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Harga Satuan</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-pink-700 dark:text-pink-300 uppercase">
-                                                Sub Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody
-                                        class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        @foreach ($mrGroup['materials'] as $material)
-                                            <tr>
-                                                <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                    {{ $material['supplier'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                                    {{ $material['item'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ $material['qty'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ $material['satuan'] ?? '-' }}</td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan'] ?? 0), 0, ',', '.') }}
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @endif
+
+
 
         <!-- Tukang -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_tukang)
@@ -751,6 +578,9 @@
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
                                                 Persentase</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                                Status</th>
                                         </tr>
                                     </thead>
                                     <tbody
@@ -769,6 +599,20 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                                     {{ $termin['persentase'] ?? '-' }}</td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    @php
+                                                        $status = $termin['status'] ?? 'Pengajuan';
+                                                        $statusColors = [
+                                                            'Pengajuan' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                                            'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                                                        ];
+                                                        $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+                                                    @endphp
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $color }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -801,25 +645,28 @@
                         @if (isset($section['termin']) && is_array($section['termin']))
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-orange-50 dark:bg-orange-900/20">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
-                                                Termin</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
-                                                Tanggal</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
-                                                Kredit</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
-                                                Sisa</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
-                                                Persentase</th>
-                                        </tr>
-                                    </thead>
+                                                                            <thead class="bg-orange-50 dark:bg-orange-900/20">
+                                            <tr>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Termin</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Tanggal</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Kredit</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Sisa</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Persentase</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-orange-700 dark:text-orange-300 uppercase">
+                                                    Status</th>
+                                            </tr>
+                                        </thead>
                                     <tbody
                                         class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
                                         @foreach ($section['termin'] as $terminIndex => $termin)
@@ -836,6 +683,20 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                                     {{ $termin['persentase'] ?? '-' }}</td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    @php
+                                                        $status = $termin['status'] ?? 'Pengajuan';
+                                                        $statusColors = [
+                                                            'Pengajuan' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                                            'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                                                        ];
+                                                        $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+                                                    @endphp
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $color }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -914,52 +775,39 @@
                 $grandTotal += $entertaimentTotal;
                 $breakdown['Entertaiment'] = $entertaimentTotal;
 
-                // Akomodasi - hanya yang status Disetujui
-                $akomodasiTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi as $mrGroup) {
-                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
-                            foreach ($mrGroup['materials'] as $material) {
-                                // Hanya hitung yang statusnya Disetujui
-                                if (($material['status'] ?? '') === 'Disetujui') {
-                                    $akomodasiTotal += (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+
+
+
+
+                // Tukang - hanya yang status Disetujui
+                $tukangTotal = 0;
+                if ($rancanganAnggaranBiaya->json_pengeluaran_tukang) {
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang as $section) {
+                        if (isset($section['termin']) && is_array($section['termin'])) {
+                            foreach ($section['termin'] as $termin) {
+                                // Hanya hitung kredit dari termin yang statusnya Disetujui
+                                if (($termin['status'] ?? '') === 'Disetujui') {
+                                    $tukangTotal += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
                                 }
                             }
                         }
                     }
                 }
-                $grandTotal += $akomodasiTotal;
-                $breakdown['Akomodasi'] = $akomodasiTotal;
-
-                // Lainnya
-                $lainnyaTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_lainnya) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_lainnya as $mrGroup) {
-                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
-                            foreach ($mrGroup['materials'] as $material) {
-                                $lainnyaTotal += (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
-                            }
-                        }
-                    }
-                }
-                $grandTotal += $lainnyaTotal;
-                $breakdown['Lainnya'] = $lainnyaTotal;
-
-                // Tukang
-                $tukangTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_tukang) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang as $section) {
-                        $tukangTotal += (float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0);
-                    }
-                }
                 $grandTotal += $tukangTotal;
                 $breakdown['Tukang'] = $tukangTotal;
 
-                // Kerja Tambah
+                // Kerja Tambah - hanya yang status Disetujui
                 $kerjaTambahTotal = 0;
                 if ($rancanganAnggaranBiaya->json_kerja_tambah) {
                     foreach ($rancanganAnggaranBiaya->json_kerja_tambah as $section) {
-                        $kerjaTambahTotal += (float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0);
+                        if (isset($section['termin']) && is_array($section['termin'])) {
+                            foreach ($section['termin'] as $termin) {
+                                // Hanya hitung kredit dari termin yang statusnya Disetujui
+                                if (($termin['status'] ?? '') === 'Disetujui') {
+                                    $kerjaTambahTotal += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                                }
+                            }
+                        }
                     }
                 }
                 $grandTotal += $kerjaTambahTotal;
@@ -1010,37 +858,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
                             </svg>
                         </div>
-                        <h3 class="font-medium text-teal-700 dark:text-teal-300">Tambah Entertainment</h3>
-                        <p class="text-sm text-teal-600 dark:text-teal-400">Tambah pengeluaran entertainment</p>
+                        <h3 class="font-medium text-teal-700 dark:text-teal-300">Tambah Pengeluaran Non Material</h3>
+                        <p class="text-sm text-teal-600 dark:text-teal-400">Tambah pengeluaran non material</p>
                     </div>
                 </a>
 
-                <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-akomodasi', $rancanganAnggaranBiaya) }}"
-                    class="flex items-center justify-center p-4 border border-yellow-200 dark:border-yellow-700 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
-                    <div class="text-center">
-                        <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-medium text-yellow-700 dark:text-yellow-300">Tambah Akomodasi</h3>
-                        <p class="text-sm text-yellow-600 dark:text-yellow-400">Tambah pengeluaran akomodasi</p>
-                    </div>
-                </a>
 
-                <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-lainnya', $rancanganAnggaranBiaya) }}"
-                    class="flex items-center justify-center p-4 border border-pink-200 dark:border-pink-700 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors">
-                    <div class="text-center">
-                        <div class="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-medium text-pink-700 dark:text-pink-300">Tambah Lainnya</h3>
-                        <p class="text-sm text-pink-600 dark:text-pink-400">Tambah pengeluaran lainnya</p>
-                    </div>
-                </a>
 
                 <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-tukang', $rancanganAnggaranBiaya) }}"
                     class="flex items-center justify-center p-4 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
@@ -1071,20 +894,20 @@
         </div>
 
         <!-- Status Update Form -->
-        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
+        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm lg:border border-zinc-200 dark:border-zinc-700 p-0 lg:p-6">
             <h2 class="text-lg font-semibold mb-4">Update Status</h2>
             <form action="{{ route('admin.rancangan-anggaran-biaya.update-status', $rancanganAnggaranBiaya) }}"
-                method="POST" class="flex items-center space-x-4">
+                method="POST" class="flex items-center justify-between space-x-4">
                 @csrf
                 @method('PATCH')
                 <select name="status"
-                    class="px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-white">
+                    class="px-3 py-2 w-full border border-zinc-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:text-white">
                     <option value="draft" {{ $rancanganAnggaranBiaya->status == 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="on_progress" {{ $rancanganAnggaranBiaya->status == 'on_progress' ? 'selected' : '' }}>On Progress</option>
                     <option value="selesai" {{ $rancanganAnggaranBiaya->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
                 </select>
                 <button type="submit"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    class="px-4 w-full py-2 bg-blue-50 border border-blue-200 dark:border-blue-700 dark:bg-blue-900 text-blue-600 dark:text-blue-50 rounded-md hover:bg-blue-100 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Update Status
                 </button>
             </form>

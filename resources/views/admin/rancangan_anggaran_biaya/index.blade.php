@@ -2,7 +2,7 @@
     <div class="container mx-auto">
         <!-- Header Section -->
         <div class="mb-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10,11 +10,11 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Rancangan Anggaran Biaya</h1>
+                        <h1 class="text-xl lg:text-3xl font-bold text-gray-900 dark:text-white">Rancangan Anggaran Biaya</h1>
                         <p class="text-gray-600 dark:text-gray-400 mt-1">Kelola dan monitor semua RAB proyek</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 mt-4 lg:mt-0">
                     <div class="bg-green-100 dark:bg-green-900/30 px-4 py-2 rounded-lg">
                         <div class="flex items-center space-x-2">
                             <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -26,16 +26,24 @@ trait NomorPenawaranGenerator
         
         // Jika ada penawaran di bulan ini, increment nomor
         if ($lastPenawaranThisMonth) {
-            $lastNumber = (int)substr($lastPenawaranThisMonth->nomor_penawaran, 0, 2);
+            // Ambil nomor dari format "0X/MKI/MM/YY" atau "0XX/MKI/MM/YY"
+            $nomorStr = $lastPenawaranThisMonth->nomor_penawaran;
+            // Cari posisi "/" pertama untuk memisahkan nomor dari prefix
+            $slashPos = strpos($nomorStr, '/');
+            if ($slashPos !== false) {
+                $lastNumber = (int)substr($nomorStr, 0, $slashPos);
+            } else {
+                $lastNumber = 0;
+            }
             $number = $lastNumber + 1;
         } else {
             // Jika bulan baru, mulai dari 1
             $number = 1;
         }
         
-        // Format nomor penawaran: XX/MKI/MM/YY
+        // Format nomor penawaran: XX/MKI/MM/YY (dengan leading zero)
         $prefix = 'A/MKI/' . $currentMonth . '/' . $currentYear;
-        return str_pad($number, 2, '0', STR_PAD_LEFT) . $prefix;
+        return '0' . $number . $prefix;
     }
 
     /**

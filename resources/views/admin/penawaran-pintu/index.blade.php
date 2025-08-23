@@ -1,8 +1,8 @@
 <x-layouts.app>
     <x-slot name="header">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Daftar Penawaran Pintu</h1>
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
+            <div class="mb-4 lg:mb-0">
+                <h1 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Daftar Penawaran Pintu</h1>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Kelola semua penawaran pintu aktif yang telah dibuat
                 </p>
             </div>
@@ -117,15 +117,7 @@
 
         <!-- Search and Filter Section -->
         <div
-            class="bg-white dark:bg-zinc-900/30 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-            <div class="flex items-center space-x-3 mb-4">
-                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pencarian & Filter</h3>
-            </div>
+            class="bg-white dark:bg-zinc-800 mb-8">
             <form method="GET" action="{{ route('admin.penawaran-pintu.index') }}">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Search -->
@@ -147,7 +139,7 @@
                             </svg>
                             <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Cari nomor, client, atau judul penawaran pintu..."
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                class="w-full pl-10 pr-4 py-1.5 border border-gray-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
 
@@ -238,7 +230,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                                    <h3 class="text-lg lg:text-xl font-bold text-gray-900 dark:text-white">
                                         {{ $penawaran->judul_penawaran }}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400 font-mono">
                                         {{ $penawaran->nomor_penawaran }}</p>
@@ -338,38 +330,6 @@
                                             {{ $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('d M Y') : 'Belum ditentukan' }}
                                         </p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Price Breakdown -->
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-6">
-                            <h4
-                                class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Rincian Harga
-                            </h4>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">Rp
-                                        {{ number_format($penawaran->total, 0, ',', '.') }}</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">PPN</p>
-                                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400">+ Rp
-                                        {{ number_format((($penawaran->total - ($penawaran->total_diskon + ($penawaran->total_diskon_1 ?? 0) + ($penawaran->total_diskon_2 ?? 0))) * $penawaran->ppn) / 100, 0, ',', '.') }}
-                                    </p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Grand Total</p>
-                                    <p class="text-xl font-bold text-green-600 dark:text-green-400">Rp
-                                        {{ number_format($penawaran->grand_total, 0, ',', '.') }}</p>
                                 </div>
                             </div>
                         </div>

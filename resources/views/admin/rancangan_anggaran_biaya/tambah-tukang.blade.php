@@ -23,6 +23,7 @@
 
             <script>
                 window.oldTukang = @json(old('json_pengeluaran_tukang'));
+                window.existingTukang = @json($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? []);
             </script>
 
             <form action="{{ route('admin.rancangan-anggaran-biaya.store-tukang', $rancanganAnggaranBiaya) }}" method="POST">

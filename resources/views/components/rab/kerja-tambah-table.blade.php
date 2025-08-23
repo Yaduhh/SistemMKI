@@ -19,12 +19,13 @@
             <button type="button" class="mt-4 text-orange-400 border border-orange-600 dark:border-orange-400 rounded-xl px-4 py-2 add-kerja-tambah-termin">Tambah Termin</button>
             <button type="button" class="absolute top-0 right-0 text-red-500 font-bold remove-kerja-tambah-section" style="z-index:10;">Hapus Section</button>
             <template class="kerja-tambah-termin-row-template">
-                <div class="grid grid-cols-6 gap-2 items-center kerja-tambah-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
+                <div class="grid grid-cols-7 gap-2 items-center kerja-tambah-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
                     <span class="termin-label font-semibold"></span>
                     <input type="date" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                     <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                     <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][sisa]" placeholder="Sisa" class="border rounded-lg px-4 py-2.5 sisa-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
                     <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][persentase]" placeholder="%" class="border rounded-lg px-4 py-2.5 persentase-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
+                    <input type="text" name="json_kerja_tambah[__SECIDX__][termin][__TERIDX__][status]" value="Pengajuan" class="border rounded-lg px-4 py-2.5 status-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200" readonly>
                     <div class="flex justify-end w-full">
                         <button type="button" class="text-red-400 bg-red-600 dark:bg-red-900/30 border border-red-600 dark:border-red-400 font-bold remove-kerja-tambah-termin px-4 py-2.5 w-full rounded-lg">Hapus</button>
                     </div>
@@ -109,10 +110,25 @@
                             // Format Rupiah untuk field kredit dan sisa
                             const numericValue = parseInt(data[key].toString().replace(/\D/g, '')) || 0;
                             input.value = formatRupiah(numericValue);
+                        } else if (key === 'status') {
+                            // Gunakan status dari data jika ada, default ke Pengajuan
+                            input.value = data[key] || 'Pengajuan';
                         } else {
                             input.value = data[key];
                         }
                     }
+                }
+                
+                // Pastikan status ada untuk termin baru
+                const statusInput = row.querySelector('[name*="[status]"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Pengajuan';
+                }
+                
+                // Update status color setelah fill data
+                const statusInputForColor = row.querySelector('.status-input');
+                if (statusInputForColor) {
+                    updateStatusColor(statusInputForColor);
                 }
             }
             
@@ -171,6 +187,13 @@
                     setupRupiahFormat(kreditInput);
                 }
                 
+                // Pastikan status input di-set dengan benar
+                const statusInput = row.querySelector('.status-input');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Pengajuan';
+                    updateStatusColor(statusInput);
+                }
+                
                 renderSectionNames();
                 toggleRemoveTerminButtons(section);
                 setupAutoCalc(section);
@@ -191,13 +214,37 @@
             function toggleRemoveTerminButtons(section) {
                 const rows = section.querySelectorAll('.kerja-tambah-termin-row');
                 rows.forEach(row => {
-                    const removeBtn = row.querySelector('.remove-kerja-tambah-termin');
+                    toggleRemoveButtonByStatus(row);
+                });
+            }
+
+            function toggleRemoveButtonByStatus(row) {
+                const removeBtn = row.querySelector('.remove-kerja-tambah-termin');
+                const statusInput = row.querySelector('.status-input');
+                
+                if (statusInput && statusInput.value === 'Disetujui') {
+                    removeBtn.style.display = 'none';
+                } else {
+                    const rows = row.closest('.kerja-tambah-termin-list').querySelectorAll('.kerja-tambah-termin-row');
                     if (rows.length === 1) {
                         removeBtn.style.display = 'none';
                     } else {
                         removeBtn.style.display = '';
                     }
-                });
+                }
+            }
+
+            function updateStatusColor(statusInput) {
+                const status = statusInput.value;
+                statusInput.className = 'border rounded-lg px-4 py-2.5 status-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white';
+                
+                if (status === 'Pengajuan') {
+                    statusInput.classList.add('bg-yellow-100', 'dark:bg-yellow-900/30', 'text-yellow-800', 'dark:text-yellow-200');
+                } else if (status === 'Disetujui') {
+                    statusInput.classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-800', 'dark:text-green-200');
+                } else if (status === 'Ditolak') {
+                    statusInput.classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-800', 'dark:text-red-200');
+                }
             }
 
             function setupAutoCalc(section) {
@@ -269,10 +316,15 @@
 
             addSectionBtn.addEventListener('click', addSection);
 
-            // Inisialisasi dari old input jika ada
+            // Inisialisasi dari old input atau existing data
             if (window.oldKerjaTambah && Array.isArray(window.oldKerjaTambah) && window.oldKerjaTambah.length > 0) {
                 console.log('Loading old kerja tambah data:', window.oldKerjaTambah); // Debug
                 window.oldKerjaTambah.forEach(section => addSection(section));
+                // Update grand total setelah semua section ditambahkan
+                setTimeout(updateGrandTotal, 1000);
+            } else if (window.existingKerjaTambah && Array.isArray(window.existingKerjaTambah) && window.existingKerjaTambah.length > 0) {
+                console.log('Loading existing kerja tambah data:', window.existingKerjaTambah); // Debug
+                window.existingKerjaTambah.forEach(section => addSection(section));
                 // Update grand total setelah semua section ditambahkan
                 setTimeout(updateGrandTotal, 1000);
             } else if (sectionList.querySelectorAll('.kerja-tambah-section').length === 0) {
@@ -305,15 +357,21 @@
             function updateGrandTotal() {
                 let grandTotal = 0;
                 sectionList.querySelectorAll('.kerja-tambah-section').forEach(section => {
-                    const debetInput = section.querySelector('.debet-input');
-                    if (debetInput) {
-                        // Handle both formatted and raw values
-                        let value = debetInput.value || '0';
-                        // Remove Rp, spaces, and convert to number
-                        value = value.replace(/[^\d]/g, '');
-                        const val = parseInt(value) || 0;
-                        grandTotal += val;
-                    }
+                    // Hitung hanya dari kredit termin yang status Disetujui
+                    const terminRows = section.querySelectorAll('.kerja-tambah-termin-row');
+                    terminRows.forEach(row => {
+                        const kreditInput = row.querySelector('.kredit-input');
+                        const statusInput = row.querySelector('.status-input');
+                        
+                        if (kreditInput && statusInput && statusInput.value === 'Disetujui') {
+                            // Handle both formatted and raw values
+                            let value = kreditInput.value || '0';
+                            // Remove Rp, spaces, and convert to number
+                            value = value.replace(/[^\d]/g, '');
+                            const val = parseInt(value) || 0;
+                            grandTotal += val;
+                        }
+                    });
                 });
                 const grandTotalEl = document.querySelector('.kerja-tambah-grand-total');
                 if (grandTotalEl) {
@@ -324,8 +382,16 @@
 
             // Update grand total when inputs change
             document.addEventListener('input', function(e) {
-                if (e.target.classList.contains('debet-input')) {
+                if (e.target.classList.contains('debet-input') || 
+                    e.target.classList.contains('kredit-input') || 
+                    e.target.classList.contains('status-input')) {
                     setTimeout(updateGrandTotal, 100);
+                }
+                
+                // Update status color when status input changes
+                if (e.target.classList.contains('status-input')) {
+                    updateStatusColor(e.target);
+                    toggleRemoveButtonByStatus(e.target.closest('.kerja-tambah-termin-row'));
                 }
             });
 
@@ -342,6 +408,29 @@
 
             // Initial grand total calculation
             setTimeout(updateGrandTotal, 500);
+
+            // Convert format Rupiah ke angka sebelum form submit
+            document.addEventListener('submit', function(e) {
+                if (e.target.closest('form')) {
+                    // Convert debet input
+                    sectionList.querySelectorAll('.debet-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                    
+                    // Convert kredit input
+                    sectionList.querySelectorAll('.kredit-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                    
+                    // Convert sisa input
+                    sectionList.querySelectorAll('.sisa-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                }
+            });
         })();
     </script>
 </div> 

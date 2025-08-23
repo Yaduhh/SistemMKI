@@ -496,8 +496,8 @@
         </tbody>
     </table>
 
-    {{-- III. Pengeluaran Entertaiment --}}
-    <div class="section-title">III. PENGELUARAN ENTERTAIMENT</div>
+    {{-- III. Pengeluaran Non Material --}}
+    <div class="section-title">III. PENGELUARAN NON MATERIAL</div>
     <table>
         <thead>
             <tr>
@@ -651,462 +651,276 @@
         </tbody>
     </table>
 
-    {{-- IV. Pengeluaran Akomodasi --}}
-    <div class="section-title">IV. PENGELUARAN AKOMODASI</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 8%">MR</th>
-                <th style="width: 12%">Tanggal</th>
-                <th style="width: 15%">Supplier</th>
-                <th style="width: 18%">Item</th>
-                <th style="width: 8%">Ukuran</th>
-                <th style="width: 8%">Panjang</th>
-                <th style="width: 6%">Qty</th>
-                <th style="width: 6%">Satuan</th>
-                <th style="width: 10%">Harga Satuan</th>
-                <th style="width: 11%">Sub Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $totalAkomodasi = 0;
-                $lastMr = null;
-                function formatTanggalIndo3($tgl)
-                {
-                    if (!$tgl) {
-                        return '';
-                    }
-                    $bulan = [
-                        1 => 'Januari',
-                        'Februari',
-                        'Maret',
-                        'April',
-                        'Mei',
-                        'Juni',
-                        'Juli',
-                        'Agustus',
-                        'September',
-                        'Oktober',
-                        'November',
-                        'Desember',
-                    ];
-                    $exp = explode('-', $tgl);
-                    if (count($exp) !== 3) {
-                        return $tgl;
-                    }
-                    return ltrim($exp[2], '0') . ' ' . $bulan[(int) $exp[1]] . ' ' . $exp[0];
-                }
-            @endphp
-            @php
-                $hasApprovedData = false;
-                foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [] as $mrGroup) {
-                    $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
-                        return isset($material['status']) && $material['status'] === 'Disetujui';
-                    });
-                    if (!empty($approvedMaterials)) {
-                        $hasApprovedData = true;
-                        break;
-                    }
-                }
-            @endphp
 
-            @if ($hasApprovedData)
-                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? [] as $mrGroup)
-                    @php
-                        // Filter hanya material dengan status Disetujui
-                        $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
-                            return isset($material['status']) && $material['status'] === 'Disetujui';
-                        });
-
-                        // Skip MR jika tidak ada material yang disetujui
-                        if (empty($approvedMaterials)) {
-                            continue;
-                        }
-
-                        $isFirst = true;
-                        $subtotalMr = 0;
-                        $materialCount = count($approvedMaterials);
-                        $materialIndex = 0;
-                    @endphp
-                    @foreach ($approvedMaterials as $material)
-                        @php
-                            if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
-                                echo '<tr>';
-                                for ($i = 0; $i < 10; $i++) {
-                                    echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
-                                }
-                                echo '</tr>';
-                            }
-                            $lastMr = $mrGroup['mr'] ?? '';
-                            $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
-                                ? $material['harga_satuan']
-                                : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
-                            $subTotal = is_numeric($material['sub_total'] ?? null)
-                                ? $material['sub_total']
-                                : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
-                            $itemName = strtolower(trim($material['item'] ?? ''));
-                            if ($itemName === 'diskon') {
-                                $totalAkomodasi -= $subTotal;
-                                $subtotalMr -= $subTotal;
-                            } else {
-                                $totalAkomodasi += $subTotal;
-                                $subtotalMr += $subTotal;
-                            }
-                            $materialIndex++;
-                        @endphp
-                        <tr>
-                            <td class="text-center">
-                                @if ($isFirst)
-                                    {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if ($isFirst)
-                                    {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo3($mrGroup['tanggal']) : '' }}
-                                @endif
-                            </td>
-                            <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
-                            <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
-                            <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
-                            <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}
-                            </td>
-                            <td class="text-center">
-                                {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
-                            </td>
-                            <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
-                            <td class="text-right">
-                                @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
-                                @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
-                                    {{-- kosong --}}
-                                @else
-                                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
-                                @endif
-                            </td>
-                            <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
-                        </tr>
-                        @php $isFirst = false; @endphp
-                        @if ($materialIndex === $materialCount)
-                            <tr class="highlightTotal">
-                                <td colspan="10" style="text-align:center;">Total: Rp
-                                    {{ number_format($subtotalMr, 0, ',', '.') }}</td>
-                            </tr>
-                        @endif
-                    @endforeach
-                @endforeach
-            @else
-                <tr>
-                    <td colspan="10" class="text-center">-</td>
-                </tr>
-            @endif
-            <tr class="highlight">
-                <td colspan="9" class="text-right">GRAND TOTAL</td>
-                <td class="text-right">Rp {{ number_format($totalAkomodasi, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    {{-- V. Pengeluaran Lainnya --}}
-    <div class="section-title">V. PENGELUARAN LAINNYA</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 8%">MR</th>
-                <th style="width: 12%">Tanggal</th>
-                <th style="width: 15%">Supplier</th>
-                <th style="width: 18%">Item</th>
-                <th style="width: 8%">Ukuran</th>
-                <th style="width: 8%">Panjang</th>
-                <th style="width: 6%">Qty</th>
-                <th style="width: 6%">Satuan</th>
-                <th style="width: 10%">Harga Satuan</th>
-                <th style="width: 11%">Sub Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $totalLainnya = 0;
-                $lastMr = null;
-                function formatTanggalIndo4($tgl)
-                {
-                    if (!$tgl) {
-                        return '';
-                    }
-                    $bulan = [
-                        1 => 'Januari',
-                        'Februari',
-                        'Maret',
-                        'April',
-                        'Mei',
-                        'Juni',
-                        'Juli',
-                        'Agustus',
-                        'September',
-                        'Oktober',
-                        'November',
-                        'Desember',
-                    ];
-                    $exp = explode('-', $tgl);
-                    if (count($exp) !== 3) {
-                        return $tgl;
-                    }
-                    return ltrim($exp[2], '0') . ' ' . $bulan[(int) $exp[1]] . ' ' . $exp[0];
-                }
-            @endphp
-            @foreach ($rancanganAnggaranBiaya->json_pengeluaran_lainnya ?? [] as $mrGroup)
-                @php
-                    $isFirst = true;
-                    $subtotalMr = 0;
-                    $materialCount = count($mrGroup['materials'] ?? []);
-                    $materialIndex = 0;
-                @endphp
-                @foreach ($mrGroup['materials'] ?? [] as $material)
-                    @php
-                        if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '')) {
-                            echo '<tr>';
-                            for ($i = 0; $i < 10; $i++) {
-                                echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
-                            }
-                            echo '</tr>';
-                        }
-                        $lastMr = $mrGroup['mr'] ?? '';
-                        $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
-                            ? $material['harga_satuan']
-                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
-                        $subTotal = is_numeric($material['sub_total'] ?? null)
-                            ? $material['sub_total']
-                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
-                        $itemName = strtolower(trim($material['item'] ?? ''));
-                        if ($itemName === 'diskon') {
-                            $totalLainnya -= $subTotal;
-                            $subtotalMr -= $subTotal;
-                        } else {
-                            $totalLainnya += $subTotal;
-                            $subtotalMr += $subTotal;
-                        }
-                        $materialIndex++;
-                    @endphp
-                    <tr>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if ($isFirst)
-                                {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo4($mrGroup['tanggal']) : '' }}
-                            @endif
-                        </td>
-                        <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
-                        <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
-                        <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
-                        <td class="text-center">
-                            {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
-                        </td>
-                        <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
-                        <td class="text-right">
-                            @php $itemName = strtolower(trim($material['item'] ?? '')); @endphp
-                            @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
-                                {{-- kosong --}}
-                            @else
-                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
-                            @endif
-                        </td>
-                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
-                    </tr>
-                    @php $isFirst = false; @endphp
-                    @if ($materialIndex === $materialCount)
-                        <tr class="highlightTotal">
-                            <td colspan="10" style="text-align:center;">Total: Rp
-                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
-                        </tr>
-                    @endif
-                @endforeach
-            @endforeach
-            <tr class="highlight">
-                <td colspan="9" class="text-right">GRAND TOTAL</td>
-                <td class="text-right">Rp {{ number_format($totalLainnya, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
-    </table>
 
     {{-- VI. Pengeluaran Tukang --}}
     <div class="section-title">VI. PENGELUARAN TUKANG</div>
-    @foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section)
-        @php
-            $debet = is_numeric($section['debet'] ?? null)
-                ? $section['debet']
-                : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
-            $rowspan = count($section['termin'] ?? []);
-        @endphp
-        <table>
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Item</th>
-                    <th>Progress (%)</th>
-                    <th>Debet</th>
-                    <th>Kredit</th>
-                    <th>Sisa</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $subtotalTukang = 0; @endphp
-                @foreach ($section['termin'] ?? [] as $terminIndex => $termin)
-                    @php
-                        $kredit = is_numeric($termin['kredit'] ?? null)
-                            ? $termin['kredit']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
-                        $sisa = is_numeric($termin['sisa'] ?? null)
-                            ? $termin['sisa']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['sisa'] ?? 0);
-                        $subtotalTukang += $kredit;
-                    @endphp
-                    <tr>
-                        <td class="text-center">{{ $termin['tanggal'] ?? '-' }}</td>
-                        <td class="text-center">Termin {{ $terminIndex + 1 }}</td>
-                        <td class="text-center">{{ $termin['persentase'] ?? '-' }}</td>
-                        @if ($terminIndex == 0)
-                            <td class="text-right" rowspan="{{ $rowspan }}">
-                                <table>
-                                    <tr>
-                                        <td class="table-none" style="width: 50%;">
-                                            Rp
-                                        </td>
-                                        <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($debet, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        @endif
-                        @if ($terminIndex != 0)
-                            <!-- Kolom debet kosong di baris berikutnya -->
-                        @endif
-                        <td class="text-right">
-                            <table>
-                                <tr>
-                                    <td class="table-none" style="width: 50%;">Rp</td>
-                                    <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($kredit, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td class="text-right">
-                            <table>
-                                <tr>
-                                    <td class="table-none" style="width: 50%;">Rp</td>
-                                    <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($sisa, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                @endforeach
-                <tr class="highlight">
-                    <td colspan="4" class="text-right">SUB TOTAL</td>
-                    <td class="text-right">
-                        <table>
-                            <tr>
-                                <td class="table-none" style="width: 50%;">Rp</td>
-                                <td class="table-none" style="width: 50%; text-align: right;">
-                                    {{ number_format($subtotalTukang, 0, ',', '.') }}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    @endforeach
+    @php
+        $hasApprovedTukang = false;
+        foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section) {
+            $approvedTermins = array_filter($section['termin'] ?? [], function ($termin) {
+                return isset($termin['status']) && $termin['status'] === 'Disetujui';
+            });
+            if (!empty($approvedTermins)) {
+                $hasApprovedTukang = true;
+                break;
+            }
+        }
+    @endphp
 
-    {{-- VII. Kerja Tambah --}}
-    <div class="section-title">VII. KERJA TAMBAH</div>
-    @foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section)
-        @php
-            $debet = is_numeric($section['debet'] ?? null)
-                ? $section['debet']
-                : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
-            $rowspan = count($section['termin'] ?? []);
-        @endphp
-        <table>
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Item</th>
-                    <th>Progress (%)</th>
-                    <th>Debet</th>
-                    <th>Kredit</th>
-                    <th>Sisa</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $subtotalKerjaTambah = 0; @endphp
-                @foreach ($section['termin'] ?? [] as $terminIndex => $termin)
-                    @php
-                        $kredit = is_numeric($termin['kredit'] ?? null)
-                            ? $termin['kredit']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
-                        $sisa = is_numeric($termin['sisa'] ?? null)
-                            ? $termin['sisa']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['sisa'] ?? 0);
-                        $subtotalKerjaTambah += $kredit;
-                    @endphp
+    @if ($hasApprovedTukang)
+        @foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section)
+            @php
+                // Filter hanya termin dengan status Disetujui
+                $approvedTermins = array_filter($section['termin'] ?? [], function ($termin) {
+                    return isset($termin['status']) && $termin['status'] === 'Disetujui';
+                });
+
+                // Skip section jika tidak ada termin yang disetujui
+                if (empty($approvedTermins)) {
+                    continue;
+                }
+
+                $debet = is_numeric($section['debet'] ?? null)
+                    ? $section['debet']
+                    : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
+                $rowspan = count($approvedTermins);
+            @endphp
+            <table>
+                <thead>
                     <tr>
-                        <td class="text-center">{{ $termin['tanggal'] ?? '-' }}</td>
-                        <td class="text-center">{{ $section['item'] ?? '-' }}</td>
-                        <td class="text-center">{{ $termin['persentase'] ?? '-' }}</td>
-                        @if ($terminIndex == 0)
-                            <td class="text-right" rowspan="{{ $rowspan }}">
+                        <th>Tanggal</th>
+                        <th>Item</th>
+                        <th>Progress (%)</th>
+                        <th>Status</th>
+                        <th>Debet</th>
+                        <th>Kredit</th>
+                        <th>Sisa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $subtotalTukang = 0; @endphp
+                    @foreach ($approvedTermins as $terminIndex => $termin)
+                        @php
+                            $kredit = is_numeric($termin['kredit'] ?? null)
+                                ? $termin['kredit']
+                                : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                            $sisa = is_numeric($termin['sisa'] ?? null)
+                                ? $termin['sisa']
+                                : (int) preg_replace('/[^0-9]/', '', $termin['sisa'] ?? 0);
+                            $subtotalTukang += $kredit;
+                        @endphp
+                        <tr>
+                            <td class="text-center">{{ $termin['tanggal'] ?? '-' }}</td>
+                            <td class="text-center">Termin {{ $terminIndex + 1 }}</td>
+                            <td class="text-center">{{ $termin['persentase'] ?? '-' }}</td>
+                            <td class="text-center">{{ $termin['status'] ?? 'Disetujui' }}</td>
+                            @if ($terminIndex == 0)
+                                <td class="text-right" rowspan="{{ $rowspan }}">
+                                    <table>
+                                        <tr>
+                                            <td class="table-none" style="width: 50%;">
+                                                Rp
+                                            </td>
+                                            <td class="table-none" style="width: 50%; text-align: right;">
+                                                {{ number_format($debet, 0, ',', '.') }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            @endif
+                            @if ($terminIndex != 0)
+                                <!-- Kolom debet kosong di baris berikutnya -->
+                            @endif
+                            <td class="text-right">
                                 <table>
                                     <tr>
                                         <td class="table-none" style="width: 50%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($debet, 0, ',', '.') }}</td>
+                                            {{ number_format($kredit, 0, ',', '.') }}</td>
                                     </tr>
                                 </table>
                             </td>
-                        @endif
-                        @if ($terminIndex != 0)
-                            <!-- Kolom debet kosong di baris berikutnya -->
-                        @endif
+                            <td class="text-right">
+                                <table>
+                                    <tr>
+                                        <td class="table-none" style="width: 50%;">Rp</td>
+                                        <td class="table-none" style="width: 50%; text-align: right;">
+                                            {{ number_format($sisa, 0, ',', '.') }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr class="highlight">
+                        <td colspan="5" class="text-right">SUB TOTAL</td>
                         <td class="text-right">
                             <table>
                                 <tr>
                                     <td class="table-none" style="width: 50%;">Rp</td>
                                     <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($kredit, 0, ',', '.') }}</td>
+                                        {{ number_format($subtotalTukang, 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </td>
-                        <td class="text-right">
-                            <table>
-                                <tr>
-                                    <td class="table-none" style="width: 50%;">Rp</td>
-                                    <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($sisa, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
-                        </td>
+                        <td></td>
                     </tr>
-                @endforeach
-                <tr class="highlight">
-                    <td colspan="4" class="text-right">SUB TOTAL</td>
-                    <td class="text-right">
-                        <table>
-                            <tr>
-                                <td class="table-none" style="width: 50%;">Rp</td>
-                                <td class="table-none" style="width: 50%; text-align: right;">
-                                    {{ number_format($subtotalKerjaTambah, 0, ',', '.') }}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td></td>
+                </tbody>
+            </table>
+        @endforeach
+    @else
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Item</th>
+                    <th>Progress (%)</th>
+                    <th>Status</th>
+                    <th>Debet</th>
+                    <th>Kredit</th>
+                    <th>Sisa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" class="text-center">-</td>
                 </tr>
             </tbody>
         </table>
-    @endforeach
+    @endif
+
+    {{-- VII. Kerja Tambah --}}
+    <div class="section-title">VII. KERJA TAMBAH</div>
+    @php
+        $hasApprovedKerjaTambah = false;
+        foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section) {
+            $approvedTermins = array_filter($section['termin'] ?? [], function ($termin) {
+                return isset($termin['status']) && $termin['status'] === 'Disetujui';
+            });
+            if (!empty($approvedTermins)) {
+                $hasApprovedKerjaTambah = true;
+                break;
+            }
+        }
+    @endphp
+
+    @if ($hasApprovedKerjaTambah)
+        @foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section)
+            @php
+                // Filter hanya termin dengan status Disetujui
+                $approvedTermins = array_filter($section['termin'] ?? [], function ($termin) {
+                    return isset($termin['status']) && $termin['status'] === 'Disetujui';
+                });
+
+                // Skip section jika tidak ada termin yang disetujui
+                if (empty($approvedTermins)) {
+                    continue;
+                }
+
+                $debet = is_numeric($section['debet'] ?? null)
+                    ? $section['debet']
+                    : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
+                $rowspan = count($approvedTermins);
+            @endphp
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Item</th>
+                        <th>Progress (%)</th>
+                        <th>Status</th>
+                        <th>Debet</th>
+                        <th>Kredit</th>
+                        <th>Sisa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $subtotalKerjaTambah = 0; @endphp
+                    @foreach ($approvedTermins as $terminIndex => $termin)
+                        @php
+                            $kredit = is_numeric($termin['kredit'] ?? null)
+                                ? $termin['kredit']
+                                : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                            $sisa = is_numeric($termin['sisa'] ?? null)
+                                ? $termin['sisa']
+                                : (int) preg_replace('/[^0-9]/', '', $termin['sisa'] ?? 0);
+                            $subtotalKerjaTambah += $kredit;
+                        @endphp
+                        <tr>
+                            <td class="text-center">{{ $termin['tanggal'] ?? '-' }}</td>
+                            <td class="text-center">{{ $section['item'] ?? '-' }}</td>
+                            <td class="text-center">{{ $termin['persentase'] ?? '-' }}</td>
+                            <td class="text-center">{{ $termin['status'] ?? 'Disetujui' }}</td>
+                            @if ($terminIndex == 0)
+                                <td class="text-right" rowspan="{{ $rowspan }}">
+                                    <table>
+                                        <tr>
+                                            <td class="table-none" style="width: 50%;">Rp</td>
+                                            <td class="table-none" style="width: 50%; text-align: right;">
+                                                {{ number_format($debet, 0, ',', '.') }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            @endif
+                            @if ($terminIndex != 0)
+                                <!-- Kolom debet kosong di baris berikutnya -->
+                            @endif
+                            <td class="text-right">
+                                <table>
+                                    <tr>
+                                        <td class="table-none" style="width: 50%;">Rp</td>
+                                        <td class="table-none" style="width: 50%; text-align: right;">
+                                            {{ number_format($kredit, 0, ',', '.') }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="text-right">
+                                <table>
+                                    <tr>
+                                        <td class="table-none" style="width: 50%;">Rp</td>
+                                        <td class="table-none" style="width: 50%; text-align: right;">
+                                            {{ number_format($sisa, 0, ',', '.') }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr class="highlight">
+                        <td colspan="5" class="text-right">SUB TOTAL</td>
+                        <td class="text-right">
+                            <table>
+                                <tr>
+                                    <td class="table-none" style="width: 50%;">Rp</td>
+                                    <td class="table-none" style="width: 50%; text-align: right;">
+                                        {{ number_format($subtotalKerjaTambah, 0, ',', '.') }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        @endforeach
+    @else
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Item</th>
+                    <th>Progress (%)</th>
+                    <th>Status</th>
+                    <th>Debet</th>
+                    <th>Kredit</th>
+                    <th>Sisa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" class="text-center">-</td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 
     {{-- Grand Total --}}
     @php
@@ -1114,26 +928,38 @@
         $grandTotal += $totalUtama;
         $grandTotal += $totalPendukung;
         $grandTotal += $totalEntertaiment;
-        $grandTotal += $totalAkomodasi;
-        $grandTotal += $totalLainnya;
 
-        // Hitung total tukang dari debet (bukan dari kredit)
+        // Hitung total tukang dari kredit - hanya yang status Disetujui
         $totalTukangDebet = 0;
         foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section) {
-            $debet = is_numeric($section['debet'] ?? null)
-                ? $section['debet']
-                : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
-            $totalTukangDebet += $debet;
+            if (isset($section['termin']) && is_array($section['termin'])) {
+                foreach ($section['termin'] as $termin) {
+                    // Hanya hitung kredit dari termin yang statusnya Disetujui
+                    if (($termin['status'] ?? '') === 'Disetujui') {
+                        $kredit = is_numeric($termin['kredit'] ?? null)
+                            ? $termin['kredit']
+                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                        $totalTukangDebet += $kredit;
+                    }
+                }
+            }
         }
         $grandTotal += $totalTukangDebet;
 
-        // Hitung total kerja tambah dari debet (bukan dari kredit)
+        // Hitung total kerja tambah dari kredit - hanya yang status Disetujui
         $totalKerjaTambahDebet = 0;
         foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section) {
-            $debet = is_numeric($section['debet'] ?? null)
-                ? $section['debet']
-                : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
-            $totalKerjaTambahDebet += $debet;
+            if (isset($section['termin']) && is_array($section['termin'])) {
+                foreach ($section['termin'] as $termin) {
+                    // Hanya hitung kredit dari termin yang statusnya Disetujui
+                    if (($termin['status'] ?? '') === 'Disetujui') {
+                        $kredit = is_numeric($termin['kredit'] ?? null)
+                            ? $termin['kredit']
+                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                        $totalKerjaTambahDebet += $kredit;
+                    }
+                }
+            }
         }
         $grandTotal += $totalKerjaTambahDebet;
     @endphp
@@ -1142,8 +968,6 @@
         $materialUtama = $totalUtama ?? 0;
         $materialPemasangan = $totalPendukung ?? 0;
         $biayaEntertaint = $totalEntertaiment ?? 0;
-        $biayaAkomodasi = $totalAkomodasi ?? 0;
-        $biayaLainLain = $totalLainnya ?? 0;
         $biayaTukang = $totalTukangDebet ?? 0;
         $kerjaTambah = $totalKerjaTambahDebet ?? 0;
         $totalNilaiKontrak = $totalUtama + ($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0);
@@ -1151,8 +975,6 @@
             $materialUtama +
             $materialPemasangan +
             $biayaEntertaint +
-            $biayaAkomodasi +
-            $biayaLainLain +
             $biayaTukang +
             $kerjaTambah;
         $sisa = $totalNilaiKontrak - $totalPengeluaran;
@@ -1160,7 +982,7 @@
         // Nilai Kontrak (Pemasangan Saja) - FIX sesuai permintaan user
         $nilaiKontrakPemasanganFix = $rancanganAnggaranBiaya->pemasangan->grand_total ?? 0;
         $totalPengeluaranPemasangan =
-            $materialPemasangan + $biayaEntertaint + $biayaAkomodasi + $biayaLainLain + $biayaTukang + $kerjaTambah;
+            $materialPemasangan + $biayaEntertaint + $biayaTukang + $kerjaTambah;
         $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasangan;
     @endphp
     <div class="section-title grand-total">GRAND TOTAL : Rp {{ number_format($grandTotal, 0, ',', '.') }}</div>
@@ -1252,19 +1074,9 @@
                 <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">BIAYA ENTERTAINT</td>
+                <td class="no-border">BIAYA NON MATERIAL</td>
                 <td class="no-border">:</td>
                 <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA AKOMODASI</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA LAIN-LAIN</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">BIAYA TUKANG</td>
@@ -1309,19 +1121,9 @@
                 <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">BIAYA ENTERTAINT</td>
+                <td class="no-border">BIAYA NON MATERIAL</td>
                 <td class="no-border">:</td>
                 <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA AKOMODASI</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaAkomodasi, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA LAIN-LAIN</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaLainLain, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">BIAYA TUKANG</td>

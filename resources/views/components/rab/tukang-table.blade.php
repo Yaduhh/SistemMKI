@@ -19,12 +19,13 @@
             <button type="button" class="mt-4 bg-purple-600 dark:bg-purple-900/30 rounded-lg border border-purple-600 dark:border-purple-400 text-white px-4 py-2 add-termin">Tambah Termin</button>
             <button type="button" class="absolute top-0 right-0 text-red-500 font-bold remove-section" style="z-index:10;">Hapus Section</button>
             <template class="termin-row-template">
-                <div class="grid grid-cols-6 gap-2 items-center tukang-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
+                <div class="grid grid-cols-7 gap-2 items-center tukang-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
                     <span class="termin-label font-semibold"></span>
                     <input type="date" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][sisa]" placeholder="Sisa" class="border rounded-lg px-4 py-2.5 sisa-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][persentase]" placeholder="%" class="border rounded-lg px-4 py-2.5 persentase-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
+                    <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][status]" value="Pengajuan" placeholder="Status" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 font-medium" readonly>
                     <div class="flex justify-end w-full">
                         <button type="button" class="text-red-400 w-full bg-red-600 dark:bg-red-900/30 border border-red-600 dark:border-red-400 font-bold remove-termin px-4 py-2.5 rounded-lg">Hapus</button>
                     </div>
@@ -109,10 +110,19 @@
                             // Format Rupiah untuk field kredit dan sisa
                             const numericValue = parseInt(data[key].toString().replace(/\D/g, '')) || 0;
                             input.value = formatRupiah(numericValue);
+                        } else if (key === 'status') {
+                            // Gunakan status dari data jika ada, default ke Pengajuan
+                            input.value = data[key] || 'Pengajuan';
                         } else {
                             input.value = data[key];
                         }
                     }
+                }
+                
+                // Pastikan status ada untuk termin baru
+                const statusInput = row.querySelector('[name*="[status]"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Pengajuan';
                 }
             }
             
@@ -135,7 +145,7 @@
                 }
             }
 
-            function addSection(data) {
+            function addSection(data, isReadonly = false) {
                 const secIdx = sectionList.querySelectorAll('.tukang-section').length;
                 const html = sectionTemplate.innerHTML.replace(/__SECIDX__/g, secIdx);
                 const temp = document.createElement('div');
@@ -144,17 +154,22 @@
                 sectionList.appendChild(section);
                 fillSection(section, data);
                 if (data && Array.isArray(data.termin) && data.termin.length) {
-                    data.termin.forEach((ter, i) => addTermin(section, ter));
+                    data.termin.forEach((ter, i) => addTermin(section, ter, isReadonly));
                 } else {
-                    addTermin(section);
+                    addTermin(section, null, isReadonly);
                 }
                 renderSectionNames();
                 toggleRemoveSectionButtons();
                 setupAutoCalc(section);
                 setTimeout(updateGrandTotal, 100); // Update grand total setelah setup selesai
+                
+                // Set readonly untuk data existing
+                if (isReadonly) {
+                    setSectionReadonly(section);
+                }
             }
 
-            function addTermin(section, data) {
+            function addTermin(section, data, isReadonly = false) {
                 const terminList = section.querySelector('.termin-list');
                 const rowTemplate = section.querySelector('.termin-row-template');
                 const terIdx = terminList.querySelectorAll('.tukang-termin-row').length;
@@ -171,9 +186,17 @@
                     setupRupiahFormat(kreditInput);
                 }
                 
+                // Set readonly untuk data existing
+                if (isReadonly) {
+                    setTerminRowReadonly(row);
+                }
+                
                 renderSectionNames();
                 toggleRemoveTerminButtons(section);
                 setupAutoCalc(section);
+                
+                // Pastikan button hapus sesuai dengan status
+                toggleRemoveButtonByStatus(row);
             }
 
             function toggleRemoveSectionButtons() {
@@ -191,13 +214,67 @@
             function toggleRemoveTerminButtons(section) {
                 const rows = section.querySelectorAll('.tukang-termin-row');
                 rows.forEach(row => {
-                    const removeBtn = row.querySelector('.remove-termin');
-                    if (rows.length === 1) {
-                        removeBtn.style.display = 'none';
-                    } else {
-                        removeBtn.style.display = '';
-                    }
+                    toggleRemoveButtonByStatus(row);
                 });
+            }
+
+            // Set readonly untuk section (data existing)
+            function setSectionReadonly(section) {
+                // Set readonly untuk input debet
+                section.querySelectorAll('.debet-input').forEach(input => {
+                    input.readOnly = true;
+                    input.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
+                
+                // Sembunyikan tombol hapus section
+                const removeSectionBtn = section.querySelector('.remove-section');
+                if (removeSectionBtn) {
+                    removeSectionBtn.style.display = 'none';
+                }
+                
+                // Tampilkan tombol tambah termin untuk data existing
+                // (tidak disembunyikan agar bisa tambah termin baru)
+                const addTerminBtn = section.querySelector('.add-termin');
+                if (addTerminBtn) {
+                    addTerminBtn.style.display = '';
+                }
+            }
+
+            // Set readonly untuk termin row (data existing)
+            function setTerminRowReadonly(row) {
+                // Set readonly untuk semua input termin
+                row.querySelectorAll('input').forEach(input => {
+                    input.readOnly = true;
+                    input.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
+                
+                // Sembunyikan tombol hapus termin
+                const removeTerminBtn = row.querySelector('.remove-termin');
+                if (removeTerminBtn) {
+                    removeTerminBtn.style.display = 'none';
+                }
+            }
+
+            // Fungsi untuk menyembunyikan button hapus berdasarkan status
+            function toggleRemoveButtonByStatus(row) {
+                const statusInput = row.querySelector('input[name*="[status]"]');
+                const removeTerminBtn = row.querySelector('.remove-termin');
+                
+                if (statusInput && removeTerminBtn) {
+                    if (statusInput.value === 'Disetujui') {
+                        removeTerminBtn.style.display = 'none';
+                    } else {
+                        // Tampilkan button hapus jika bukan status Disetujui
+                        // Tapi tetap cek apakah ini termin terakhir
+                        const section = row.closest('.tukang-section');
+                        const terminRows = section.querySelectorAll('.tukang-termin-row');
+                        if (terminRows.length > 1) {
+                            removeTerminBtn.style.display = '';
+                        } else {
+                            removeTerminBtn.style.display = 'none';
+                        }
+                    }
+                }
             }
 
             function setupAutoCalc(section) {
@@ -269,13 +346,22 @@
 
             addSectionBtn.addEventListener('click', addSection);
 
-            // Inisialisasi dari old input jika ada
-            if (window.oldTukang && Array.isArray(window.oldTukang) && window.oldTukang.length > 0) {
+            // Inisialisasi dari data existing RAB jika ada (prioritas tertinggi)
+            if (window.existingTukang && Array.isArray(window.existingTukang) && window.existingTukang.length > 0) {
+                console.log('Loading existing tukang data:', window.existingTukang); // Debug
+                window.existingTukang.forEach(section => addSection(section, true));
+                // Update grand total setelah semua section ditambahkan
+                setTimeout(updateGrandTotal, 1000);
+            }
+            // Inisialisasi dari old input jika ada (untuk validation error)
+            else if (window.oldTukang && Array.isArray(window.oldTukang) && window.oldTukang.length > 0) {
                 console.log('Loading old tukang data:', window.oldTukang); // Debug
                 window.oldTukang.forEach(section => addSection(section));
                 // Update grand total setelah semua section ditambahkan
                 setTimeout(updateGrandTotal, 1000);
-            } else if (sectionList.querySelectorAll('.tukang-section').length === 0) {
+            } 
+            // Jika tidak ada data, tambah section kosong
+            else if (sectionList.querySelectorAll('.tukang-section').length === 0) {
                 addSection();
             }
             toggleRemoveSectionButtons();
@@ -305,27 +391,41 @@
             function updateGrandTotal() {
                 let grandTotal = 0;
                 sectionList.querySelectorAll('.tukang-section').forEach(section => {
-                    const debetInput = section.querySelector('.debet-input');
-                    if (debetInput) {
-                        // Handle both formatted and raw values
-                        let value = debetInput.value || '0';
-                        // Remove Rp, spaces, and convert to number
-                        value = value.replace(/[^\d]/g, '');
-                        const val = parseInt(value) || 0;
-                        grandTotal += val;
-                    }
+                    // Cek setiap termin dalam section
+                    const terminRows = section.querySelectorAll('.tukang-termin-row');
+                    terminRows.forEach(row => {
+                        const statusInput = row.querySelector('input[name*="[status]"]');
+                        const kreditInput = row.querySelector('.kredit-input');
+                        
+                        // Hanya hitung kredit dari termin yang statusnya Disetujui
+                        if (statusInput && statusInput.value === 'Disetujui' && kreditInput) {
+                            let kreditValue = kreditInput.value || '0';
+                            // Remove Rp, spaces, and convert to number
+                            kreditValue = kreditValue.replace(/[^\d]/g, '');
+                            const kreditVal = parseInt(kreditValue) || 0;
+                            grandTotal += kreditVal;
+                        }
+                    });
                 });
                 const grandTotalEl = document.querySelector('.tukang-grand-total');
                 if (grandTotalEl) {
                     grandTotalEl.textContent = 'Rp ' + grandTotal.toLocaleString('id-ID');
                 }
-                console.log('Tukang Grand Total:', grandTotal); // Debug
+                console.log('Tukang Grand Total (Approved Kredit Only):', grandTotal); // Debug
             }
 
             // Update grand total when inputs change
             document.addEventListener('input', function(e) {
-                if (e.target.classList.contains('debet-input')) {
+                if (e.target.classList.contains('debet-input') || e.target.classList.contains('kredit-input') || e.target.name && e.target.name.includes('[status]')) {
                     setTimeout(updateGrandTotal, 100);
+                    
+                    // Jika yang berubah adalah status input, update button hapus
+                    if (e.target.name && e.target.name.includes('[status]')) {
+                        const row = e.target.closest('.tukang-termin-row');
+                        if (row) {
+                            toggleRemoveButtonByStatus(row);
+                        }
+                    }
                 }
             });
 
@@ -342,6 +442,29 @@
 
             // Initial grand total calculation
             setTimeout(updateGrandTotal, 500);
+
+            // Convert format Rupiah ke angka sebelum form submit
+            document.addEventListener('submit', function(e) {
+                if (e.target.closest('form')) {
+                    // Convert debet input
+                    sectionList.querySelectorAll('.debet-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                    
+                    // Convert kredit input
+                    sectionList.querySelectorAll('.kredit-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                    
+                    // Convert sisa input
+                    sectionList.querySelectorAll('.sisa-input').forEach(input => {
+                        const numericValue = getNumericValue(input);
+                        input.value = numericValue;
+                    });
+                }
+            });
         })();
     </script>
 </div> 

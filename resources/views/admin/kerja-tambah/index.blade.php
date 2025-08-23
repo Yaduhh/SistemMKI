@@ -1,24 +1,23 @@
-<x-layouts.app :title="__('Pengeluaran Non Material')">
+<x-layouts.app :title="__('Kerja Tambah')">
     <div class="container mx-auto">
         <div class="mb-6">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                <div class="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                    <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+                            d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7">
                         </path>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl lg:text-2xl font-bold">Pengeluaran Non Material</h1>
-                    <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Kelola status pengeluaran
-                        non material dari RAB</p>
+                    <h1 class="text-xl lg:text-2xl font-bold">Kerja Tambah</h1>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Kelola status kerja tambah dari RAB</p>
                 </div>
             </div>
         </div>
 
-        <!-- Filter Section -->
+            <!-- Filter Section -->
         <div
             class="mb-6 bg-white dark:bg-zinc-800">
             <div class="flex items-center gap-2 mb-4">
@@ -34,18 +33,18 @@
                 <div class="w-full">
                     <select name="status_filter"
                         class="border w-full border-zinc-300 dark:border-zinc-600 rounded-md px-3 py-2.5 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white">
-                        <option value="">Semua Status</option>
+                            <option value="">Semua Status</option>
                         <option value="Pengajuan" {{ request('status_filter') == 'Pengajuan' ? 'selected' : '' }}>
                             Pengajuan</option>
                         <option value="Disetujui" {{ request('status_filter') == 'Disetujui' ? 'selected' : '' }}>
                             Disetujui</option>
                         <option value="Ditolak" {{ request('status_filter') == 'Ditolak' ? 'selected' : '' }}>Ditolak
                         </option>
-                    </select>
-                </div>
+                        </select>
+                    </div>
                 <div class="flex gap-2">
                     <button type="submit"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                        class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
@@ -53,7 +52,7 @@
                         </svg>
                         Filter
                     </button>
-                    <a href="{{ route('admin.entertainment.index') }}"
+                    <a href="{{ route('admin.kerja-tambah.index') }}"
                         class="px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -88,7 +87,7 @@
         @endif
 
         <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
-            <div class="overflow-x-auto">
+                <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                     <thead class="bg-zinc-50 dark:bg-zinc-700">
                         <tr>
@@ -127,24 +126,13 @@
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2 truncate">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                        </path>
-                                    </svg>
-                                    Supplier & Item
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
                                 <div class="flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
                                         </path>
                                     </svg>
-                                    Qty
+                                    Debet
                                 </div>
                             </th>
                             <th
@@ -155,7 +143,18 @@
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
                                         </path>
                                     </svg>
-                                    Harga Satuan
+                                    Kredit
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                        </path>
+                                    </svg>
+                                    Sisa
                                 </div>
                             </th>
                             <th
@@ -166,7 +165,7 @@
                                             d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
                                         </path>
                                     </svg>
-                                    Sub Total
+                                    Persentase
                                 </div>
                             </th>
                             <th
@@ -192,59 +191,39 @@
                                     Aksi
                                 </div>
                             </th>
-                        </tr>
-                    </thead>
+                            </tr>
+                        </thead>
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @forelse($entertainments as $entertainment)
+                            @forelse($kerjaTambahData as $data)
                             <tr>
                                 <td class="text-center">
                                     {{ $loop->iteration }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    <div class="mb-4 border-b border-zinc-200 dark:border-zinc-700 pb-2">
-                                        <p>
-                                            {{ $entertainment['supervisi_nama'] ?? '-' }}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium">{{ $entertainment['rab_proyek'] }}</div>
-                                        <div class="text-zinc-500 dark:text-zinc-400">
-                                            {{ $entertainment['rab_pekerjaan'] }}</div>
-                                    </div>
+                                    <div class="font-medium">{{ $data['proyek'] }}</div>
+                                    <div class="text-zinc-500 dark:text-zinc-400">{{ $data['pekerjaan'] }}</div>
+                                    <div class="text-zinc-500 dark:text-zinc-400 text-xs">{{ $data['kontraktor'] }} - {{ $data['lokasi'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    @if (!empty($entertainment['tanggal']) && $entertainment['tanggal'] !== '-' && $entertainment['tanggal'] !== null)
-                                        @formatTanggalIndonesia($entertainment['tanggal'])
+                                    @if (!empty($data['tanggal']) && $data['tanggal'] !== null && $data['tanggal'] !== '-')
+                                        @formatTanggalIndonesia($data['tanggal'])
                                     @else
                                         -
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    <div class="mb-4">
-                                        <p>
-                                            Supplier:
-                                        </p>
-                                        <p>
-                                            {{ $entertainment['supplier'] }}
-                                        </p>
-                                    </div>
-                                    <div class="w-full">
-                                        <p>Item:</p>
-                                        <p>
-                                            {{ $entertainment['item'] }}
-                                        </p>
-                                    </div>
+                                    Rp {{ number_format($data['debet'], 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    {{ $entertainment['qty'] }} - {{ $entertainment['satuan'] }}
+                                    Rp {{ number_format($data['kredit'], 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($entertainment['harga_satuan'], 0, ',', '.') }}
+                                    Rp {{ number_format($data['sisa'], 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($entertainment['sub_total'], 0, ',', '.') }}
+                                    {{ $data['persentase'] }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
                                             'Pengajuan' =>
@@ -254,31 +233,28 @@
                                             'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
                                         ];
                                         $color =
-                                            $statusColors[$entertainment['status']] ??
+                                            $statusColors[$data['status']] ??
                                             'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
                                     @endphp
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                        {{ $entertainment['status'] }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            {{ $data['status'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        @if ($entertainment['rab_status'] !== 'selesai')
-                                            <button
-                                                onclick="updateStatus({{ $entertainment['rab_id'] }}, {{ $entertainment['mr_index'] }}, {{ $entertainment['material_index'] }}, '{{ $entertainment['status'] }}')"
-                                                class="hover:cursor-pointer bg-zinc-100 dark:bg-indigo-700 px-4 py-2 rounded-md text-indigo-600 hover:text-indigo-900 dark:text-indigo-50 dark:hover:text-indigo-300 flex items-center gap-2">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                    </path>
-                                                </svg>
-                                                Update Status
-                                            </button>
-                                        @endif
-                                        <a href="{{ route('admin.rancangan-anggaran-biaya.show', $entertainment['rab_id']) }}"
+                                        <button
+                                            onclick="updateStatus({{ $data['id'] }}, '{{ $data['tanggal'] }}', {{ $data['kredit'] }}, '{{ $data['status'] }}')"
+                                            class="hover:cursor-pointer bg-zinc-100 dark:bg-orange-700 px-4 py-2 rounded-md text-orange-600 hover:text-orange-900 dark:text-orange-50 dark:hover:text-orange-300 flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                </path>
+                                            </svg>
+                                            Update Status
+                                        </button>
+                                        <a href="{{ route('admin.rancangan-anggaran-biaya.show', $data['id']) }}"
                                             class="hover:cursor-pointer bg-zinc-100 dark:bg-emerald-700 px-4 py-2 rounded-md text-emerald-600 hover:text-emerald-900 dark:text-emerald-50 dark:hover:text-emerald-300 flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -291,18 +267,19 @@
                                             Lihat RAB
                                         </a>
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="12"
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                <td colspan="9"
                                     class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                                    Tidak ada data pengeluaran entertainment
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                        Tidak ada data kerja tambah
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -311,12 +288,12 @@
     <div id="statusModal" class="fixed inset-0 bg-gray-600/30 backdrop-blur-sm dark:bg-zinc-900/30 hidden z-50">
         <div class="flex items-center justify-center min-h-screen">
             <div class="bg-white dark:bg-zinc-800 rounded-lg p-6 w-96 border border-zinc-200 dark:border-zinc-400">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Update Pengajuan Non Material</h3>
+                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">Update Status Kerja Tambah</h3>
                 <form id="statusForm" method="POST">
                     @csrf
                     @method('PATCH')
-                    <input type="hidden" name="entertainment_index" id="entertainment_index">
-                    <input type="hidden" name="material_index" id="material_index">
+                    <input type="hidden" name="tanggal" id="tanggal">
+                    <input type="hidden" name="kredit" id="kredit">
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Status</label>
@@ -337,7 +314,7 @@
                             Batal
                         </button>
                         <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                            class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
@@ -351,10 +328,10 @@
     </div>
 
     <script>
-        function updateStatus(rabId, entertainmentIndex, materialIndex, currentStatus) {
-            document.getElementById('entertainment_index').value = entertainmentIndex;
-            document.getElementById('material_index').value = materialIndex;
-            document.getElementById('statusForm').action = `/admin/entertainment/${rabId}/update-status`;
+        function updateStatus(rabId, tanggal, kredit, currentStatus) {
+            document.getElementById('tanggal').value = tanggal;
+            document.getElementById('kredit').value = kredit;
+            document.getElementById('statusForm').action = `/admin/kerja-tambah/${rabId}/update-status`;
             document.querySelector('select[name="status"]').value = currentStatus;
             document.getElementById('statusModal').classList.remove('hidden');
         }
@@ -368,6 +345,12 @@
             if (e.target === this) {
                 closeStatusModal();
             }
+        });
+
+        // Handle form submission
+        document.getElementById('statusForm').addEventListener('submit', function(e) {
+            // Let the form submit normally, but add a success message
+            // The controller will redirect back with success message
         });
     </script>
 </x-layouts.app>

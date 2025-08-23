@@ -95,14 +95,14 @@
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
             Tgl:
-            @if($penawaran->tanggal_penawaran)
+            @if($penawaran->updated_at)
                 @php
                     $bulanIndonesia = [
                         1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
                         5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
                         9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
                     ];
-                    $tanggal = $penawaran->tanggal_penawaran;
+                    $tanggal = $penawaran->updated_at;
                     $bulan = $bulanIndonesia[$tanggal->month];
                     echo $tanggal->day . '-' . $bulan . '-' . $tanggal->year;
                 @endphp
@@ -121,7 +121,7 @@
     <div>
         <p>
             Up: {{ $penawaran->client->nama ?? 'Contact Person' }}<br>
-            Hal : Penawaran Harga produk Pintu WPC <br>
+            Hal : {{ $penawaran->judul_penawaran ?? 'Penawaran Harga Pintu WPC' }}<br>
         </p>
     </div>
     <div>
@@ -134,8 +134,6 @@
     </div>
 
     @if (is_array($json_penawaran_pintu) && count($json_penawaran_pintu) > 0)
-        <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 10px; font-weight: bold; color: #000000;">PINTU WPC
-        </h3>
         @php
             $no = 1;
             $totalKeseluruhan = 0;

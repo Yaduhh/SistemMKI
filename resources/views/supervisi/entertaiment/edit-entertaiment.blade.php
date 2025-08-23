@@ -27,9 +27,9 @@
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
                 <div class="py-4">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Entertainment</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Non Material</h3>
                     <p class=" text-gray-600 dark:text-gray-400 mt-1">
-                        Kelola pengeluaran entertainment untuk proyek ini
+                        Kelola pengeluaran non material untuk proyek ini
                     </p>
                     @php
                         // Check if any material has approved/rejected status

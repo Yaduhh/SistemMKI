@@ -40,10 +40,13 @@
                             <script>
                 window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung', $rancanganAnggaranBiaya->json_pengeluaran_material_pendukung ?? null));
                 window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment', $rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? null));
-                window.oldAkomodasi = @json(old('json_pengeluaran_akomodasi', $rancanganAnggaranBiaya->json_pengeluaran_akomodasi ?? null));
-                window.oldLainnya = @json(old('json_pengeluaran_lainnya', $rancanganAnggaranBiaya->json_pengeluaran_lainnya ?? null));
                 window.oldTukang = @json(old('json_pengeluaran_tukang', $rancanganAnggaranBiaya->json_pengeluaran_tukang ?? null));
                 window.oldKerjaTambah = @json(old('json_kerja_tambah', $rancanganAnggaranBiaya->json_kerja_tambah ?? null));
+
+                // Data existing untuk edit mode
+                window.existingEntertaiment = @json($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? []);
+                window.existingTukang = @json($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? []);
+                window.existingKerjaTambah = @json($rancanganAnggaranBiaya->json_kerja_tambah ?? []);
 
                 // Data produk penawaran untuk validasi
                 window.produkPenawaran = @json($produkPenawaran);
@@ -152,38 +155,7 @@
                     </div>
                     <x-rab.entertaiment-table />
                 </div>
-                <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600"></div>
-                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600 mt-2"></div>
-                        </div>
-                        <h2
-                            class="text-lg font-semibold w-full text-center bg-yellow-600 dark:bg-yellow-600 py-2 uppercase">
-                            Pengeluaran Akomodasi</h2>
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600"></div>
-                            <div class="w-full h-[0.5px] bg-yellow-600 dark:bg-yellow-600 mt-2"></div>
-                        </div>
-                    </div>
-                    <x-rab.akomodasi-table />
-                </div>
-                <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600"></div>
-                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600 mt-2"></div>
-                        </div>
-                        <h2
-                            class="text-lg font-semibold w-full text-center bg-pink-600 dark:bg-pink-600 py-2 uppercase">
-                            Pengeluaran Lainnya</h2>
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600"></div>
-                            <div class="w-full h-[0.5px] bg-pink-600 dark:bg-pink-600 mt-2"></div>
-                        </div>
-                    </div>
-                    <x-rab.lainnya-table />
-                </div>
+
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-4 mb-6">
                         <div class="w-full">
@@ -280,8 +252,13 @@
             // Clean up entertainment data - set to null if no data entered
             cleanupEntertainmentData();
             
-            // Clean up akomodasi data - set to null if no data entered
-            cleanupAkomodasiData();
+            // Clean up tukang data - set to null if no data entered
+            cleanupTukangData();
+            
+            // Clean up kerja tambah data - set to null if no data entered
+            cleanupKerjaTambahData();
+            
+            
         }
 
         // Function to clean up entertainment data
@@ -306,14 +283,14 @@
             }
         }
 
-        // Function to clean up akomodasi data
-        function cleanupAkomodasiData() {
-            const akomodasiInputs = document.querySelectorAll('input[name*="json_pengeluaran_akomodasi"]');
-            if (akomodasiInputs.length === 0) return;
+        // Function to clean up tukang data
+        function cleanupTukangData() {
+            const tukangInputs = document.querySelectorAll('input[name*="json_pengeluaran_tukang"]');
+            if (tukangInputs.length === 0) return;
 
-            // Check if any akomodasi data has been entered
+            // Check if any tukang data has been entered
             let hasData = false;
-            akomodasiInputs.forEach(input => {
+            tukangInputs.forEach(input => {
                 if (input.value && input.value.trim() !== '') {
                     hasData = true;
                 }
@@ -321,12 +298,36 @@
 
             // If no data entered, set the hidden input to null
             if (!hasData) {
-                const hiddenInput = document.querySelector('input[name="json_pengeluaran_akomodasi"]');
+                const hiddenInput = document.querySelector('input[name="json_pengeluaran_tukang"]');
                 if (hiddenInput) {
                     hiddenInput.value = 'null';
                 }
             }
         }
+
+        // Function to clean up kerja tambah data
+        function cleanupKerjaTambahData() {
+            const kerjaTambahInputs = document.querySelectorAll('input[name*="json_kerja_tambah"]');
+            if (kerjaTambahInputs.length === 0) return;
+
+            // Check if any kerja tambah data has been entered
+            let hasData = false;
+            kerjaTambahInputs.forEach(input => {
+                if (input.value && input.value.trim() !== '') {
+                    hasData = true;
+                }
+            });
+
+            // If no data entered, set the hidden input to null
+            if (!hasData) {
+                const hiddenInput = document.querySelector('input[name="json_kerja_tambah"]');
+                if (hiddenInput) {
+                    hiddenInput.value = 'null';
+                }
+            }
+        }
+
+
 
         // Function to format number to Indonesian Rupiah format
         function formatRupiah(angka) {
