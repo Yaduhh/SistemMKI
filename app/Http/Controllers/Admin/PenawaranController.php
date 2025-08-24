@@ -65,7 +65,7 @@ class PenawaranController extends Controller
         $wallpanels = Wallpanel::active()->get();
         $floorings = Flooring::active()->get();
         $facades = Facade::active()->get();
-        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->get();
+        $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
         return view('admin.penawaran.create', compact('users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
     }
 

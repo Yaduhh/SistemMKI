@@ -697,10 +697,6 @@
                         </svg>
                         Edit
                     </a>
-                @endif
-
-                <!-- Tombol Status - Hanya tampil jika bukan WIN dan belum ada pemasangan -->
-                @if ($penawaran->status != 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
                     <!-- Tombol WIN -->
                     <form action="{{ route('admin.penawaran.update-status', $penawaran->id) }}" method="POST"
                         class="inline">
@@ -716,6 +712,10 @@
                             WIN
                         </button>
                     </form>
+                @endif
+
+                <!-- Tombol Status - Hanya tampil jika bukan WIN dan belum ada pemasangan -->
+                @if ($penawaran->status != 1 && (!$penawaran->pemasangans || $penawaran->pemasangans->count() == 0))
 
                     <!-- Tombol LOSE - Hanya tampil jika bukan LOSE -->
                     @if ($penawaran->status != 2)

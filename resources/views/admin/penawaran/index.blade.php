@@ -342,44 +342,6 @@
                             </div>
                         </div>
 
-                        <!-- Price Breakdown -->
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-6">
-                            <h4
-                                class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Rincian Harga
-                            </h4>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
-                                    <p class="text-lg font-bold text-gray-900 dark:text-white">Rp
-                                        {{ number_format($penawaran->total, 0, ',', '.') }}</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Diskon</p>
-                                    <p class="text-lg font-bold text-red-600 dark:text-red-400">- Rp
-                                        {{ number_format($penawaran->total_diskon + ($penawaran->total_diskon_1 ?? 0) + ($penawaran->total_diskon_2 ?? 0), 0, ',', '.') }}
-                                    </p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">PPN</p>
-                                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400">+ Rp
-                                        {{ number_format((($penawaran->total - ($penawaran->total_diskon + ($penawaran->total_diskon_1 ?? 0) + ($penawaran->total_diskon_2 ?? 0))) * $penawaran->ppn) / 100, 0, ',', '.') }}
-                                    </p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Grand Total</p>
-                                    <p class="text-xl font-bold text-green-600 dark:text-green-400">Rp
-                                        {{ number_format($penawaran->grand_total, 0, ',', '.') }}</p>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Action Buttons -->
                         <div class="flex flex-wrap gap-3">
                             <x-button href="{{ route('admin.penawaran.show', $penawaran) }}"

@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Buat Rancangan Anggaran Biaya (RAB)')">
+<x-layouts.app :title="__('Edit Rancangan Anggaran Biaya (RAB)')">
     <div class="container mx-auto">
         <div class="w-full mx-auto">
             <h1 class="text-2xl font-bold mb-4">Edit RAB {{ $penawaran->nomor_penawaran ?? '-' }}</h1>
@@ -37,46 +37,39 @@
                     </div>
                 </div>
             </div>
-                            <script>
-                window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung', $rancanganAnggaranBiaya->json_pengeluaran_material_pendukung ?? null));
-                window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment', $rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? null));
-                window.oldTukang = @json(old('json_pengeluaran_tukang', $rancanganAnggaranBiaya->json_pengeluaran_tukang ?? null));
-                window.oldKerjaTambah = @json(old('json_kerja_tambah', $rancanganAnggaranBiaya->json_kerja_tambah ?? null));
-
-                // Data existing untuk edit mode
-                window.existingEntertaiment = @json($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? []);
-                window.existingTukang = @json($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? []);
-                window.existingKerjaTambah = @json($rancanganAnggaranBiaya->json_kerja_tambah ?? []);
+            <script>
+                window.oldMaterialPendukung = @json(old('json_pengeluaran_material_pendukung', is_array($rab->json_pengeluaran_material_pendukung) ? $rab->json_pengeluaran_material_pendukung : []));
 
                 // Data produk penawaran untuk validasi
                 window.produkPenawaran = @json($produkPenawaran);
             </script>
-            <form action="{{ route('admin.rancangan-anggaran-biaya.update', $rancanganAnggaranBiaya->id) }}" method="POST">
+            <form action="{{ route('admin.rancangan-anggaran-biaya.update', $rab->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <!-- Hidden inputs untuk penawaran_id dan pemasangan_id -->
+                <!-- Hidden inputs untuk penawaran_id, pemasangan_id, dan rab_id -->
                 <input type="hidden" name="penawaran_id" value="{{ $penawaran->id ?? '' }}">
                 <input type="hidden" name="pemasangan_id" value="{{ $pemasangan->id ?? '' }}">
+                <input type="hidden" name="rab_id" value="{{ $rab->id ?? '' }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <flux:input name="proyek" label="Proyek" placeholder="Nama Proyek" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
-                            value="{{ old('proyek', $rancanganAnggaranBiaya->proyek ?? '') }}" />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" 
+                            value="{{ old('proyek', $rab->proyek ?? '') }}" required />
                     </div>
                     <div>
                         <flux:input name="pekerjaan" label="Pekerjaan" placeholder="Nama Pekerjaan" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
-                            value="{{ old('pekerjaan', $rancanganAnggaranBiaya->pekerjaan ?? '') }}" />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" 
+                            value="{{ old('pekerjaan', $rab->pekerjaan ?? '') }}" required />
                     </div>
                     <div>
                         <flux:input name="kontraktor" label="Kontraktor" placeholder="Nama Kontraktor" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
-                            value="{{ old('kontraktor', $rancanganAnggaranBiaya->kontraktor ?? '') }}" />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" 
+                            value="{{ old('kontraktor', $rab->kontraktor ?? '') }}" required />
                     </div>
                     <div>
                         <flux:input name="lokasi" label="Lokasi" placeholder="Lokasi Proyek" type="text"
-                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required 
-                            value="{{ old('lokasi', $rancanganAnggaranBiaya->lokasi ?? '') }}" />
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" 
+                            value="{{ old('lokasi', $rab->lokasi ?? '') }}" required />
                     </div>
                 </div>
 
@@ -88,13 +81,13 @@
                         <x-rab-material-utama-pintu :penawaranPintu="$penawaran->json_penawaran_pintu" />
                         <!-- Hidden input untuk menyimpan data material utama pintu -->
                         <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama"
-                            value="{{ old('json_pengeluaran_material_utama', json_encode($penawaran->json_penawaran_pintu)) }}">
+                            value="{{ json_encode($penawaran->json_penawaran_pintu) }}">
                     @else
                         <!-- Tampilkan komponen biasa untuk penawaran non-pintu -->
-                        <x-rab.material-utama-table :produk="$produkPenawaran" />
+                        <x-rab.material-utama-table :produk="$produkPenawaran" :existingData="$existingData" />
                         <!-- Hidden input untuk menyimpan data material utama -->
                         <input type="hidden" name="json_pengeluaran_material_utama" id="json_pengeluaran_material_utama"
-                            value="{{ old('json_pengeluaran_material_utama', $rancanganAnggaranBiaya->json_pengeluaran_material_utama ?? '') }}">
+                            value="{{ old('json_pengeluaran_material_utama', is_string($rab->json_pengeluaran_material_utama) ? $rab->json_pengeluaran_material_utama : json_encode($rab->json_pengeluaran_material_utama ?? [])) }}">
                     @endif
 
                     <!-- Validasi Material Utama vs Penawaran -->
@@ -139,58 +132,10 @@
                     </div>
                     <x-rab.material-pendukung-table />
                 </div>
-                <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600"></div>
-                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600 mt-2"></div>
-                        </div>
-                        <h2
-                            class="text-lg font-semibold w-full text-center bg-teal-600 dark:bg-teal-600 py-2 uppercase">
-                            Pengeluaran Entertaiment</h2>
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600"></div>
-                            <div class="w-full h-[0.5px] bg-teal-600 dark:bg-teal-600 mt-2"></div>
-                        </div>
-                    </div>
-                    <x-rab.entertaiment-table />
-                </div>
 
-                <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600"></div>
-                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600 mt-2"></div>
-                        </div>
-                        <h2
-                            class="text-lg font-semibold w-full text-center bg-purple-600 dark:bg-purple-600 py-2 uppercase">
-                            Pengeluaran Tukang</h2>
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600"></div>
-                            <div class="w-full h-[0.5px] bg-purple-600 dark:bg-purple-600 mt-2"></div>
-                        </div>
-                    </div>
-                    <x-rab.tukang-table />
-                </div>
-                <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600"></div>
-                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600 mt-2"></div>
-                        </div>
-                        <h2
-                            class="text-lg font-semibold w-full text-center bg-orange-600 dark:bg-orange-600 py-2 uppercase">
-                            Kerja Tambah</h2>
-                        <div class="w-full">
-                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600"></div>
-                            <div class="w-full h-[0.5px] bg-orange-600 dark:bg-orange-600 mt-2"></div>
-                        </div>
-                    </div>
-                    <x-rab.kerja-tambah-table />
-                </div>
                 <div class="mt-8 flex justify-end">
                     <button type="submit" onclick="prepareFormData()"
-                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">Update RAB</button>
+                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition">Update</button>
                 </div>
             </form>
         </div>
@@ -249,83 +194,12 @@
             // Set the hidden input value
             document.getElementById('json_pengeluaran_material_utama').value = JSON.stringify(materialUtamaData);
 
-            // Clean up entertainment data - set to null if no data entered
-            cleanupEntertainmentData();
-            
-            // Clean up tukang data - set to null if no data entered
-            cleanupTukangData();
-            
-            // Clean up kerja tambah data - set to null if no data entered
-            cleanupKerjaTambahData();
+
             
             
         }
 
-        // Function to clean up entertainment data
-        function cleanupEntertainmentData() {
-            const entertainmentInputs = document.querySelectorAll('input[name*="json_pengeluaran_entertaiment"]');
-            if (entertainmentInputs.length === 0) return;
 
-            // Check if any entertainment data has been entered
-            let hasData = false;
-            entertainmentInputs.forEach(input => {
-                if (input.value && input.value.trim() !== '') {
-                    hasData = true;
-                }
-            });
-
-            // If no data entered, set the hidden input to null
-            if (!hasData) {
-                const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
-                if (hiddenInput) {
-                    hiddenInput.value = 'null';
-                }
-            }
-        }
-
-        // Function to clean up tukang data
-        function cleanupTukangData() {
-            const tukangInputs = document.querySelectorAll('input[name*="json_pengeluaran_tukang"]');
-            if (tukangInputs.length === 0) return;
-
-            // Check if any tukang data has been entered
-            let hasData = false;
-            tukangInputs.forEach(input => {
-                if (input.value && input.value.trim() !== '') {
-                    hasData = true;
-                }
-            });
-
-            // If no data entered, set the hidden input to null
-            if (!hasData) {
-                const hiddenInput = document.querySelector('input[name="json_pengeluaran_tukang"]');
-                if (hiddenInput) {
-                    hiddenInput.value = 'null';
-                }
-            }
-        }
-
-        // Function to clean up kerja tambah data
-        function cleanupKerjaTambahData() {
-            const kerjaTambahInputs = document.querySelectorAll('input[name*="json_kerja_tambah"]');
-            if (kerjaTambahInputs.length === 0) return;
-
-            // Check if any kerja tambah data has been entered
-            let hasData = false;
-            kerjaTambahInputs.forEach(input => {
-                if (input.value && input.value.trim() !== '') {
-                    hasData = true;
-                }
-            });
-
-            // If no data entered, set the hidden input to null
-            if (!hasData) {
-                const hiddenInput = document.querySelector('input[name="json_kerja_tambah"]');
-                if (hiddenInput) {
-                    hiddenInput.value = 'null';
-                }
-            }
-        }
 
 
 

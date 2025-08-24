@@ -119,17 +119,19 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total</label>
                         <input type="text" :value="formatRupiah(totalHarga())" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold">
                         <input type="hidden" name="total" :value="totalHarga()">
-                        <div class="text-xs text-gray-400 mt-1">Debug: totalHarga() = <span x-text="totalHarga()"></span></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon (%)</label>
-                        <input name="diskon" type="number" min="0" max="100" step="any" x-model.number="diskon" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
+                        <input name="diskon" type="number" min="0" max="100" step="any" :value="hitungDiskon()" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand Total</label>
-                        <input type="text" :value="formatRupiah(grandTotal())" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold">
-                        <input type="hidden" name="grand_total" :value="grandTotal()">
-                        <div class="text-xs text-gray-400 mt-1">Debug: grandTotal() = <span x-text="grandTotal()"></span></div>
+                        <input type="text"
+                            :value="formatRupiah(grandTotalManual)"
+                            @input="e => { grandTotalManual = parseRupiah(e.target.value); e.target.value = formatRupiah(grandTotalManual); }"
+                            class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold"
+                            placeholder="Rp 0">
+                        <input type="hidden" name="grand_total" :value="grandTotalManual">
                     </div>
                 </div>
                 <div class="mt-6">
@@ -198,7 +200,7 @@
                 sections: [
                     { sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] }
                 ],
-                diskon: 0,
+                grandTotalManual: 0,
                 addSection() {
                     this.sections.push({ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] });
                 },
@@ -229,11 +231,12 @@
                     });
                     return total;
                 },
-                grandTotal() {
+                hitungDiskon() {
                     let total = this.totalHarga();
-                    let diskon = Number(this.diskon) || 0;
-                    let grand = total - (total * diskon / 100);
-                    return grand > 0 ? Math.round(grand) : 0;
+                    if (total === 0) return 0;
+                    let selisih = total - this.grandTotalManual;
+                    let diskonPersen = (selisih / total) * 100;
+                    return diskonPersen > 0 ? Math.round(diskonPersen * 100) / 100 : 0;
                 }
             }
         }

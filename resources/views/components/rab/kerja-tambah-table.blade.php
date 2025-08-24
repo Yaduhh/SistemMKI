@@ -17,7 +17,7 @@
             </div>
             <div class="space-y-4 kerja-tambah-termin-list"></div>
             <button type="button" class="mt-4 text-orange-400 border border-orange-600 dark:border-orange-400 rounded-xl px-4 py-2 add-kerja-tambah-termin">Tambah Termin</button>
-            <button type="button" class="absolute top-0 right-0 text-red-500 font-bold remove-kerja-tambah-section" style="z-index:10;">Hapus Section</button>
+            <button type="button" class="absolute top-4 right-4 text-red-500 font-bold remove-kerja-tambah-section" style="z-index:10;">Hapus Section</button>
             <template class="kerja-tambah-termin-row-template">
                 <div class="grid grid-cols-7 gap-2 items-center kerja-tambah-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
                     <span class="termin-label font-semibold"></span>
@@ -203,7 +203,18 @@
                 const sections = sectionList.querySelectorAll('.kerja-tambah-section');
                 sections.forEach(section => {
                     const removeBtn = section.querySelector('.remove-kerja-tambah-section');
-                    if (sections.length === 1) {
+                    
+                    // Cek apakah ada termin dengan status Disetujui di section ini
+                    const statusInputs = section.querySelectorAll('.kerja-tambah-termin-row .status-input');
+                    let hasApprovedTermins = false;
+                    
+                    statusInputs.forEach(input => {
+                        if (input.value === 'Disetujui') {
+                            hasApprovedTermins = true;
+                        }
+                    });
+                    
+                    if (sections.length === 1 || hasApprovedTermins) {
                         removeBtn.style.display = 'none';
                     } else {
                         removeBtn.style.display = '';
@@ -301,6 +312,7 @@
                 if (e.target.classList.contains('add-kerja-tambah-termin')) {
                     const section = e.target.closest('.kerja-tambah-section');
                     addTermin(section);
+                    toggleRemoveSectionButtons(); // Update section remove buttons
                 }
                 // Remove termin
                 if (e.target.classList.contains('remove-kerja-tambah-termin')) {
@@ -310,11 +322,15 @@
                         e.target.closest('.kerja-tambah-termin-row').remove();
                         renderSectionNames();
                         toggleRemoveTerminButtons(section);
+                        toggleRemoveSectionButtons(); // Update section remove buttons
                     }
                 }
             });
 
-            addSectionBtn.addEventListener('click', addSection);
+            addSectionBtn.addEventListener('click', function() {
+                addSection();
+                toggleRemoveSectionButtons(); // Update section remove buttons
+            });
 
             // Inisialisasi dari old input atau existing data
             if (window.oldKerjaTambah && Array.isArray(window.oldKerjaTambah) && window.oldKerjaTambah.length > 0) {
@@ -327,6 +343,7 @@
                 window.existingKerjaTambah.forEach(section => addSection(section));
                 // Update grand total setelah semua section ditambahkan
                 setTimeout(updateGrandTotal, 1000);
+                setTimeout(toggleRemoveSectionButtons, 1000); // Update section remove buttons
             } else if (sectionList.querySelectorAll('.kerja-tambah-section').length === 0) {
                 addSection();
             }
@@ -392,6 +409,7 @@
                 if (e.target.classList.contains('status-input')) {
                     updateStatusColor(e.target);
                     toggleRemoveButtonByStatus(e.target.closest('.kerja-tambah-termin-row'));
+                    toggleRemoveSectionButtons(); // Update section remove buttons
                 }
             });
 

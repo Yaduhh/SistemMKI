@@ -12,14 +12,14 @@
                 </div>
                 <div>
                     <h1 class="text-xl lg:text-2xl font-bold">Kerja Tambah</h1>
-                    <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Kelola status kerja tambah dari RAB</p>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Kelola status kerja tambah dari RAB
+                    </p>
                 </div>
             </div>
         </div>
 
-            <!-- Filter Section -->
-        <div
-            class="mb-6 bg-white dark:bg-zinc-800">
+        <!-- Filter Section -->
+        <div class="mb-6 bg-white dark:bg-zinc-800">
             <div class="flex items-center gap-2 mb-4">
                 <svg class="w-5 h-5 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -33,15 +33,15 @@
                 <div class="w-full">
                     <select name="status_filter"
                         class="border w-full border-zinc-300 dark:border-zinc-600 rounded-md px-3 py-2.5 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white">
-                            <option value="">Semua Status</option>
+                        <option value="">Semua Status</option>
                         <option value="Pengajuan" {{ request('status_filter') == 'Pengajuan' ? 'selected' : '' }}>
                             Pengajuan</option>
                         <option value="Disetujui" {{ request('status_filter') == 'Disetujui' ? 'selected' : '' }}>
                             Disetujui</option>
                         <option value="Ditolak" {{ request('status_filter') == 'Ditolak' ? 'selected' : '' }}>Ditolak
                         </option>
-                        </select>
-                    </div>
+                    </select>
+                </div>
                 <div class="flex gap-2">
                     <button type="submit"
                         class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 flex items-center gap-2">
@@ -87,7 +87,7 @@
         @endif
 
         <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
-                <div class="overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                     <thead class="bg-zinc-50 dark:bg-zinc-700">
                         <tr>
@@ -191,10 +191,10 @@
                                     Aksi
                                 </div>
                             </th>
-                            </tr>
-                        </thead>
+                        </tr>
+                    </thead>
                     <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                            @forelse($kerjaTambahData as $data)
+                        @forelse($kerjaTambahData as $data)
                             <tr>
                                 <td class="text-center">
                                     {{ $loop->iteration }}
@@ -202,7 +202,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
                                     <div class="font-medium">{{ $data['proyek'] }}</div>
                                     <div class="text-zinc-500 dark:text-zinc-400">{{ $data['pekerjaan'] }}</div>
-                                    <div class="text-zinc-500 dark:text-zinc-400 text-xs">{{ $data['kontraktor'] }} - {{ $data['lokasi'] }}</div>
+                                    <div class="text-zinc-500 dark:text-zinc-400 text-xs">{{ $data['kontraktor'] }} -
+                                        {{ $data['lokasi'] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
                                     @if (!empty($data['tanggal']) && $data['tanggal'] !== null && $data['tanggal'] !== '-')
@@ -223,7 +224,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
                                     {{ $data['persentase'] }}
                                 </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
                                             'Pengajuan' =>
@@ -238,10 +239,10 @@
                                     @endphp
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                            {{ $data['status'] }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {{ $data['status'] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         <button
                                             onclick="updateStatus({{ $data['id'] }}, '{{ $data['tanggal'] }}', {{ $data['kredit'] }}, '{{ $data['status'] }}')"
@@ -267,21 +268,21 @@
                                             Lihat RAB
                                         </a>
                                     </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
                                 <td colspan="9"
                                     class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                                        Tidak ada data kerja tambah
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    Tidak ada data kerja tambah
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Modal Update Status -->

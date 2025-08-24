@@ -13,6 +13,7 @@ class TukangController extends Controller
     {
         $tukangs = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_tukang')
             ->where('json_pengeluaran_tukang', '!=', '[]')
+            ->where('status', '!=', 'selesai')
             ->with('supervisi')
             ->get()
             ->map(function ($rab) {

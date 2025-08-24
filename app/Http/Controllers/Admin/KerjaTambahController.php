@@ -15,6 +15,7 @@ class KerjaTambahController extends Controller
         
         $rabs = RancanganAnggaranBiaya::whereNotNull('json_kerja_tambah')
             ->where('json_kerja_tambah', '!=', 'null')
+            ->where('status', '!=', 'selesai')
             ->get();
             
         foreach ($rabs as $rab) {

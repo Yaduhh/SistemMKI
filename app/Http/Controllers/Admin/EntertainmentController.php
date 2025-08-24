@@ -13,6 +13,7 @@ class EntertainmentController extends Controller
     {
         $entertainments = RancanganAnggaranBiaya::whereNotNull('json_pengeluaran_entertaiment')
             ->where('json_pengeluaran_entertaiment', '!=', '[]')
+            ->where('status', '!=', 'selesai')
             ->with('supervisi')
             ->get()
             ->map(function ($rab) {

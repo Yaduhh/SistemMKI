@@ -201,7 +201,12 @@
         <tr>
             <td style="width: 30%; vertical-align: top;">
                 <div>
-                    <p style="margin-bottom: 65px;">Hormat Kami,</p>
+                    <p>Hormat Kami,</p>
+                    @if ($pemasangan->penawaran->user && $pemasangan->penawaran->user->tandaTangan)
+                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($pemasangan->penawaran->user->tandaTangan->ttd)) }}"
+                            alt="Tanda Tangan"
+                            style="width: 140px; height: 100px; object-fit: contain;">
+                    @endif
                     <p>{{ $pemasangan->sales->name ?? 'Sales' }}</p>
                 </div>
             </td>

@@ -145,6 +145,8 @@ class RancanganAnggaranBiayaController extends Controller
         return view('admin.rancangan_anggaran_biaya.create', compact('penawaran', 'pemasangan', 'produkPenawaran'));
     }
 
+
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -164,9 +166,6 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
-            'json_pengeluaran_entertaiment' => 'nullable|array',
-            'json_pengeluaran_tukang' => 'nullable|array',
-            'json_kerja_tambah' => 'nullable|array',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -335,13 +334,11 @@ class RancanganAnggaranBiayaController extends Controller
         
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
         $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
-        $validated['json_pengeluaran_entertaiment'] = $entertaimentData;
         
-        // Convert tukang data to numeric format
-        $validated['json_pengeluaran_tukang'] = $this->convertTukangDataToNumeric($tukangData);
-        
-        // Convert kerja tambah data to numeric format
-        $validated['json_kerja_tambah'] = $this->convertKerjaTambahDataToNumeric($kerjaTambahData);
+        // Set default values for fields that are not used in edit mode
+        $validated['json_pengeluaran_entertaiment'] = [];
+        $validated['json_pengeluaran_tukang'] = [];
+        $validated['json_kerja_tambah'] = [];
         $validated['status_deleted'] = false;
         $validated['status'] = $request->status ?? 'draft';
         $validated['created_by'] = auth()->id();
@@ -361,9 +358,10 @@ class RancanganAnggaranBiayaController extends Controller
 
     public function edit(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
-        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
-        $penawaran = $rancanganAnggaranBiaya->penawaran;
-        $pemasangan = $rancanganAnggaranBiaya->pemasangan;
+        $rab = $rancanganAnggaranBiaya;
+        $rab->load(['penawaran', 'pemasangan']);
+        $penawaran = $rab->penawaran;
+        $pemasangan = $rab->pemasangan;
         $produkPenawaran = [];
         $penawaranTotal = 0;
 
@@ -389,10 +387,26 @@ class RancanganAnggaranBiayaController extends Controller
         }
 
         // Clean old data format for tukang and kerja tambah
-        $rancanganAnggaranBiaya->json_pengeluaran_tukang = $this->cleanOldDataFormat($rancanganAnggaranBiaya->json_pengeluaran_tukang);
-        $rancanganAnggaranBiaya->json_kerja_tambah = $this->cleanOldDataFormat($rancanganAnggaranBiaya->json_kerja_tambah);
+        $rab->json_pengeluaran_tukang = $this->cleanOldDataFormat($rab->json_pengeluaran_tukang ?? []);
+        $rab->json_kerja_tambah = $this->cleanOldDataFormat($rab->json_kerja_tambah ?? []);
 
-        return view('admin.rancangan_anggaran_biaya.edit', compact('rancanganAnggaranBiaya', 'penawaran', 'pemasangan', 'produkPenawaran', 'penawaranTotal'));
+        // Prepare existing data for material utama table
+        $existingData = [];
+        if ($rab->json_pengeluaran_material_utama && is_array($rab->json_pengeluaran_material_utama)) {
+            $existingData = $rab->json_pengeluaran_material_utama;
+        }
+
+        // Debug: Log data types to check for issues
+        \Log::info('RAB Edit Debug', [
+            'rab_id' => $rab->id,
+            'json_pengeluaran_material_utama_type' => gettype($rab->json_pengeluaran_material_utama),
+            'json_pengeluaran_material_pendukung_type' => gettype($rab->json_pengeluaran_material_pendukung),
+            'json_pengeluaran_entertaiment_type' => gettype($rab->json_pengeluaran_entertaiment),
+            'json_pengeluaran_tukang_type' => gettype($rab->json_pengeluaran_tukang),
+            'json_kerja_tambah_type' => gettype($rab->json_kerja_tambah),
+        ]);
+
+        return view('admin.rancangan_anggaran_biaya.edit', compact('rab', 'penawaran', 'pemasangan', 'produkPenawaran', 'penawaranTotal', 'existingData'));
     }
 
     public function update(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
@@ -414,9 +428,6 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
-            'json_pengeluaran_entertaiment' => 'nullable|array',
-            'json_pengeluaran_tukang' => 'nullable|array',
-            'json_kerja_tambah' => 'nullable|array',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -587,13 +598,11 @@ class RancanganAnggaranBiayaController extends Controller
         
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
         $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
-        $validated['json_pengeluaran_entertaiment'] = $entertaimentData;
         
-        // Convert tukang data to numeric format
-        $validated['json_pengeluaran_tukang'] = $this->convertTukangDataToNumeric($tukangData);
-        
-        // Convert kerja tambah data to numeric format
-        $validated['json_kerja_tambah'] = $this->convertKerjaTambahDataToNumeric($kerjaTambahData);
+        // Tidak update field yang tidak ada di form edit (tetap pertahankan data existing)
+        unset($validated['json_pengeluaran_entertaiment']);
+        unset($validated['json_pengeluaran_tukang']);
+        unset($validated['json_kerja_tambah']);
         $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         
         $rancanganAnggaranBiaya->update($validated);

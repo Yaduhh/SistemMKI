@@ -23,6 +23,7 @@
 
             <script>
                 window.oldKerjaTambah = @json(old('json_kerja_tambah'));
+                window.existingKerjaTambah = @json($rancanganAnggaranBiaya->json_kerja_tambah ?? []);
             </script>
 
             <form action="{{ route('admin.rancangan-anggaran-biaya.store-kerja-tambah', $rancanganAnggaranBiaya) }}" method="POST">

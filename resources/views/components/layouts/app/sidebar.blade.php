@@ -59,7 +59,7 @@
 
             @if (auth()->user()->master === true)
                 <flux:navlist.group :heading="__('Pengeluaran RAB')" class="mt-10">
-                    <flux:navlist.item icon="musical-note" :href="route('admin.entertainment.index')"
+                    <flux:navlist.item icon="sparkles" :href="route('admin.entertainment.index')"
                         :current="request()->routeIs('admin.entertainment.*')" wire:navigate>{{ __('Non Material') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="users" :href="route('admin.tukang.index')"

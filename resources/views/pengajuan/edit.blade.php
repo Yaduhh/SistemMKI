@@ -27,7 +27,7 @@
             <flux:input name="title_aksesoris" :label="__('Title Aksesoris')" type="text" autocomplete="off"
                 value="{{ old('title_aksesoris', $pengajuan->title_aksesoris) }}" />
             <flux:input name="json_produk" :label="__('JSON Produk')" type="text" autocomplete="off"
-                value="{{ old('json_produk', $pengajuan->json_produk) }}" />
+                value="{{ old('json_produk', $pengajuan->json_produk ? json_encode($pengajuan->json_produk) : '') }}" />
             <flux:input name="total_1" :label="__('Total 1')" type="number" step="any" autocomplete="off"
                 value="{{ old('total_1', $pengajuan->total_1) }}" />
             <flux:input name="total_2" :label="__('Total 2')" type="number" step="any" autocomplete="off"
