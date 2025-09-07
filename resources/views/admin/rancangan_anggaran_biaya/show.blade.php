@@ -902,63 +902,33 @@
         </div>
 
         <!-- Tambah Pengeluaran Section -->
-        <div class="w-full mb-6">
-            <h2 class="text-lg font-semibold mb-4">Tambah Pengeluaran</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-entertainment', $rancanganAnggaranBiaya) }}"
-                    class="flex items-center justify-center p-4 border border-teal-200 dark:border-teal-700 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors">
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-                                </path>
-                            </svg>
+        @if($rancanganAnggaranBiaya->status !== 'selesai')
+            <div class="w-full mb-6">
+                <h2 class="text-lg font-semibold mb-4">Tambah Pengeluaran</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-entertainment', $rancanganAnggaranBiaya) }}"
+                        class="flex items-center justify-center p-4 border border-teal-200 dark:border-teal-700 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors">
+                        <div class="text-center">
+                            <h3 class="font-medium text-teal-700 dark:text-teal-300">Tambah Pengeluaran Non Material</h3>
                         </div>
-                        <h3 class="font-medium text-teal-700 dark:text-teal-300">Tambah Pengeluaran Non Material</h3>
-                        <p class="text-sm text-teal-600 dark:text-teal-400">Tambah pengeluaran non material</p>
-                    </div>
-                </a>
+                    </a>
 
-
-
-                <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-tukang', $rancanganAnggaranBiaya) }}"
-                    class="flex items-center justify-center p-4 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                </path>
-                            </svg>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-tukang', $rancanganAnggaranBiaya) }}"
+                        class="flex items-center justify-center p-4 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                        <div class="text-center">
+                            <h3 class="font-medium text-purple-700 dark:text-purple-300">Tambah Pengeluaran Tukang</h3>
                         </div>
-                        <h3 class="font-medium text-purple-700 dark:text-purple-300">Tambah Tukang</h3>
-                        <p class="text-sm text-purple-600 dark:text-purple-400">Tambah pengeluaran tukang</p>
-                    </div>
-                </a>
+                    </a>
 
-                <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-kerja-tambah', $rancanganAnggaranBiaya) }}"
-                    class="flex items-center justify-center p-4 border border-orange-200 dark:border-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
-                    <div class="text-center">
-                        <div
-                            class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
-                                </path>
-                            </svg>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-kerja-tambah', $rancanganAnggaranBiaya) }}"
+                        class="flex items-center justify-center p-4 border border-orange-200 dark:border-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
+                        <div class="text-center">
+                            <h3 class="font-medium text-orange-700 dark:text-orange-300">Tambah Pengeluaran Kerja Tambah</h3>
                         </div>
-                        <h3 class="font-medium text-orange-700 dark:text-orange-300">Tambah Kerja Tambah</h3>
-                        <p class="text-sm text-orange-600 dark:text-orange-400">Tambah pengeluaran kerja tambah</p>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
-        </div>
+        @endif
 
         <!-- Status Update Form -->
         <div

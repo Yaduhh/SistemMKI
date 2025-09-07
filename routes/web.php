@@ -286,6 +286,10 @@ Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->
                 Route::resource('rab', App\Http\Controllers\Supervisi\RabController::class)->only(['index', 'show']);
                 Route::get('rab/{rab}/edit-entertainment', [App\Http\Controllers\Supervisi\RabController::class, 'editEntertainment'])->name('rab.edit-entertainment');
                 Route::patch('rab/{rab}/update-entertainment', [App\Http\Controllers\Supervisi\RabController::class, 'updateEntertainment'])->name('rab.update-entertainment');
+                Route::get('rab/{rab}/edit-tukang', [App\Http\Controllers\Supervisi\RabController::class, 'editTukang'])->name('rab.edit-tukang');
+                Route::patch('rab/{rab}/update-tukang', [App\Http\Controllers\Supervisi\RabController::class, 'updateTukang'])->name('rab.update-tukang');
+                Route::get('rab/{rab}/edit-kerja-tambah', [App\Http\Controllers\Supervisi\RabController::class, 'editKerjaTambah'])->name('rab.edit-kerja-tambah');
+                Route::patch('rab/{rab}/update-kerja-tambah', [App\Http\Controllers\Supervisi\RabController::class, 'updateKerjaTambah'])->name('rab.update-kerja-tambah');
 
     // Settings Route
     Route::view('/setting', 'supervisi.setting.index')->name('setting.index');

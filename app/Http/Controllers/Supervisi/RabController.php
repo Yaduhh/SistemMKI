@@ -112,4 +112,146 @@ class RabController extends Controller
 
         return redirect()->route('supervisi.rab.show', $rab)->with('success', 'Data pengeluaran entertainment berhasil diperbarui.');
     }
+
+    /**
+     * Show the form for editing tukang expenses.
+     */
+    public function editTukang(RancanganAnggaranBiaya $rab)
+    {
+        // Check if the RAB is assigned to this supervisi
+        if ($rab->supervisi_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this RAB.');
+        }
+
+        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
+        
+        return view('supervisi.tukang.edit-tukang', compact('rab'));
+    }
+
+    /**
+     * Update tukang expenses for the specified RAB.
+     */
+    public function updateTukang(Request $request, RancanganAnggaranBiaya $rab)
+    {
+        // Check if the RAB is assigned to this supervisi
+        if ($rab->supervisi_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this RAB.');
+        }
+
+        $request->validate([
+            'json_pengeluaran_tukang' => 'nullable|array',
+            'json_pengeluaran_tukang.*.debet' => 'nullable|numeric|min:0',
+            'json_pengeluaran_tukang.*.termin' => 'nullable|array',
+            'json_pengeluaran_tukang.*.termin.*.tanggal' => 'nullable|date',
+            'json_pengeluaran_tukang.*.termin.*.kredit' => 'nullable|numeric|min:0',
+            'json_pengeluaran_tukang.*.termin.*.sisa' => 'nullable|numeric|min:0',
+            'json_pengeluaran_tukang.*.termin.*.persentase' => 'nullable|string|max:255',
+            'json_pengeluaran_tukang.*.termin.*.status' => 'nullable|string|in:Pengajuan,Disetujui,Ditolak',
+        ]);
+
+        // Clean and validate tukang data
+        $tukangData = [];
+        if ($request->has('json_pengeluaran_tukang') && is_array($request->json_pengeluaran_tukang) && count($request->json_pengeluaran_tukang) > 0) {
+            foreach ($request->json_pengeluaran_tukang as $section) {
+                $cleanTermins = [];
+                if (isset($section['termin']) && is_array($section['termin'])) {
+                    foreach ($section['termin'] as $termin) {
+                        if (!empty($termin['tanggal']) || !empty($termin['kredit']) || !empty($termin['status'])) {
+                            $cleanTermins[] = [
+                                'tanggal' => $termin['tanggal'] ?? '',
+                                'kredit' => floatval($termin['kredit'] ?? 0),
+                                'sisa' => floatval($termin['sisa'] ?? 0),
+                                'persentase' => $termin['persentase'] ?? '',
+                                'status' => $termin['status'] ?? 'Pengajuan'
+                            ];
+                        }
+                    }
+                }
+                if (!empty($cleanTermins)) {
+                    $tukangData[] = [
+                        'debet' => floatval($section['debet'] ?? 0),
+                        'termin' => $cleanTermins
+                    ];
+                }
+            }
+        }
+
+        // Update the RAB
+        $rab->update([
+            'json_pengeluaran_tukang' => $tukangData
+        ]);
+
+        return redirect()->route('supervisi.rab.show', $rab)->with('success', 'Data pengeluaran tukang berhasil diperbarui.');
+    }
+
+    /**
+     * Show the form for editing kerja tambah expenses.
+     */
+    public function editKerjaTambah(RancanganAnggaranBiaya $rab)
+    {
+        // Check if the RAB is assigned to this supervisi
+        if ($rab->supervisi_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this RAB.');
+        }
+
+        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
+        
+        return view('supervisi.kerja-tambah.edit-kerja-tambah', compact('rab'));
+    }
+
+    /**
+     * Update kerja tambah expenses for the specified RAB.
+     */
+    public function updateKerjaTambah(Request $request, RancanganAnggaranBiaya $rab)
+    {
+        // Check if the RAB is assigned to this supervisi
+        if ($rab->supervisi_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this RAB.');
+        }
+
+        $request->validate([
+            'json_kerja_tambah' => 'nullable|array',
+            'json_kerja_tambah.*.debet' => 'nullable|numeric|min:0',
+            'json_kerja_tambah.*.termin' => 'nullable|array',
+            'json_kerja_tambah.*.termin.*.tanggal' => 'nullable|date',
+            'json_kerja_tambah.*.termin.*.kredit' => 'nullable|numeric|min:0',
+            'json_kerja_tambah.*.termin.*.sisa' => 'nullable|numeric|min:0',
+            'json_kerja_tambah.*.termin.*.persentase' => 'nullable|string|max:255',
+            'json_kerja_tambah.*.termin.*.status' => 'nullable|string|in:Pengajuan,Disetujui,Ditolak',
+        ]);
+
+        // Clean and validate kerja tambah data
+        $kerjaTambahData = [];
+        if ($request->has('json_kerja_tambah') && is_array($request->json_kerja_tambah) && count($request->json_kerja_tambah) > 0) {
+            foreach ($request->json_kerja_tambah as $section) {
+                $cleanTermins = [];
+                if (isset($section['termin']) && is_array($section['termin'])) {
+                    foreach ($section['termin'] as $termin) {
+                        if (!empty($termin['tanggal']) || !empty($termin['kredit']) || !empty($termin['status'])) {
+                            $cleanTermins[] = [
+                                'tanggal' => $termin['tanggal'] ?? '',
+                                'kredit' => floatval($termin['kredit'] ?? 0),
+                                'sisa' => floatval($termin['sisa'] ?? 0),
+                                'persentase' => $termin['persentase'] ?? '',
+                                'status' => $termin['status'] ?? 'Pengajuan'
+                            ];
+                        }
+                    }
+                }
+                if (!empty($cleanTermins)) {
+                    $kerjaTambahData[] = [
+                        'debet' => floatval($section['debet'] ?? 0),
+                        'termin' => $cleanTermins
+                    ];
+                }
+            }
+        }
+
+        // Update the RAB
+        $rab->update([
+            'json_kerja_tambah' => $kerjaTambahData
+        ]);
+
+        return redirect()->route('supervisi.rab.show', $rab)->with('success', 'Data kerja tambah berhasil diperbarui.');
+    }
 }

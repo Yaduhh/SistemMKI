@@ -197,7 +197,7 @@ class PemasanganController extends Controller
         if (stripos($company, 'WPC MAKMUR ABADI') !== false) {
             $logo = public_path('assets/images/logoMki.png');
         } else {
-            $logo = public_path('assets/images/logomki.png');
+            $logo = public_path('assets/images/wpcmakmurabadi.jpg');
         }
 
         $pdf = Pdf::loadView('admin.pemasangan.pdf_item', compact('pemasangan', 'json_produk', 'json_pemasangan', 'json_syarat_kondisi', 'logo'));

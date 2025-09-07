@@ -6,14 +6,15 @@
                     <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
                         </path>
                     </svg>
                 </div>
                 <div>
                     <h1 class="text-xl lg:text-2xl font-bold">Pengeluaran Non Material</h1>
                     <p class="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Kelola status pengeluaran
-                        non material dari RAB</p>
+                        non material
+                    </p>
                 </div>
             </div>
         </div>

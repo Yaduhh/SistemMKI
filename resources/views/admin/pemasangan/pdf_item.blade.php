@@ -26,7 +26,7 @@
     <div class="w-100" style="position: relative; z-index: 0;">
         @if($pemasangan->logo == 'WPC MAKMUR ABADI')
             <div style="position: absolute; top: 0; right: 0; z-index: 1;">
-                <p style="font-size: 28px; font-weight: bold;">WPC MAKMUR ABADI</p>
+                <img src="{{ $logo }}" alt="Logo Perusahaan" width="250">
             </div>
         @else
             <div style="position: absolute; top: 0; right: 0; z-index: 1;">
