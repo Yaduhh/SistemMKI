@@ -26,10 +26,6 @@ class RabController extends Controller
      */
     public function show(RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
 
         $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
         
@@ -41,10 +37,6 @@ class RabController extends Controller
      */
     public function editEntertainment(RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
 
         $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
         
@@ -56,11 +48,6 @@ class RabController extends Controller
      */
     public function updateEntertainment(Request $request, RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
-
         $request->validate([
             'json_pengeluaran_entertaiment' => 'nullable|array',
             'json_pengeluaran_entertaiment.*.mr' => 'nullable|string|max:255',
@@ -118,11 +105,6 @@ class RabController extends Controller
      */
     public function editTukang(RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
-
         $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
         
         return view('supervisi.tukang.edit-tukang', compact('rab'));
@@ -133,11 +115,6 @@ class RabController extends Controller
      */
     public function updateTukang(Request $request, RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
-
         $request->validate([
             'json_pengeluaran_tukang' => 'nullable|array',
             'json_pengeluaran_tukang.*.debet' => 'nullable|numeric|min:0',
@@ -189,11 +166,6 @@ class RabController extends Controller
      */
     public function editKerjaTambah(RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
-
         $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
         
         return view('supervisi.kerja-tambah.edit-kerja-tambah', compact('rab'));
@@ -204,11 +176,6 @@ class RabController extends Controller
      */
     public function updateKerjaTambah(Request $request, RancanganAnggaranBiaya $rab)
     {
-        // Check if the RAB is assigned to this supervisi
-        if ($rab->supervisi_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this RAB.');
-        }
-
         $request->validate([
             'json_kerja_tambah' => 'nullable|array',
             'json_kerja_tambah.*.debet' => 'nullable|numeric|min:0',
