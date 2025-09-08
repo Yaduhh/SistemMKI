@@ -13,7 +13,7 @@ class TandaTanganController extends Controller
     public function index()
     {
         $tandaTangan = TandaTangan::with('user')->get();
-        $users = User::whereDoesntHave('tandaTangan')->get();
+        $users = User::whereDoesntHave('tandaTangan')->where('status_deleted', 0)->get();
         
         return view('admin.tanda-tangan.index', compact('tandaTangan', 'users'));
     }

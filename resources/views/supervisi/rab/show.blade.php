@@ -83,26 +83,6 @@
                 </div>
             </div>
 
-            <!-- Total Biaya Pemasangan -->
-            @if($rab->pemasangan)
-                <div class="mb-6">
-                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-4 lg:p-6 text-white">
-                        <div class="flex flex-col md:flex-row items-center justify-between">
-                            <div class="flex items-center space-x-3 mb-4 md:mb-0">
-                                <div class="text-center md:text-right">
-                                    <h3 class="text-xl font-bold">Total Biaya Pemasangan</h3>
-                                    <p class="text-emerald-100 text-sm">{{ $rab->pemasangan->judul_pemasangan ?? 'Pemasangan' }}</p>
-                                </div>
-                            </div>
-                            <div class="text-center md:text-right">
-                                <div class="text-3xl font-bold">Rp {{ number_format($rab->pemasangan->grand_total ?? 0, 0, ',', '.') }}</div>
-                                <p class="text-emerald-100 text-sm">Nilai Kontrak Pemasangan</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
                 <div class="py-4">
