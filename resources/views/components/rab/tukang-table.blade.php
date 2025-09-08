@@ -19,7 +19,7 @@
             <button type="button" class="mt-4 bg-purple-600 dark:bg-purple-900/30 rounded-lg border border-purple-600 dark:border-purple-400 text-white px-4 py-2 add-termin">Tambah Termin</button>
             <button type="button" class="absolute top-4 right-4 text-red-500 font-bold remove-section" style="z-index:10;">Hapus Section</button>
             <template class="termin-row-template">
-                <div class="grid grid-cols-1 lg:grid-cols-7 gap-2 items-center tukang-termin-row bg-gray-50 dark:bg-zinc-700/30 p-6 rounded-xl relative">
+                <div class="grid grid-cols-1 lg:grid-cols-7 gap-2 items-center tukang-termin-row bg-gray-50 dark:bg-zinc-700/30 rounded-xl relative">
                     <span class="termin-label font-semibold"></span>
                     <input type="date" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
