@@ -82,9 +82,6 @@
             
             <flux:navlist.group :heading="__('Rancangan Anggaran Biaya')" class="grid mt-10">
                 <flux:navlist.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">Daftar RAB</flux:navlist.item>
-                <flux:navlist.item icon="document-text" href="#" :current="request()->routeIs('supervisi.rab.pending')">RAB Pending</flux:navlist.item>
-                <flux:navlist.item icon="clock" href="#" :current="request()->routeIs('supervisi.rab.on-progress')">RAB On Progress</flux:navlist.item>
-                <flux:navlist.item icon="check-circle" href="#" :current="request()->routeIs('supervisi.rab.completed')">RAB Selesai</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Sistem')" class="grid mt-10">

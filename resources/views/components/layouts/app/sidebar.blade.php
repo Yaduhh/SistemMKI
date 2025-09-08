@@ -108,8 +108,7 @@
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
-{{--
-            <flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
+            {{--<flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
                 <flux:navlist.item icon="document" :href="route('admin.surat_jalan.index')"
                     :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}
                 </flux:navlist.item>

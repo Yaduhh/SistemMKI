@@ -11,7 +11,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full">
             <!-- RAB List -->
             <div class="bg-white dark:bg-zinc-800 overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-zinc-700">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-700">
@@ -22,7 +22,7 @@
                     <div class="divide-y divide-gray-200 dark:divide-zinc-700">
                         @foreach($rabs as $rab)
                             <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-200">
-                                <div class="flex items-center justify-between">
+                                <div class="flex flex-col lg:flex-row items-center justify-between">
                                     <div class="flex items-center space-x-3">
                                         <div class="flex-shrink-0">
                                             <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center">
@@ -44,7 +44,7 @@
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center gap-2 max-sm:mt-4">
                                             @php
                                                 $statusColors = [
                                                     'draft' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -66,9 +66,6 @@
                                                 Lihat Detail
                                             </a>
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            {{ $rab->created_at->format('d M Y, H:i') }}
-                                        </p>
                                     </div>
                                 </div>
                             </div>

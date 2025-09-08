@@ -83,6 +83,26 @@
                 </div>
             </div>
 
+            <!-- Total Biaya Pemasangan -->
+            @if($rab->pemasangan)
+                <div class="mb-6">
+                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-4 lg:p-6 text-white">
+                        <div class="flex flex-col md:flex-row items-center justify-between">
+                            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                                <div class="text-center md:text-right">
+                                    <h3 class="text-xl font-bold">Total Biaya Pemasangan</h3>
+                                    <p class="text-emerald-100 text-sm">{{ $rab->pemasangan->judul_pemasangan ?? 'Pemasangan' }}</p>
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right">
+                                <div class="text-3xl font-bold">Rp {{ number_format($rab->pemasangan->grand_total ?? 0, 0, ',', '.') }}</div>
+                                <p class="text-emerald-100 text-sm">Nilai Kontrak Pemasangan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
                 <div class="py-4">
@@ -585,10 +605,6 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <div class="text-right">
-                                            <span class="text-white text-sm">Total Termin:
-                                                {{ count($section['termin'] ?? []) }}</span>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -623,13 +639,13 @@
                                                 @foreach ($section['termin'] as $terminIndex => $termin)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             Termin {{ $terminIndex + 1 }}
                                                         </td>
                                                         <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                                             {{ $termin['tanggal'] ?? '-' }}
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
@@ -637,7 +653,7 @@
                                                                 -
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
@@ -751,10 +767,6 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <div class="text-right">
-                                            <span class="text-white text-sm">Total Termin:
-                                                {{ count($section['termin'] ?? []) }}</span>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -789,13 +801,13 @@
                                                 @foreach ($section['termin'] as $terminIndex => $termin)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             Termin {{ $terminIndex + 1 }}
                                                         </td>
                                                         <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                                             {{ $termin['tanggal'] ?? '-' }}
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
@@ -803,7 +815,7 @@
                                                                 -
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
