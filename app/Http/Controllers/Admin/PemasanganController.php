@@ -199,8 +199,9 @@ class PemasanganController extends Controller
         } else {
             $logo = public_path('assets/images/wpcmakmurabadi.jpg');
         }
-
-        $pdf = Pdf::loadView('admin.pemasangan.pdf_item', compact('pemasangan', 'json_produk', 'json_pemasangan', 'json_syarat_kondisi', 'logo'));
+        $ttd = public_path('assets/images/ttdCiyuli.jpg');
+        
+        $pdf = Pdf::loadView('admin.pemasangan.pdf_item', compact('pemasangan', 'json_produk', 'json_pemasangan', 'json_syarat_kondisi', 'logo', 'ttd'));
         $safeFilename = str_replace(['/', '\\'], '-', $pemasangan->nomor_pemasangan);
         return $pdf->download('pemasangan_' . $safeFilename . '.pdf');
     }
