@@ -195,9 +195,9 @@ class PemasanganController extends Controller
         // Tentukan logo berdasarkan nama perusahaan
         $company = $pemasangan->client->nama_perusahaan ?? '';
         if (stripos($company, 'WPC MAKMUR ABADI') !== false) {
-            $logo = public_path('assets/images/logoMki.png');
-        } else {
             $logo = public_path('assets/images/wpcmakmurabadi.jpg');
+        } else {
+            $logo = public_path('assets/images/logomki.png');
         }
 
         $pdf = Pdf::loadView('admin.pemasangan.pdf_item', compact('pemasangan', 'json_produk', 'json_pemasangan', 'json_syarat_kondisi', 'logo'));
