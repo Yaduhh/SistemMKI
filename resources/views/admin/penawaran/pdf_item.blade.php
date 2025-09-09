@@ -165,7 +165,7 @@
                         FINISHING</th>
                     <th width="4%"
                         style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
-                        VOL<br>(m²)</th>
+                        VOL<br>m2</th>
                     <th width="5%"
                         style="padding: 5px; border: 1px solid #000000; background-color: #f2f2f2; text-align: center;">
                         QTY</th>
