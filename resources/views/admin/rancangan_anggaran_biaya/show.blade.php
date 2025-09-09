@@ -471,6 +471,108 @@
             </div>
         @endif
 
+        <!-- Material Tambahan -->
+        @if ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan)
+            <div class="w-full mb-6 border border-indigo-200 dark:border-indigo-700 dark:bg-zinc-900/30">
+                <div class="flex items-center justify-between gap-4">
+                    <h2
+                        class="text-lg font-semibold w-full text-center bg-indigo-600 dark:bg-indigo-600/30 py-2 uppercase text-white">
+                        Pengeluaran Material Tambahan
+                    </h2>
+                </div>
+                @php
+                    // Filter hanya material yang statusnya "Disetujui"
+                    $filteredMaterialTambahan = [];
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan as $mrIndex => $mrGroup) {
+                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                            $approvedMaterials = array_filter($mrGroup['materials'], function ($material) {
+                                return ($material['status'] ?? '') === 'Disetujui';
+                            });
+
+                            if (!empty($approvedMaterials)) {
+                                $filteredMR = $mrGroup;
+                                $filteredMR['materials'] = array_values($approvedMaterials);
+                                $filteredMaterialTambahan[] = $filteredMR;
+                            }
+                        }
+                    }
+                @endphp
+
+                @if (count($filteredMaterialTambahan) > 0)
+                    @foreach ($filteredMaterialTambahan as $mrIndex => $mrGroup)
+                        <div class="p-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-indigo-700 dark:text-indigo-300">MR</label>
+                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">{{ $mrGroup['mr'] ?? '-' }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-indigo-700 dark:text-indigo-300">Tanggal</label>
+                                    <p class="mt-1 text-sm text-zinc-900 dark:text-white">@formatTanggalIndonesia($mrGroup['tanggal'] ?? null)</p>
+                                </div>
+                            </div>
+                            @if (isset($mrGroup['materials']) && is_array($mrGroup['materials']))
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-indigo-50 dark:bg-indigo-900/20">
+                                            <tr>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Supplier</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Item</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Qty</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Satuan</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Harga Satuan</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase">
+                                                    Sub Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            @foreach ($mrGroup['materials'] as $material)
+                                                <tr>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                        {{ $material['supplier'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                        {{ $material['item'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ $material['qty'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ $material['satuan'] ?? '-' }}</td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <p>Tidak ada material tambahan yang disetujui</p>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         <!-- Entertaiment -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment)
             <div class="w-full mb-6 border border-teal-200 dark:border-teal-700 dark:bg-zinc-900/30">
@@ -832,6 +934,27 @@
                 }
                 $grandTotal += $entertaimentTotal;
                 $breakdown['Non Material'] = $entertaimentTotal;
+
+                // Material Tambahan - hanya yang status Disetujui
+                $materialTambahanTotal = 0;
+                if ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan) {
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan as $mrGroup) {
+                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                            foreach ($mrGroup['materials'] as $material) {
+                                // Hanya hitung yang statusnya Disetujui
+                                if (($material['status'] ?? '') === 'Disetujui') {
+                                    $materialTambahanTotal += (float) preg_replace(
+                                        '/[^\d]/',
+                                        '',
+                                        $material['sub_total'] ?? 0,
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                $grandTotal += $materialTambahanTotal;
+                $breakdown['Material Tambahan'] = $materialTambahanTotal;
 
                 // Tukang - hanya yang status Disetujui
                 $tukangTotal = 0;

@@ -85,12 +85,8 @@
 
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
-                <div class="py-4">
+                <div class="pb-4">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Non Material</h3>
-                    <p class=" text-gray-600 dark:text-gray-400 mt-1">
-                        Kelola pengeluaran non material untuk proyek ini
-                    </p>
-
                     @php
                         // Filter entertainment data to remove empty/null entries
                         $filteredEntertainment = [];
@@ -387,7 +383,7 @@
                                         }
                                     }
                                 @endphp
-                                <div class="bg-gradient-to-r from-teal-600 to-teal-700 rounded-lg p-6 text-white">
+                                <div class="bg-gradient-to-r from-teal-600 to-teal-700 rounded-lg p-2 text-white">
                                     <div class="flex flex-col md:flex-row items-center justify-between">
                                         <div class="flex items-center lg:space-x-3">
                                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
@@ -397,11 +393,11 @@
                                                 </path>
                                             </svg>
                                             <div>
-                                                <h3 class="text-xl font-bold">Total Pengeluaran Non Material</h3>
+                                                <h3 class="font-bold">Non Material</h3>
                                             </div>
                                         </div>
                                         <div class="text-center lg:text-right">
-                                            <div class="text-2xl font-bold truncate">Rp
+                                            <div class="font-bold truncate">Rp
                                                 {{ number_format($grandTotal, 0, ',', '.') }}</div>
                                         </div>
                                     </div>
@@ -409,37 +405,51 @@
                             </div>
                         </div>
                     @endif
-                    @if($rab->status !== 'selesai')
+                    @if ($rab->status !== 'selesai')
                         <div class="border-t border-gray-200 dark:border-zinc-600 pt-6">
                             <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-                                <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Data</h4>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pengajuan Material &
+                                    Dana</h4>
                                 <div class="flex flex-col sm:flex-row gap-3">
                                     <a href="{{ route('supervisi.rab.edit-entertainment', $rab) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 bg-teal-600 dark:bg-teal-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-teal-700 dark:hover:bg-teal-600 focus:outline-none focus:border-teal-700 focus:ring focus:ring-teal-200 active:bg-teal-900 disabled:opacity-25 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                             </path>
                                         </svg>
-                                        Edit Non Material
+                                        Pengajuan Non Material
                                     </a>
                                     <a href="{{ route('supervisi.rab.edit-tukang', $rab) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 dark:bg-purple-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-purple-700 dark:hover:bg-purple-600 focus:outline-none focus:border-purple-700 focus:ring focus:ring-purple-200 active:bg-purple-900 disabled:opacity-25 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                             </path>
                                         </svg>
-                                        Edit Tukang
+                                        PengajuanTukang
                                     </a>
                                     <a href="{{ route('supervisi.rab.edit-kerja-tambah', $rab) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 bg-orange-600 dark:bg-orange-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-orange-700 dark:hover:bg-orange-600 focus:outline-none focus:border-orange-700 focus:ring focus:ring-orange-200 active:bg-orange-900 disabled:opacity-25 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
                                             </path>
                                         </svg>
-                                        Edit Kerja Tambah
+                                        Pengajuan Kerja Tambah
+                                    </a>
+                                    <a href="{{ route('supervisi.rab.edit-material-tambahan', $rab) }}"
+                                        class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 dark:bg-indigo-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:border-indigo-700 focus:ring focus:ring-indigo-200 active:bg-indigo-900 disabled:opacity-25 transition">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                            </path>
+                                        </svg>
+                                        Pengajuan Material Tambahan
                                     </a>
                                 </div>
                             </div>
@@ -448,17 +458,215 @@
                 </div>
             </div>
 
+            <!-- Pengeluaran Material Tambahan -->
+            @if (isset($rab->json_pengeluaran_material_tambahan) &&
+                    is_array($rab->json_pengeluaran_material_tambahan) &&
+                    count($rab->json_pengeluaran_material_tambahan) > 0)
+                <div class="mt-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Pengeluaran Material Tambahan</h3>
+
+                    <div class="space-y-6">
+                        @foreach ($rab->json_pengeluaran_material_tambahan as $mrIndex => $mr)
+                            <div
+                                class="bg-white dark:bg-zinc-900/50 border border-indigo-200 dark:border-indigo-600 rounded-lg overflow-hidden">
+                                <!-- Header MR -->
+                                <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-white/20 rounded-full p-2">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h5 class="text-white font-semibold">{{ $mr['mr'] ?? 'MR -' }}</h5>
+                                                <p class="text-indigo-100 text-sm">
+                                                    {{ $mr['tanggal'] ?? 'Tanggal tidak tersedia' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-white text-sm">{{ count($mr['materials'] ?? []) }}
+                                                Material</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabel Material -->
+                                @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                                            <thead class="bg-gray-50 dark:bg-zinc-800">
+                                                <tr>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Supplier</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Item</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Qty</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Satuan</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
+                                                        Harga Satuan</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
+                                                        Sub Total</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
+                                                        Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
+                                                @foreach ($mr['materials'] as $matIndex => $material)
+                                                    <tr
+                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
+                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                            {{ $material['supplier'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                                            {{ $material['item'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                            {{ $material['qty'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                            {{ $material['satuan'] ?? '-' }}
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                            @if (isset($material['harga_satuan']) && $material['harga_satuan'])
+                                                                Rp
+                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-semibold truncate">
+                                                            @if (isset($material['sub_total']) && $material['sub_total'])
+                                                                Rp
+                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-4 py-3">
+                                                            @php
+                                                                $statusColors = [
+                                                                    'Pengajuan' =>
+                                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                                    'Disetujui' =>
+                                                                        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                                    'Ditolak' =>
+                                                                        'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                                ];
+                                                                $status = $material['status'] ?? 'Pengajuan';
+                                                                $color =
+                                                                    $statusColors[$status] ??
+                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                            @endphp
+                                                            <span
+                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                                {{ $status }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Total per MR -->
+                                    @php
+                                        $totalMR = 0;
+                                        if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                            foreach ($mr['materials'] as $material) {
+                                                if (isset($material['sub_total']) && $material['sub_total']) {
+                                                    $totalMR += (float) preg_replace(
+                                                        '/[^\d]/',
+                                                        '',
+                                                        $material['sub_total'],
+                                                    );
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    <div
+                                        class="bg-gray-50 dark:bg-zinc-800/50 px-4 py-3 border-t border-gray-200 dark:border-zinc-600">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total
+                                                {{ $mr['mr'] ?? '-' }}:</span>
+                                            <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                                                Rp {{ number_format($totalMR, 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                            </path>
+                                        </svg>
+                                        <p>Belum ada material untuk MR ini</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+
+                        <!-- Grand Total -->
+                        @php
+                            $grandTotal = 0;
+                            foreach ($rab->json_pengeluaran_material_tambahan as $mr) {
+                                if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                    foreach ($mr['materials'] as $material) {
+                                        if (
+                                            isset($material['sub_total']) &&
+                                            $material['sub_total'] &&
+                                            ($material['status'] ?? '') === 'Disetujui'
+                                        ) {
+                                            $grandTotal += (float) preg_replace('/[^\d]/', '', $material['sub_total']);
+                                        }
+                                    }
+                                }
+                            }
+                        @endphp
+                        <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg p-2 text-white">
+                            <div class="flex flex-col md:flex-row items-center justify-between">
+                                <div class="flex items-center lg:space-x-3">
+                                    <h3 class="font-bold">Material Tambahan</h3>
+                                </div>
+                                <div class="text-center lg:text-right">
+                                    <div class="font-bold truncate">Rp
+                                        {{ number_format($grandTotal, 0, ',', '.') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Pengeluaran Material Pendukung -->
             @if (isset($rab->json_pengeluaran_material_pendukung) &&
                     is_array($rab->json_pengeluaran_material_pendukung) &&
                     count($rab->json_pengeluaran_material_pendukung) > 0)
-                <div class="mt-8">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Material
-                        Pendukung</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">
-                        Data material pendukung untuk proyek ini
-                    </p>
-
+                <div class="mt-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                        Pengeluaran Material Pendukung
+                    </h3>
                     <div class="space-y-6">
                         @foreach ($rab->json_pengeluaran_material_pendukung as $mrIndex => $mr)
                             <div
@@ -581,7 +789,8 @@
                                             <div>
                                                 <h5 class="text-white font-semibold">Pengeluaran Tukang</h5>
                                                 <p class="text-purple-100 text-sm">
-                                                    Debet: Rp {{ number_format((float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0), 0, ',', '.') }}
+                                                    Debet: Rp
+                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0), 0, ',', '.') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -619,13 +828,15 @@
                                                 @foreach ($section['termin'] as $terminIndex => $termin)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             Termin {{ $terminIndex + 1 }}
                                                         </td>
                                                         <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                                             {{ $termin['tanggal'] ?? '-' }}
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
@@ -633,7 +844,8 @@
                                                                 -
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
@@ -688,19 +900,18 @@
                                     <div
                                         class="bg-gray-50 dark:bg-zinc-800/50 px-4 py-3 border-t border-gray-200 dark:border-zinc-600">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Kredit:</span>
-                                            <span
-                                                class="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total
+                                                Kredit:</span>
+                                            <span class="text-lg font-bold text-purple-600 dark:text-purple-400">
                                                 Rp {{ number_format($totalKredit, 0, ',', '.') }}
                                             </span>
                                         </div>
                                     </div>
                                 @else
                                     <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
+                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                             </path>
                                         </svg>
@@ -714,9 +925,7 @@
             @endif
 
             <!-- Kerja Tambah -->
-            @if (isset($rab->json_kerja_tambah) &&
-                    is_array($rab->json_kerja_tambah) &&
-                    count($rab->json_kerja_tambah) > 0)
+            @if (isset($rab->json_kerja_tambah) && is_array($rab->json_kerja_tambah) && count($rab->json_kerja_tambah) > 0)
                 <div class="mt-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Kerja Tambah</h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-6">
@@ -743,7 +952,8 @@
                                             <div>
                                                 <h5 class="text-white font-semibold">Kerja Tambah</h5>
                                                 <p class="text-orange-100 text-sm">
-                                                    Debet: Rp {{ number_format((float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0), 0, ',', '.') }}
+                                                    Debet: Rp
+                                                    {{ number_format((float) preg_replace('/[^\d]/', '', $section['debet'] ?? 0), 0, ',', '.') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -781,13 +991,15 @@
                                                 @foreach ($section['termin'] as $terminIndex => $termin)
                                                     <tr
                                                         class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             Termin {{ $terminIndex + 1 }}
                                                         </td>
                                                         <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                                                             {{ $termin['tanggal'] ?? '-' }}
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
@@ -795,7 +1007,8 @@
                                                                 -
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        <td
+                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
                                                                 Rp
                                                                 {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
@@ -850,19 +1063,18 @@
                                     <div
                                         class="bg-gray-50 dark:bg-zinc-800/50 px-4 py-3 border-t border-gray-200 dark:border-zinc-600">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Kredit:</span>
-                                            <span
-                                                class="text-lg font-bold text-orange-600 dark:text-orange-400">
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total
+                                                Kredit:</span>
+                                            <span class="text-lg font-bold text-orange-600 dark:text-orange-400">
                                                 Rp {{ number_format($totalKredit, 0, ',', '.') }}
                                             </span>
                                         </div>
                                     </div>
                                 @else
                                     <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
+                                        <svg class="mx-auto h-8 w-8 mb-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
                                             </path>
                                         </svg>

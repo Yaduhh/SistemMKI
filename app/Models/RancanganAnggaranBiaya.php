@@ -21,6 +21,8 @@ class RancanganAnggaranBiaya extends Model
         'json_pengeluaran_entertaiment',
         'json_pengeluaran_tukang',
         'json_kerja_tambah',
+        'json_pengeluaran_material_tambahan',
+        'json_pengeluaran_pemasangan',
         'status_deleted',
         'status',
         'created_by',
@@ -36,6 +38,8 @@ class RancanganAnggaranBiaya extends Model
         'json_pengeluaran_entertaiment' => 'array',
         'json_pengeluaran_tukang' => 'array',
         'json_kerja_tambah' => 'array',
+        'json_pengeluaran_material_tambahan' => 'array',
+        'json_pengeluaran_pemasangan' => 'array',
         'status_deleted' => 'boolean',
         'penawaran_pintu' => 'boolean',
     ];
@@ -66,6 +70,16 @@ class RancanganAnggaranBiaya extends Model
     public function setJsonKerjaTambahAttribute($value)
     {
         $this->attributes['json_kerja_tambah'] = json_encode($value ?? []);
+    }
+
+    public function setJsonPengeluaranMaterialTambahanAttribute($value)
+    {
+        $this->attributes['json_pengeluaran_material_tambahan'] = json_encode($value ?? []);
+    }
+
+    public function setJsonPengeluaranPemasanganAttribute($value)
+    {
+        $this->attributes['json_pengeluaran_pemasangan'] = json_encode($value ?? []);
     }
 
     // Relationships

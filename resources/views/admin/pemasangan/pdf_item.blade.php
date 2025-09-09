@@ -145,6 +145,7 @@
                     </table>
                 </td>
             </tr>
+            @if($pemasangan->diskon > 0)
             <tr>
                 <td class="table-none" style="width: 5%; text-align: center;"></td>
                 <td class="table-none" style="width: 35%;"></td>
@@ -182,6 +183,7 @@
                     </table>
                 </td>
             </tr>
+            @endif
         </table>
     @endif
     @if (is_array($json_syarat_kondisi) && count($json_syarat_kondisi) > 0)

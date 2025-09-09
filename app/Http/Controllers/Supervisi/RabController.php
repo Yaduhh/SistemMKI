@@ -221,4 +221,71 @@ class RabController extends Controller
 
         return redirect()->route('supervisi.rab.show', $rab)->with('success', 'Data kerja tambah berhasil diperbarui.');
     }
+
+    /**
+     * Show the form for editing material tambahan expenses.
+     */
+    public function editMaterialTambahan(RancanganAnggaranBiaya $rab)
+    {
+        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
+        
+        return view('supervisi.material-tambahan.edit-material-tambahan', compact('rab'));
+    }
+
+    /**
+     * Update material tambahan expenses for the specified RAB.
+     */
+    public function updateMaterialTambahan(Request $request, RancanganAnggaranBiaya $rab)
+    {
+        $request->validate([
+            'json_pengeluaran_material_tambahan' => 'nullable|array',
+            'json_pengeluaran_material_tambahan.*.mr' => 'nullable|string|max:255',
+            'json_pengeluaran_material_tambahan.*.tanggal' => 'nullable|date',
+            'json_pengeluaran_material_tambahan.*.materials' => 'nullable|array',
+            'json_pengeluaran_material_tambahan.*.materials.*.supplier' => 'nullable|string|max:255',
+            'json_pengeluaran_material_tambahan.*.materials.*.item' => 'nullable|string|max:255',
+            'json_pengeluaran_material_tambahan.*.materials.*.qty' => 'nullable|numeric|min:0',
+            'json_pengeluaran_material_tambahan.*.materials.*.satuan' => 'nullable|string|max:255',
+            'json_pengeluaran_material_tambahan.*.materials.*.harga_satuan' => 'nullable|numeric|min:0',
+            'json_pengeluaran_material_tambahan.*.materials.*.status' => 'nullable|string|in:Pengajuan,Disetujui,Ditolak',
+            'json_pengeluaran_material_tambahan.*.materials.*.sub_total' => 'nullable|numeric|min:0',
+        ]);
+
+        // Clean and validate material tambahan data (same format as entertainment)
+        $materialTambahanData = [];
+        if ($request->has('json_pengeluaran_material_tambahan') && is_array($request->json_pengeluaran_material_tambahan) && count($request->json_pengeluaran_material_tambahan) > 0) {
+            foreach ($request->json_pengeluaran_material_tambahan as $mr) {
+                $cleanMaterials = [];
+                if (isset($mr['materials']) && is_array($mr['materials'])) {
+                    foreach ($mr['materials'] as $material) {
+                        if (!empty($material['supplier']) || !empty($material['item']) || !empty($material['qty']) || !empty($material['harga_satuan'])) {
+                            $cleanMaterials[] = [
+                                'supplier' => $material['supplier'] ?? '',
+                                'item' => $material['item'] ?? '',
+                                'qty' => floatval($material['qty'] ?? 0),
+                                'satuan' => $material['satuan'] ?? '',
+                                'harga_satuan' => floatval($material['harga_satuan'] ?? 0),
+                                'status' => $material['status'] ?? 'Pengajuan',
+                                'sub_total' => floatval($material['sub_total'] ?? 0)
+                            ];
+                        }
+                    }
+                }
+                if (!empty($cleanMaterials)) {
+                    $materialTambahanData[] = [
+                        'mr' => $mr['mr'] ?? '',
+                        'tanggal' => $mr['tanggal'] ?? '',
+                        'materials' => $cleanMaterials
+                    ];
+                }
+            }
+        }
+
+        // Update the RAB
+        $rab->update([
+            'json_pengeluaran_material_tambahan' => $materialTambahanData
+        ]);
+
+        return redirect()->route('supervisi.rab.show', $rab)->with('success', 'Data pengeluaran material tambahan berhasil diperbarui.');
+    }
 }

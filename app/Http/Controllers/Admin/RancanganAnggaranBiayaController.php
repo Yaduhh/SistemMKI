@@ -149,6 +149,14 @@ class RancanganAnggaranBiayaController extends Controller
 
     public function store(Request $request)
     {
+        // Debug: Log request data
+        \Log::info('RAB Store - Request data:', [
+            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
+            'json_pengeluaran_pemasangan_type' => gettype($request->json_pengeluaran_pemasangan),
+            'penawaran_id' => $request->penawaran_id,
+            'pemasangan_id' => $request->pemasangan_id
+        ]);
+        
         $validated = $request->validate([
             'proyek' => 'required|string|max:255',
             'pekerjaan' => 'required|string|max:255',
@@ -166,6 +174,8 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
+            'json_pengeluaran_material_tambahan' => 'nullable|array',
+            'json_pengeluaran_pemasangan' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -334,6 +344,20 @@ class RancanganAnggaranBiayaController extends Controller
         
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
         $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
+        $validated['json_pengeluaran_material_tambahan'] = $request->json_pengeluaran_material_tambahan ?? [];
+        
+        // Handle json_pengeluaran_pemasangan - convert string to array if needed
+        $pemasanganData = $request->json_pengeluaran_pemasangan ?? [];
+        if (is_string($pemasanganData)) {
+            $pemasanganData = json_decode($pemasanganData, true) ?? [];
+        }
+        $validated['json_pengeluaran_pemasangan'] = $pemasanganData;
+        
+        // Debug: Log pemasangan data
+        \Log::info('RAB Store Debug - Pemasangan Data', [
+            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
+            'validated_pemasangan' => $validated['json_pengeluaran_pemasangan']
+        ]);
         
         // Set default values for fields that are not used in edit mode
         $validated['json_pengeluaran_entertaiment'] = [];
@@ -346,8 +370,32 @@ class RancanganAnggaranBiayaController extends Controller
         $validated['pemasangan_id'] = $request->pemasangan_id ?? null;
         $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         
-        $rab = RancanganAnggaranBiaya::create($validated);
-        return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', 'RAB berhasil dibuat.');
+        try {
+            // Debug: Log data before create
+            \Log::info('RAB Store - Data before create:', [
+                'json_pengeluaran_pemasangan' => $validated['json_pengeluaran_pemasangan'],
+                'penawaran_id' => $validated['penawaran_id'],
+                'pemasangan_id' => $validated['pemasangan_id']
+            ]);
+            
+            $rab = RancanganAnggaranBiaya::create($validated);
+            
+            // Debug: Check if pemasangan data was saved
+            $pemasanganData = $rab->json_pengeluaran_pemasangan;
+            $message = 'RAB berhasil dibuat.';
+            if (!empty($pemasanganData)) {
+                $message .= ' Data pemasangan tersimpan: ' . count($pemasanganData) . ' item.';
+            } else {
+                $message .= ' WARNING: Data pemasangan kosong!';
+            }
+            
+            \Log::info('RAB Store - Success:', ['message' => $message]);
+            return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('RAB Store Error: ' . $e->getMessage());
+            \Log::error('RAB Store Error Stack: ' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function show(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
@@ -428,6 +476,8 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
+            'json_pengeluaran_material_tambahan' => 'nullable|array',
+            'json_pengeluaran_pemasangan' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -598,6 +648,8 @@ class RancanganAnggaranBiayaController extends Controller
         
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
         $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
+        $validated['json_pengeluaran_material_tambahan'] = $request->json_pengeluaran_material_tambahan ?? [];
+        $validated['json_pengeluaran_pemasangan'] = $request->json_pengeluaran_pemasangan ?? [];
         
         // Tidak update field yang tidak ada di form edit (tetap pertahankan data existing)
         unset($validated['json_pengeluaran_entertaiment']);

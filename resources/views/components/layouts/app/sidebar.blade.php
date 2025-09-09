@@ -62,6 +62,9 @@
                     <flux:navlist.item icon="sparkles" :href="route('admin.entertainment.index')"
                         :current="request()->routeIs('admin.entertainment.*')" wire:navigate>{{ __('Non Material') }}
                     </flux:navlist.item>
+                    <flux:navlist.item icon="cube" :href="route('admin.material-tambahan.index')"
+                        :current="request()->routeIs('admin.material-tambahan.*')" wire:navigate>{{ __('Material Tambahan') }}
+                    </flux:navlist.item>
                     <flux:navlist.item icon="users" :href="route('admin.tukang.index')"
                         :current="request()->routeIs('admin.tukang.*')" wire:navigate>{{ __('Tukang') }}
                     </flux:navlist.item>

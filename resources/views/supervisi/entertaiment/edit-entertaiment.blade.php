@@ -28,9 +28,6 @@
             <div class="w-full">
                 <div class="py-4">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pengeluaran Non Material</h3>
-                    <p class=" text-gray-600 dark:text-gray-400 mt-1">
-                        Kelola pengeluaran non material untuk proyek ini
-                    </p>
                     @php
                         // Check if any material has approved/rejected status
                         $hasApprovedMaterial = false;
@@ -72,7 +69,7 @@
                     @elseif($hasRejectedMaterial)
                         <div
                             class="mt-2 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
-                            <div class="flex items-center">
+                            <div class="flex lg:items-center">
                                 <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -155,7 +152,7 @@
                                             @if (isset($mr['materials']) && is_array($mr['materials']))
                                                 @foreach ($mr['materials'] as $matIndex => $material)
                                                     <div
-                                                        class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
+                                                        class="grid grid-cols-1 md:grid-cols-7 mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
                                                         <div>
                                                             <label
                                                                 class="block text-xs font-medium mb-1">Supplier</label>
@@ -253,10 +250,6 @@
 
                         <div class="mt-6 pt-6 border-t border-gray-200 dark:border-zinc-700">
                             <div class="flex justify-end space-x-3">
-                                <button type="button" onclick="resetForm()"
-                                    class="inline-flex items-center px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-md font-semibold text-xs text-zinc-700 dark:text-zinc-300 uppercase tracking-widest bg-white dark:bg-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-600 focus:outline-none focus:border-zinc-400 focus:ring focus:ring-zinc-200 active:bg-zinc-100 disabled:opacity-25 transition">
-                                    Reset
-                                </button>
                                 <button type="submit"
                                     class="inline-flex items-center px-4 py-2 bg-amber-600 dark:bg-amber-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-amber-700 dark:hover:bg-amber-600 focus:outline-none focus:border-amber-700 focus:ring focus:ring-amber-200 active:bg-amber-900 disabled:opacity-25 transition">
                                     Simpan Perubahan

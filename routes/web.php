@@ -233,6 +233,10 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
     Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');
     
+    // Material Tambahan Routes
+    Route::get('material-tambahan', [App\Http\Controllers\Admin\MaterialTambahanController::class, 'index'])->name('material-tambahan.index');
+    Route::patch('material-tambahan/{id}/update-status', [App\Http\Controllers\Admin\MaterialTambahanController::class, 'updateStatus'])->name('material-tambahan.update-status');
+    
     // Tukang Routes
     Route::get('tukang', [App\Http\Controllers\Admin\TukangController::class, 'index'])->name('tukang.index');
     Route::patch('tukang/{id}/update-status', [App\Http\Controllers\Admin\TukangController::class, 'updateStatus'])->name('tukang.update-status');
@@ -290,6 +294,8 @@ Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->
                 Route::patch('rab/{rab}/update-tukang', [App\Http\Controllers\Supervisi\RabController::class, 'updateTukang'])->name('rab.update-tukang');
                 Route::get('rab/{rab}/edit-kerja-tambah', [App\Http\Controllers\Supervisi\RabController::class, 'editKerjaTambah'])->name('rab.edit-kerja-tambah');
                 Route::patch('rab/{rab}/update-kerja-tambah', [App\Http\Controllers\Supervisi\RabController::class, 'updateKerjaTambah'])->name('rab.update-kerja-tambah');
+                Route::get('rab/{rab}/edit-material-tambahan', [App\Http\Controllers\Supervisi\RabController::class, 'editMaterialTambahan'])->name('rab.edit-material-tambahan');
+                Route::patch('rab/{rab}/update-material-tambahan', [App\Http\Controllers\Supervisi\RabController::class, 'updateMaterialTambahan'])->name('rab.update-material-tambahan');
 
     // Settings Route
     Route::view('/setting', 'supervisi.setting.index')->name('setting.index');
