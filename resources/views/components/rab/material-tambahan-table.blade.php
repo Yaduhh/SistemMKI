@@ -651,8 +651,6 @@
             // Inisialisasi dari old input jika ada
             if (window.oldMaterialTambahan && Array.isArray(window.oldMaterialTambahan) && window.oldMaterialTambahan.length) {
                 window.oldMaterialTambahan.forEach(mr => addMrGroup(mr));
-            } else if (mrList.querySelectorAll('.mr-group').length === 0) {
-                addMrGroup();
             }
 
             addMrBtn.addEventListener('click', function () {

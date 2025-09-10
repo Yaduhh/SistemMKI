@@ -1,7 +1,7 @@
     <div>
         <div id="tukang-section-list" class="space-y-8"></div>
-        <button type="button" class="mt-6 bg-purple-600 dark:bg-purple-900/30 border-b border-t border-purple-600 dark:border-purple-400 text-white px-4 py-2 w-full" id="add-tukang-section">Tambah Section Pengeluaran Tukang</button>
-        <div class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+        <button type="button" class="bg-purple-600 dark:bg-purple-900/30 border-b border-t border-purple-600 dark:border-purple-400 text-white px-4 py-3 w-full" id="add-tukang-section">TAMBAH SECTION</button>
+        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
             <div class="text-right">
                 <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Grand Total:</span>
                 <span class="ml-2 text-lg font-bold text-purple-600 dark:text-purple-400 tukang-grand-total">Rp 0</span>
@@ -12,7 +12,7 @@
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Debet (Biaya Tukang)</label>
-                    <input type="text" placeholder="masukkan nilai debet" name="json_pengeluaran_tukang[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
+                    <input type="text" placeholder="masukkan nilai debet" name="json_pengeluaran_tukang[__SECIDX__][debet]" class="border rounded-lg px-4 py-2.5 w-full debet-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                 </div>
             </div>
             <div class="space-y-4 termin-list"></div>
@@ -21,7 +21,7 @@
             <template class="termin-row-template">
                 <div class="grid grid-cols-1 lg:grid-cols-7 gap-2 items-center tukang-termin-row bg-gray-50 dark:bg-zinc-700/30 rounded-xl relative">
                     <span class="termin-label font-semibold"></span>
-                    <input type="date" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" required>
+                    <input type="date" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][tanggal]" class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][kredit]" placeholder="Kredit" class="border rounded-lg px-4 py-2.5 kredit-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][sisa]" placeholder="Sisa" class="border rounded-lg px-4 py-2.5 sisa-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
                     <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][persentase]" placeholder="%" class="border rounded-lg px-4 py-2.5 persentase-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" readonly>
@@ -405,10 +405,6 @@
                 // Update grand total setelah semua section ditambahkan
                 setTimeout(updateGrandTotal, 1000);
                 setTimeout(toggleRemoveSectionButtons, 1000); // Update section remove buttons
-            } 
-            // Jika tidak ada data, tambah section kosong
-            else if (sectionList.querySelectorAll('.tukang-section').length === 0) {
-                addSection();
             }
             toggleRemoveSectionButtons();
 

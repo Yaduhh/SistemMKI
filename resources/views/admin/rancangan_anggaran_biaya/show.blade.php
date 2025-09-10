@@ -137,7 +137,7 @@
         <!-- Material Utama -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_material_utama)
             <div
-                class="bg-white dark:bg-zinc-800 lg:dark:bg-zinc-900/30 rounded-lg shadow-sm lg:border border-zinc-200 dark:border-zinc-700 p-0 lg:p-6 mb-6">
+                class="w-full mb-6">
                 <h2 class="text-lg font-semibold mb-4">Pengeluaran Material Utama</h2>
 
                 <!-- Informasi Penawaran Terkait -->
@@ -393,6 +393,77 @@
                         </table>
                     </div>
                 @endif
+            </div>
+        @endif
+
+        <!-- Pengeluaran Pemasangan -->
+        @if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan)
+            <div class="w-full mb-6 border border-amber-200 dark:border-amber-700 dark:bg-zinc-900/30">
+                <div class="flex items-center justify-between gap-4">
+                    <h2
+                        class="text-lg font-semibold w-full text-center bg-amber-600 dark:bg-amber-600/30 py-2 uppercase text-white">
+                        Pengeluaran Pemasangan
+                    </h2>
+                </div>
+                <div class="w-full">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                            <thead class="bg-amber-50 dark:bg-amber-900/20">
+                                <tr>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-amber-700 dark:text-amber-300 uppercase">
+                                        Item</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-amber-700 dark:text-amber-300 uppercase">
+                                        Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-amber-700 dark:text-amber-300 uppercase">
+                                        Qty</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-amber-700 dark:text-amber-300 uppercase">
+                                        Harga Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-amber-700 dark:text-amber-300 uppercase">
+                                        Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                            {{ $item['item'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['satuan'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['qty'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Total Pemasangan -->
+                    @php
+                        $totalPemasangan = 0;
+                        foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item) {
+                            $totalPemasangan += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        }
+                    @endphp
+                    <div class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+                        <div class="text-right">
+                            <span class="text-sm font-medium text-amber-700 dark:text-amber-300">Total Pemasangan:</span>
+                            <span class="ml-2 text-lg font-bold text-amber-600 dark:text-amber-400">
+                                Rp {{ number_format($totalPemasangan, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
 
@@ -890,6 +961,16 @@
                 }
                 $grandTotal += $materialUtamaTotal;
                 $breakdown['Material Utama'] = $materialUtamaTotal;
+
+                // Pemasangan
+                $pemasanganTotal = 0;
+                if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan) {
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item) {
+                        $pemasanganTotal += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                    }
+                }
+                $grandTotal += $pemasanganTotal;
+                $breakdown['Pemasangan'] = $pemasanganTotal;
 
                 // Material Pendukung - perhitungkan diskon yang ada di dalam material pendukung
                 $materialPendukungTotal = 0;

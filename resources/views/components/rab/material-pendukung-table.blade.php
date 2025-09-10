@@ -1,4 +1,4 @@
-<div>
+<div class="mt-4">
     <div id="mr-list" class="space-y-8">
         <!-- MR group akan di-generate oleh JS -->
     </div>
@@ -195,7 +195,10 @@
                     const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
                     if (mrInput) {
                         const mrNumber = mrIdx + 1;
-                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
+                        const mrValue = 'MR ' + String(mrNumber).padStart(3, '0');
+                        
+                        // Selalu set ke format sederhana MR 001, MR 002, dst
+                        mrInput.value = mrValue;
                     }
                 });
             }
@@ -264,16 +267,16 @@
                 const mrGroup = temp.firstElementChild;
                 mrList.appendChild(mrGroup);
                 
-                // Auto-fill MR number jika tidak ada data
-                if (!data || !data.mr) {
-                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
-                    if (mrInput) {
-                        const mrNumber = mrIdx + 1;
-                        mrInput.value = 'MR ' + String(mrNumber).padStart(3, '0');
-                    }
+                // Fill data first if available
+                fillMrGroup(mrGroup, data);
+                
+                // Auto-fill MR number jika tidak ada data atau data.mr kosong
+                const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                if (mrInput && (!data || !data.mr || data.mr.trim() === '')) {
+                    // Jangan set MR number di sini, biarkan renumberMR() yang handle
+                    // Ini akan dipanggil di renderAllNames()
                 }
                 
-                fillMrGroup(mrGroup, data);
                 if (data && Array.isArray(data.materials) && data.materials.length) {
                     data.materials.forEach((mat, i) => addMaterialRow(mrGroup, mat));
                 } else {
@@ -650,9 +653,16 @@
 
             // Inisialisasi dari old input jika ada
             if (window.oldMaterialPendukung && Array.isArray(window.oldMaterialPendukung) && window.oldMaterialPendukung.length) {
-                window.oldMaterialPendukung.forEach(mr => addMrGroup(mr));
-            } else if (mrList.querySelectorAll('.mr-group').length === 0) {
-                addMrGroup();
+                // Clear any existing MR groups first
+                mrList.innerHTML = '';
+                
+                // Add each MR group from old data
+                window.oldMaterialPendukung.forEach(mr => {
+                    // Clear MR field dari data lama agar menggunakan penomoran baru
+                    const mrData = { ...mr };
+                    mrData.mr = ''; // Force renumbering
+                    addMrGroup(mrData);
+                });
             }
 
             addMrBtn.addEventListener('click', function () {
@@ -734,6 +744,31 @@
                 });
             }
             
+            // Function to load existing data for edit mode
+            function loadExistingData(existingData) {
+                if (!existingData || !Array.isArray(existingData) || existingData.length === 0) {
+                    return;
+                }
+                
+                // Clear any existing MR groups first
+                mrList.innerHTML = '';
+                
+                // Add each MR group from existing data
+                existingData.forEach(mr => {
+                    addMrGroup(mr);
+                });
+            }
+
+            // Expose functions globally for external access
+            window.materialPendukungFunctions = {
+                renderAllNames: renderAllNames,
+                setupRupiahFormatting: setupRupiahFormatting,
+                addMrGroup: addMrGroup,
+                addMaterialRow: addMaterialRow,
+                updateGrandTotal: updateGrandTotal,
+                loadExistingData: loadExistingData
+            };
+
             // Setup format rupiah saat halaman dimuat
             document.addEventListener('DOMContentLoaded', function() {
                 setupRupiahFormatting();

@@ -226,15 +226,41 @@
                 @endif
 
                 <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center justify-between gap-4">
                         <h2 class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600 py-2 uppercase">
                             Pengeluaran Material Pendukung
                         </h2>
                     </div>
+                    
+                    <!-- Filter Pemasangan Sisa -->
+                    @if(isset($pemasanganSisa) && $pemasanganSisa->count() > 0)
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                        <h3 class="text-md font-semibold mb-3 text-blue-800 dark:text-blue-200">Pilih Data Pemasangan Sisa</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Pemasangan yang Tersedia:</label>
+                                <select id="pemasangan-sisa-select" class="w-full border rounded-lg px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                                    <option value="">-- Pilih Pemasangan --</option>
+                                    @foreach($pemasanganSisa as $pemasanganItem)
+                                        <option value="{{ $pemasanganItem->id }}" data-json="{{ json_encode($pemasanganItem->json_pemasangan) }}">
+                                            {{ $pemasanganItem->nomor_pemasangan }} - {{ $pemasanganItem->judul_pemasangan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex items-end w-full">
+                                <button type="button" id="tambah-pemasangan-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                                    Tambahkan ke Material Pendukung
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    
                     <x-rab.material-pendukung-table />
                 </div>
                 <div class="mt-8">
-                    <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center justify-between gap-4">
                         <h2
                             class="text-lg font-semibold w-full text-center bg-indigo-600 dark:bg-indigo-600 py-2 uppercase">
                             Pengeluaran Material Tambahan
@@ -764,6 +790,207 @@
             warnaInputs.forEach(input => {
                 input.addEventListener('input', validateMaterialUtama);
             });
+
+            // Initialize pemasangan sisa functionality
+            initializePemasanganSisa();
         });
+
+        // Function to initialize pemasangan sisa functionality
+        function initializePemasanganSisa() {
+            const pemasanganSelect = document.getElementById('pemasangan-sisa-select');
+            const tambahBtn = document.getElementById('tambah-pemasangan-btn');
+            
+            if (!pemasanganSelect || !tambahBtn) return;
+
+            // Enable/disable button based on selection
+            pemasanganSelect.addEventListener('change', function() {
+                tambahBtn.disabled = !this.value;
+            });
+
+            // Handle tambah button click
+            tambahBtn.addEventListener('click', function() {
+                const selectedOption = pemasanganSelect.options[pemasanganSelect.selectedIndex];
+                if (!selectedOption.value) return;
+
+                const jsonData = selectedOption.dataset.json;
+                if (!jsonData) return;
+
+                try {
+                    const pemasanganData = JSON.parse(jsonData);
+                    
+                    // Count items and groups that will be added (after filtering)
+                    let totalItems = 0;
+                    let validGroups = 0;
+                    pemasanganData.forEach(group => {
+                        if (Array.isArray(group.items)) {
+                            let groupHasValidItems = false;
+                            group.items.forEach(item => {
+                                if (isSatuanAllowed(item.satuan)) {
+                                    totalItems++;
+                                    groupHasValidItems = true;
+                                }
+                            });
+                            if (groupHasValidItems) {
+                                validGroups++;
+                            }
+                        }
+                    });
+                    
+                    if (totalItems === 0) {
+                        alert('Tidak ada item dengan satuan yang sesuai (btg, pcs, BTG, PCS, BATANG) dalam pemasangan ini.');
+                        return;
+                    }
+                    
+                    // Confirm before adding
+                    const confirmMessage = `Akan menambahkan ${validGroups} section dengan ${totalItems} item dari pemasangan ini ke material pendukung. Lanjutkan?`;
+                    if (confirm(confirmMessage)) {
+                        tambahkanPemasanganKeMaterialPendukung(pemasanganData);
+                        
+                        // Reset selection
+                        pemasanganSelect.value = '';
+                        tambahBtn.disabled = true;
+                    }
+                } catch (e) {
+                    console.error('Error parsing pemasangan data:', e);
+                    alert('Error: Data pemasangan tidak valid');
+                }
+            });
+        }
+
+        // Function to add pemasangan data to material pendukung
+        function tambahkanPemasanganKeMaterialPendukung(pemasanganData) {
+            if (!Array.isArray(pemasanganData)) {
+                console.error('Pemasangan data is not an array');
+                return;
+            }
+
+            // Get the material pendukung component
+            const mrList = document.getElementById('mr-list');
+            if (!mrList) {
+                console.error('Material pendukung list not found');
+                return;
+            }
+
+            // Filter groups that have items with BTG satuan
+            const validGroups = pemasanganData.filter(group => {
+                if (!Array.isArray(group.items)) return false;
+                
+                // Check if this group has any item with BTG satuan
+                return group.items.some(item => isSatuanAllowed(item.satuan));
+            });
+
+            if (validGroups.length === 0) {
+                alert('Tidak ada section dengan satuan BTG dalam pemasangan ini.');
+                return;
+            }
+
+            // Create a new MR group for each valid pemasangan group
+            validGroups.forEach((group, groupIndex) => {
+                const mrGroup = createMrGroupFromPemasangan(group, groupIndex);
+                if (mrGroup) {
+                    mrList.appendChild(mrGroup);
+                }
+            });
+
+            // Re-render all names and update totals
+            if (window.materialPendukungFunctions && window.materialPendukungFunctions.renderAllNames) {
+                window.materialPendukungFunctions.renderAllNames();
+            }
+
+            // Setup formatting for newly added materials
+            setTimeout(() => {
+                if (window.materialPendukungFunctions && window.materialPendukungFunctions.setupRupiahFormatting) {
+                    window.materialPendukungFunctions.setupRupiahFormatting();
+                }
+            }, 100);
+        }
+
+        // Function to create MR group from pemasangan data
+        function createMrGroupFromPemasangan(group, groupIndex) {
+            const mrGroupTemplate = document.getElementById('mr-group-template');
+            if (!mrGroupTemplate) return null;
+
+            const mrIdx = document.querySelectorAll('.mr-group').length;
+            const html = mrGroupTemplate.innerHTML.replace(/__MRIDX__/g, mrIdx);
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            const mrGroup = temp.firstElementChild;
+
+            // Set MR info - biarkan kosong dulu, akan diisi oleh renumberMR()
+            const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+            const tanggalInput = mrGroup.querySelector('[data-mr-field="tanggal"]');
+            
+            if (mrInput) {
+                // Biarkan kosong, akan diisi oleh renumberMR() dengan format MR 001
+                mrInput.value = '';
+            }
+            if (tanggalInput) {
+                tanggalInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Add materials from pemasangan (filter by satuan)
+            const matList = mrGroup.querySelector('.material-list');
+            if (matList && Array.isArray(group.items)) {
+                let filteredItemIndex = 0;
+                group.items.forEach((item, itemIndex) => {
+                    // Filter hanya item dengan satuan btg, pcs, BTG, PCS, BATANG
+                    if (isSatuanAllowed(item.satuan)) {
+                        const materialRow = createMaterialRowFromPemasangan(item, mrIdx, filteredItemIndex);
+                        if (materialRow) {
+                            matList.appendChild(materialRow);
+                            filteredItemIndex++;
+                        }
+                    }
+                });
+                
+                // Jika tidak ada item yang sesuai, hapus MR group ini
+                if (filteredItemIndex === 0) {
+                    return null;
+                }
+            }
+
+            return mrGroup;
+        }
+
+        // Function to create material row from pemasangan item
+        function createMaterialRowFromPemasangan(item, mrIdx, matIdx) {
+            const materialRowTemplate = document.getElementById('material-row-template');
+            if (!materialRowTemplate) return null;
+
+            const html = materialRowTemplate.innerHTML.replace(/__MRIDX__/g, mrIdx).replace(/__MATIDX__/g, matIdx);
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            const row = temp.firstElementChild;
+
+            // Fill data from pemasangan item
+            const itemInput = row.querySelector('[data-material-field="item"]');
+            const qtyInput = row.querySelector('[data-material-field="qty"]');
+            const satuanInput = row.querySelector('[data-material-field="satuan"]');
+            const hargaInput = row.querySelector('[data-material-field="harga_satuan"]');
+            const subTotalInput = row.querySelector('[data-material-field="sub_total"]');
+
+            if (itemInput) itemInput.value = item.item || '';
+            if (qtyInput) qtyInput.value = item.qty || '';
+            if (satuanInput) satuanInput.value = item.satuan || '';
+            if (hargaInput) {
+                const harga = parseFloat(item.harga_satuan || 0);
+                hargaInput.value = harga > 0 ? 'Rp ' + harga.toLocaleString('id-ID') : '';
+            }
+            if (subTotalInput) {
+                const qty = parseFloat(item.qty || 0);
+                const harga = parseFloat(item.harga_satuan || 0);
+                const subTotal = qty * harga;
+                subTotalInput.value = subTotal > 0 ? 'Rp ' + subTotal.toLocaleString('id-ID') : '';
+            }
+
+            return row;
+        }
+
+        // Function to check if satuan is allowed (btg, pcs, BTG, PCS, BATANG)
+        function isSatuanAllowed(satuan) {
+            if (!satuan) return false;
+            const allowedSatuans = ['btg', 'pcs', 'BTG', 'PCS', 'BATANG'];
+            return allowedSatuans.includes(satuan.toString().trim());
+        }
     </script>
 </x-layouts.app>

@@ -123,6 +123,18 @@ class RancanganAnggaranBiayaController extends Controller
         $pemasangan = $penawaran->pemasangans->first();
         $produkPenawaran = [];
 
+        // Ambil semua pemasangan yang terhubung dengan penawaran ini
+        $semuaPemasangan = $penawaran->pemasangans;
+        
+        // Ambil semua RAB yang sudah ada untuk penawaran ini
+        $rabsExisting = RancanganAnggaranBiaya::where('penawaran_id', $penawaran->id)
+            ->where('status_deleted', false)
+            ->get();
+        
+        // Filter pemasangan yang belum digunakan (belum ada di RAB)
+        $pemasanganTerpakai = $rabsExisting->pluck('pemasangan_id')->filter()->toArray();
+        $pemasanganSisa = $semuaPemasangan->whereNotIn('id', $pemasanganTerpakai);
+
         if (is_array($penawaran->json_produk)) {
             foreach ($penawaran->json_produk as $area) {
                 $judul = $area['judul'] ?? '';
@@ -142,9 +154,8 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
 
-        return view('admin.rancangan_anggaran_biaya.create', compact('penawaran', 'pemasangan', 'produkPenawaran'));
+        return view('admin.rancangan_anggaran_biaya.create', compact('penawaran', 'pemasangan', 'produkPenawaran', 'pemasanganSisa'));
     }
-
 
 
     public function store(Request $request)
@@ -406,14 +417,23 @@ class RancanganAnggaranBiayaController extends Controller
 
     public function edit(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
-        $rab = $rancanganAnggaranBiaya;
-        $rab->load(['penawaran', 'pemasangan']);
-        $penawaran = $rab->penawaran;
-        $pemasangan = $rab->pemasangan;
+        $penawaran = Penawaran::with('pemasangans')->findOrFail($rancanganAnggaranBiaya->penawaran_id);
+        $pemasangan = $penawaran->pemasangans->first();
         $produkPenawaran = [];
-        $penawaranTotal = 0;
 
-        if ($penawaran && is_array($penawaran->json_produk)) {
+        // Ambil semua pemasangan yang terhubung dengan penawaran ini
+        $semuaPemasangan = $penawaran->pemasangans;
+        
+        // Ambil semua RAB yang sudah ada untuk penawaran ini
+        $rabsExisting = RancanganAnggaranBiaya::where('penawaran_id', $penawaran->id)
+            ->where('status_deleted', false)
+            ->get();
+        
+        // Filter pemasangan yang belum digunakan (belum ada di RAB)
+        $pemasanganTerpakai = $rabsExisting->pluck('pemasangan_id')->filter()->toArray();
+        $pemasanganSisa = $semuaPemasangan->whereNotIn('id', $pemasanganTerpakai);
+
+        if (is_array($penawaran->json_produk)) {
             foreach ($penawaran->json_produk as $area) {
                 $judul = $area['judul'] ?? '';
                 if (isset($area['product_sections']) && is_array($area['product_sections'])) {
@@ -426,39 +446,25 @@ class RancanganAnggaranBiayaController extends Controller
                                 ],
                                 $product
                             );
-                            // Calculate total from penawaran
-                            $penawaranTotal += floatval($product['total_harga'] ?? 0);
                         }
                     }
                 }
             }
         }
 
-        // Clean old data format for tukang and kerja tambah
-        $rab->json_pengeluaran_tukang = $this->cleanOldDataFormat($rab->json_pengeluaran_tukang ?? []);
-        $rab->json_kerja_tambah = $this->cleanOldDataFormat($rab->json_kerja_tambah ?? []);
-
-        // Prepare existing data for material utama table
-        $existingData = [];
-        if ($rab->json_pengeluaran_material_utama && is_array($rab->json_pengeluaran_material_utama)) {
-            $existingData = $rab->json_pengeluaran_material_utama;
-        }
-
-        // Debug: Log data types to check for issues
-        \Log::info('RAB Edit Debug', [
-            'rab_id' => $rab->id,
-            'json_pengeluaran_material_utama_type' => gettype($rab->json_pengeluaran_material_utama),
-            'json_pengeluaran_material_pendukung_type' => gettype($rab->json_pengeluaran_material_pendukung),
-            'json_pengeluaran_entertaiment_type' => gettype($rab->json_pengeluaran_entertaiment),
-            'json_pengeluaran_tukang_type' => gettype($rab->json_pengeluaran_tukang),
-            'json_kerja_tambah_type' => gettype($rab->json_kerja_tambah),
-        ]);
-
-        return view('admin.rancangan_anggaran_biaya.edit', compact('rab', 'penawaran', 'pemasangan', 'produkPenawaran', 'penawaranTotal', 'existingData'));
+        return view('admin.rancangan_anggaran_biaya.edit', compact('rancanganAnggaranBiaya', 'penawaran', 'pemasangan', 'produkPenawaran', 'pemasanganSisa'))->with('rab', $rancanganAnggaranBiaya);
     }
 
     public function update(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
+        // Debug: Log request data
+        \Log::info('RAB Update - Request data:', [
+            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
+            'json_pengeluaran_pemasangan_type' => gettype($request->json_pengeluaran_pemasangan),
+            'penawaran_id' => $request->penawaran_id,
+            'pemasangan_id' => $request->pemasangan_id
+        ]);
+        
         $validated = $request->validate([
             'proyek' => 'required|string|max:255',
             'pekerjaan' => 'required|string|max:255',
@@ -644,21 +650,60 @@ class RancanganAnggaranBiayaController extends Controller
         
 
         
-
-        
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
         $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
         $validated['json_pengeluaran_material_tambahan'] = $request->json_pengeluaran_material_tambahan ?? [];
-        $validated['json_pengeluaran_pemasangan'] = $request->json_pengeluaran_pemasangan ?? [];
         
-        // Tidak update field yang tidak ada di form edit (tetap pertahankan data existing)
-        unset($validated['json_pengeluaran_entertaiment']);
-        unset($validated['json_pengeluaran_tukang']);
-        unset($validated['json_kerja_tambah']);
+        // Handle json_pengeluaran_pemasangan - convert string to array if needed
+        $pemasanganData = $request->json_pengeluaran_pemasangan ?? [];
+        if (is_string($pemasanganData)) {
+            $pemasanganData = json_decode($pemasanganData, true) ?? [];
+        }
+        $validated['json_pengeluaran_pemasangan'] = $pemasanganData;
+        
+        // Debug: Log pemasangan data
+        \Log::info('RAB Store Debug - Pemasangan Data', [
+            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
+            'validated_pemasangan' => $validated['json_pengeluaran_pemasangan']
+        ]);
+        
+        // Set default values for fields that are not used in edit mode
+        $validated['json_pengeluaran_entertaiment'] = [];
+        $validated['json_pengeluaran_tukang'] = [];
+        $validated['json_kerja_tambah'] = [];
+        $validated['status_deleted'] = false;
+        $validated['status'] = $request->status ?? 'draft';
+        $validated['created_by'] = auth()->id();
+        $validated['penawaran_id'] = $request->penawaran_id ?? null;
+        $validated['pemasangan_id'] = $request->pemasangan_id ?? null;
         $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         
-        $rancanganAnggaranBiaya->update($validated);
-        return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', 'RAB berhasil diupdate.');
+        try {
+            // Debug: Log data before update
+            \Log::info('RAB Update - Data before update:', [
+                'json_pengeluaran_pemasangan' => $validated['json_pengeluaran_pemasangan'],
+                'penawaran_id' => $validated['penawaran_id'],
+                'pemasangan_id' => $validated['pemasangan_id']
+            ]);
+            
+            $rancanganAnggaranBiaya->update($validated);
+            
+            // Debug: Check if pemasangan data was saved
+            $pemasanganData = $rancanganAnggaranBiaya->fresh()->json_pengeluaran_pemasangan;
+            $message = 'RAB berhasil diperbarui.';
+            if (!empty($pemasanganData)) {
+                $message .= ' Data pemasangan tersimpan: ' . count($pemasanganData) . ' item.';
+            } else {
+                $message .= ' WARNING: Data pemasangan kosong!';
+            }
+            
+            \Log::info('RAB Update - Success:', ['message' => $message]);
+            return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('RAB Update Error: ' . $e->getMessage());
+            \Log::error('RAB Update Error Stack: ' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function destroy(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
@@ -832,11 +877,11 @@ class RancanganAnggaranBiayaController extends Controller
     public function storeTukang(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
         $request->validate([
-            'json_pengeluaran_tukang' => 'required|array'
+            'json_pengeluaran_tukang' => 'nullable|array'
         ]);
 
         // Data dari form sudah lengkap (existing + baru), langsung update
-        $tukangData = $request->json_pengeluaran_tukang;
+        $tukangData = $request->json_pengeluaran_tukang ?? [];
         
         // Convert tukang data to numeric format
         $convertedTukangData = $this->convertTukangDataToNumeric($tukangData);
