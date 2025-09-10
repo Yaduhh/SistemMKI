@@ -227,98 +227,84 @@
                                             </div>
                                         </div>
 
-                                        <!-- Tabel Material -->
+                                        <!-- Card Layout untuk Material -->
                                         @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
-                                            <div class="overflow-x-auto">
-                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                                                    <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                        <tr>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                                Supplier</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                                Item</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                                Qty</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                                Satuan</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
-                                                                Harga Satuan</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
-                                                                Sub Total</th>
-                                                            <th
-                                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                                Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody
-                                                        class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                        @foreach ($mr['materials'] as $matIndex => $material)
-                                                            <tr
-                                                                class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100">
-                                                                    {{ $material['supplier'] ?? '-' }}
-                                                                </td>
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 font-medium">
-                                                                    {{ $material['item'] ?? '-' }}
-                                                                </td>
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
-                                                                    {{ $material['qty'] ?? '-' }}
-                                                                </td>
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
-                                                                    {{ $material['satuan'] ?? '-' }}
-                                                                </td>
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 truncate">
+                                            <div class="space-y-4">
+                                                @foreach ($mr['materials'] as $matIndex => $material)
+                                                    <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-600 p-4">
+                                                        <!-- Header Card -->
+                                                        <div class="flex items-start justify-between mb-3">
+                                                            <div class="flex items-center gap-3">
+                                                                <div class="p-2 bg-teal-100 dark:bg-teal-900/20 rounded-lg">
+                                                                    <svg class="w-5 h-5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                    </svg>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ $material['item'] ?? '-' }}</h4>
+                                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $material['supplier'] ?? '-' }}</p>
+                                                                </div>
+                                                            </div>
+                                                            @php
+                                                                $statusColors = [
+                                                                    'Pengajuan' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                                    'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                                    'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                                ];
+                                                                $status = $material['status'] ?? 'Pengajuan';
+                                                                $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                            @endphp
+                                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                                {{ $status }}
+                                                            </span>
+                                                        </div>
+
+                                                        <!-- Detail Info Grid -->
+                                                        <div class="grid grid-cols-2 gap-4 mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                                </svg>
+                                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Qty:</span>
+                                                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ $material['qty'] ?? '-' }} {{ $material['satuan'] ?? '' }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Harga Info -->
+                                                        <div class="grid grid-cols-2 gap-4">
+                                                            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                                <div class="flex items-center gap-2 mb-1">
+                                                                    <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                                    </svg>
+                                                                    <span class="text-sm font-medium text-green-700 dark:text-green-300">Harga Satuan</span>
+                                                                </div>
+                                                                <p class="text-sm font-semibold text-green-600 dark:text-green-400">
                                                                     @if (isset($material['harga_satuan']) && $material['harga_satuan'])
-                                                                        Rp
-                                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
+                                                                        Rp {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
                                                                     @else
                                                                         -
                                                                     @endif
-                                                                </td>
-                                                                <td
-                                                                    class="px-4 py-3  text-gray-900 dark:text-gray-100 font-semibold truncate">
+                                                                </p>
+                                                            </div>
+                                                            <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                                                                <div class="flex items-center gap-2 mb-1">
+                                                                    <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                                    </svg>
+                                                                    <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">Sub Total</span>
+                                                                </div>
+                                                                <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                                                                     @if (isset($material['sub_total']) && $material['sub_total'])
-                                                                        Rp
-                                                                        {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
+                                                                        Rp {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
                                                                     @else
                                                                         -
                                                                     @endif
-                                                                </td>
-                                                                <td class="px-4 py-3 ">
-                                                                    @php
-                                                                        $statusColors = [
-                                                                            'Pengajuan' =>
-                                                                                'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-                                                                            'Disetujui' =>
-                                                                                'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-                                                                            'Ditolak' =>
-                                                                                'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-                                                                        ];
-                                                                        $status = $material['status'] ?? 'Pengajuan';
-                                                                        $color =
-                                                                            $statusColors[$status] ??
-                                                                            'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
-                                                                    @endphp
-                                                                    <span
-                                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                                                        {{ $status }}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
 
                                             <!-- Total per MR -->
@@ -495,97 +481,84 @@
                                     </div>
                                 </div>
 
-                                <!-- Tabel Material -->
+                                <!-- Card Layout untuk Material -->
                                 @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
-                                    <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                                            <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                <tr>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Supplier</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Item</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Qty</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Satuan</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
-                                                        Harga Satuan</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider truncate">
-                                                        Sub Total</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                @foreach ($mr['materials'] as $matIndex => $material)
-                                                    <tr
-                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                            {{ $material['supplier'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                                            {{ $material['item'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
-                                                            {{ $material['qty'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
-                                                            {{ $material['satuan'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                    <div class="space-y-4">
+                                        @foreach ($mr['materials'] as $matIndex => $material)
+                                            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-600 p-4">
+                                                <!-- Header Card -->
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="p-2 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg">
+                                                            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-900 dark:text-white">{{ $material['item'] ?? '-' }}</h4>
+                                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $material['supplier'] ?? '-' }}</p>
+                                                        </div>
+                                                    </div>
+                                                    @php
+                                                        $statusColors = [
+                                                            'Pengajuan' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                            'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                        ];
+                                                        $status = $material['status'] ?? 'Pengajuan';
+                                                        $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Detail Info Grid -->
+                                                <div class="grid grid-cols-2 gap-4 mb-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Qty:</span>
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $material['qty'] ?? '-' }} {{ $material['satuan'] ?? '' }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Harga Info -->
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-green-700 dark:text-green-300">Harga Satuan</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-green-600 dark:text-green-400">
                                                             @if (isset($material['harga_satuan']) && $material['harga_satuan'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $material['harga_satuan']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-semibold truncate">
+                                                        </p>
+                                                    </div>
+                                                    <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">Sub Total</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                                                             @if (isset($material['sub_total']) && $material['sub_total'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td class="px-4 py-3">
-                                                            @php
-                                                                $statusColors = [
-                                                                    'Pengajuan' =>
-                                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-                                                                    'Disetujui' =>
-                                                                        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-                                                                    'Ditolak' =>
-                                                                        'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-                                                                ];
-                                                                $status = $material['status'] ?? 'Pengajuan';
-                                                                $color =
-                                                                    $statusColors[$status] ??
-                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
-                                                            @endphp
-                                                            <span
-                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                                                {{ $status }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
                                     <!-- Total per MR -->
@@ -697,50 +670,45 @@
                                     </div>
                                 </div>
 
-                                <!-- Tabel Material -->
+                                <!-- Card Layout untuk Material -->
                                 @if (isset($mr['materials']) && is_array($mr['materials']) && count($mr['materials']) > 0)
-                                    <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                                            <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                <tr>
-                                                    <th
-                                                        class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Supplier</th>
-                                                    <th
-                                                        class="px-4 py-3 text-xs text-left font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Item</th>
-                                                    <th
-                                                        class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                        Qty</th>
-                                                    <th
-                                                        class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider text-center">
-                                                        Satuan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                @foreach ($mr['materials'] as $material)
-                                                    <tr
-                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td class="px-4 py-3  text-gray-900 dark:text-gray-100">
-                                                            {{ $material['supplier'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 font-medium">
-                                                            {{ $material['item'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
-                                                            {{ $material['qty'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3  text-gray-900 dark:text-gray-100 text-center">
-                                                            {{ $material['satuan'] ?? '-' }}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                    <div class="space-y-4">
+                                        @foreach ($mr['materials'] as $material)
+                                            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-600 p-4">
+                                                <!-- Header Card -->
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-900 dark:text-white">{{ $material['item'] ?? '-' }}</h4>
+                                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $material['supplier'] ?? '-' }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Detail Info Grid -->
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Qty:</span>
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $material['qty'] ?? '-' }}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Satuan:</span>
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $material['satuan'] ?? '-' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 @else
                                     <div class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
@@ -797,89 +765,84 @@
                                     </div>
                                 </div>
 
-                                <!-- Tabel Termin -->
+                                <!-- Card Layout untuk Termin -->
                                 @if (isset($section['termin']) && is_array($section['termin']) && count($section['termin']) > 0)
-                                    <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                                            <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                <tr>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Termin</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Tanggal</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Kredit</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Sisa</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Persentase</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                @foreach ($section['termin'] as $terminIndex => $termin)
-                                                    <tr
-                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
-                                                            Termin {{ $terminIndex + 1 }}
-                                                        </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                            {{ $termin['tanggal'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                    <div class="space-y-4">
+                                        @foreach ($section['termin'] as $terminIndex => $termin)
+                                            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-600 p-4">
+                                                <!-- Header Card -->
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                                                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-900 dark:text-white">Termin {{ $terminIndex + 1 }}</h4>
+                                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $termin['tanggal'] ?? '-' }}</p>
+                                                        </div>
+                                                    </div>
+                                                    @php
+                                                        $statusColors = [
+                                                            'Pengajuan' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                            'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                        ];
+                                                        $status = $termin['status'] ?? 'Pengajuan';
+                                                        $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Detail Info Grid -->
+                                                <div class="grid grid-cols-1 gap-4 mb-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Persentase:</span>
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $termin['persentase'] ?? '-' }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Financial Info -->
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-green-700 dark:text-green-300">Kredit</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-green-600 dark:text-green-400">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        </p>
+                                                    </div>
+                                                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Sisa</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                            {{ $termin['persentase'] ?? '-' }}
-                                                        </td>
-                                                        <td class="px-4 py-3">
-                                                            @php
-                                                                $statusColors = [
-                                                                    'Pengajuan' =>
-                                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-                                                                    'Disetujui' =>
-                                                                        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-                                                                    'Ditolak' =>
-                                                                        'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-                                                                ];
-                                                                $status = $termin['status'] ?? 'Pengajuan';
-                                                                $color =
-                                                                    $statusColors[$status] ??
-                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
-                                                            @endphp
-                                                            <span
-                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                                                {{ $status }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
                                     <!-- Total per Section -->
@@ -960,89 +923,84 @@
                                     </div>
                                 </div>
 
-                                <!-- Tabel Termin -->
+                                <!-- Card Layout untuk Termin -->
                                 @if (isset($section['termin']) && is_array($section['termin']) && count($section['termin']) > 0)
-                                    <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
-                                            <thead class="bg-gray-50 dark:bg-zinc-800">
-                                                <tr>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Termin</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Tanggal</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Kredit</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Sisa</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Persentase</th>
-                                                    <th
-                                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider">
-                                                        Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody
-                                                class="bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
-                                                @foreach ($section['termin'] as $terminIndex => $termin)
-                                                    <tr
-                                                        class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
-                                                            Termin {{ $terminIndex + 1 }}
-                                                        </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                            {{ $termin['tanggal'] ?? '-' }}
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                    <div class="space-y-4">
+                                        @foreach ($section['termin'] as $terminIndex => $termin)
+                                            <div class="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-600 p-4">
+                                                <!-- Header Card -->
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                                                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-semibold text-gray-900 dark:text-white">Termin {{ $terminIndex + 1 }}</h4>
+                                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $termin['tanggal'] ?? '-' }}</p>
+                                                        </div>
+                                                    </div>
+                                                    @php
+                                                        $statusColors = [
+                                                            'Pengajuan' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+                                                            'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+                                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
+                                                        ];
+                                                        $status = $termin['status'] ?? 'Pengajuan';
+                                                        $color = $statusColors[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </div>
+
+                                                <!-- Detail Info Grid -->
+                                                <div class="grid grid-cols-1 gap-4 mb-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Persentase:</span>
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $termin['persentase'] ?? '-' }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Financial Info -->
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-green-700 dark:text-green-300">Kredit</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-green-600 dark:text-green-400">
                                                             @if (isset($termin['kredit']) && $termin['kredit'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $termin['kredit']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                        </p>
+                                                    </div>
+                                                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Sisa</span>
+                                                        </div>
+                                                        <p class="text-sm font-semibold text-blue-600 dark:text-blue-400">
                                                             @if (isset($termin['sisa']) && $termin['sisa'])
-                                                                Rp
-                                                                {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
+                                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $termin['sisa']), 0, ',', '.') }}
                                                             @else
                                                                 -
                                                             @endif
-                                                        </td>
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                                            {{ $termin['persentase'] ?? '-' }}
-                                                        </td>
-                                                        <td class="px-4 py-3">
-                                                            @php
-                                                                $statusColors = [
-                                                                    'Pengajuan' =>
-                                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-                                                                    'Disetujui' =>
-                                                                        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
-                                                                    'Ditolak' =>
-                                                                        'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-                                                                ];
-                                                                $status = $termin['status'] ?? 'Pengajuan';
-                                                                $color =
-                                                                    $statusColors[$status] ??
-                                                                    'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
-                                                            @endphp
-                                                            <span
-                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                                                {{ $status }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
                                     <!-- Total per Section -->

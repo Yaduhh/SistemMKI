@@ -86,201 +86,125 @@
             </div>
         @endif
 
-        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-700">
-                        <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                        </path>
-                                    </svg>
-                                    No
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                        </path>
-                                    </svg>
-                                    Proyek
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                    Tanggal
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
-                                        </path>
-                                    </svg>
-                                    Debet
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
-                                        </path>
-                                    </svg>
-                                    Kredit
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
-                                        </path>
-                                    </svg>
-                                    Sisa
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                    Persentase
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    Status
-                                </div>
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                                        </path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    Aksi
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @forelse($kerjaTambahData as $data)
-                            <tr>
-                                <td class="text-center">
-                                    {{ $loop->iteration }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    <div class="font-medium">{{ $data['proyek'] }}</div>
-                                    <div class="text-zinc-500 dark:text-zinc-400">{{ $data['pekerjaan'] }}</div>
-                                    <div class="text-zinc-500 dark:text-zinc-400 text-xs">{{ $data['kontraktor'] }} -
-                                        {{ $data['lokasi'] }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    @if (!empty($data['tanggal']) && $data['tanggal'] !== null && $data['tanggal'] !== '-')
-                                        @formatTanggalIndonesia($data['tanggal'])
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($data['debet'], 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($data['kredit'], 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    Rp {{ number_format($data['sisa'], 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-white">
-                                    {{ $data['persentase'] }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $statusColors = [
-                                            'Pengajuan' =>
-                                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                            'Disetujui' =>
-                                                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                            'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-                                        ];
-                                        $color =
-                                            $statusColors[$data['status']] ??
-                                            'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-                                    @endphp
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
-                                        {{ $data['status'] }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button
-                                            onclick="updateStatus({{ $data['id'] }}, '{{ $data['tanggal'] }}', {{ $data['kredit'] }}, '{{ $data['status'] }}')"
-                                            class="hover:cursor-pointer bg-zinc-100 dark:bg-orange-700 px-4 py-2 rounded-md text-orange-600 hover:text-orange-900 dark:text-orange-50 dark:hover:text-orange-300 flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                </path>
-                                            </svg>
-                                            Update Status
-                                        </button>
-                                        <a href="{{ route('admin.rancangan-anggaran-biaya.show', $data['id']) }}"
-                                            class="hover:cursor-pointer bg-zinc-100 dark:bg-emerald-700 px-4 py-2 rounded-md text-emerald-600 hover:text-emerald-900 dark:text-emerald-50 dark:hover:text-emerald-300 flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                                </path>
-                                            </svg>
-                                            Lihat RAB
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9"
-                                    class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                                    Tidak ada data kerja tambah
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <!-- Card Layout untuk Mobile -->
+        <div class="space-y-4">
+            @forelse($kerjaTambahData as $data)
+                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-4">
+                    <!-- Header Card -->
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <h3 class="font-semibold text-zinc-900 dark:text-white">{{ $data['proyek'] }}</h3>
+                                <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $data['pekerjaan'] }}</p>
+                                <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ $data['kontraktor'] }} - {{ $data['lokasi'] }}</p>
+                            </div>
+                        </div>
+                        @php
+                            $statusColors = [
+                                'Pengajuan' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                            ];
+                            $color = $statusColors[$data['status']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                        @endphp
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $color }}">
+                            {{ $data['status'] }}
+                        </span>
+                    </div>
+
+                    <!-- Detail Info Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Tanggal -->
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Tanggal:</span>
+                            <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                                @if (!empty($data['tanggal']) && $data['tanggal'] !== null && $data['tanggal'] !== '-')
+                                    @formatTanggalIndonesia($data['tanggal'])
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        </div>
+
+                        <!-- Persentase -->
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Persentase:</span>
+                            <span class="text-sm text-zinc-600 dark:text-zinc-400">{{ $data['persentase'] }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Financial Info -->
+                    <div class="grid grid-cols-1 gap-4 mb-4">
+                        <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-4 h-4 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                                <span class="text-sm font-medium text-red-700 dark:text-red-300">Debet</span>
+                            </div>
+                            <p class="text-sm font-semibold text-red-600 dark:text-red-400">Rp {{ number_format($data['debet'], 0, ',', '.') }}</p>
+                        </div>
+                        <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                                <span class="text-sm font-medium text-green-700 dark:text-green-300">Kredit</span>
+                            </div>
+                            <p class="text-sm font-semibold text-green-600 dark:text-green-400">Rp {{ number_format($data['kredit'], 0, ',', '.') }}</p>
+                        </div>
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Sisa</span>
+                            </div>
+                            <p class="text-sm font-semibold text-blue-600 dark:text-blue-400">Rp {{ number_format($data['sisa'], 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                        <button
+                            onclick="updateStatus({{ $data['id'] }}, '{{ $data['tanggal'] }}', {{ $data['kredit'] }}, '{{ $data['status'] }}')"
+                            class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Update Status
+                        </button>
+                        <a href="{{ route('admin.rancangan-anggaran-biaya.show', $data['id']) }}"
+                            class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Lihat RAB
+                        </a>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-8 text-center">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="w-16 h-16 bg-zinc-100 dark:bg-zinc-700 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-2">Tidak ada data</h3>
+                            <p class="text-zinc-500 dark:text-zinc-400">Belum ada kerja tambah yang tercatat.</p>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
         </div>
     </div>
     </div>
