@@ -18,12 +18,12 @@ class CeilingController extends Controller
         $ceilings = Ceiling::where('status_deleted', false)
             ->where('status_aksesoris', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
         
         $aksesorisCeilings = Ceiling::where('status_deleted', false)
             ->where('status_aksesoris', 1)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.ceiling.index', compact('ceilings', 'aksesorisCeilings'));
     }

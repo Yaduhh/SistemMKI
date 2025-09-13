@@ -18,12 +18,12 @@ class WallpanelController extends Controller
         $wallpanels = Wallpanel::where('status_deleted', false)
             ->where('status_aksesoris', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
         
         $aksesorisWallpanels = Wallpanel::where('status_deleted', false)
             ->where('status_aksesoris', 1)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.wallpanel.index', compact('wallpanels', 'aksesorisWallpanels'));
     }

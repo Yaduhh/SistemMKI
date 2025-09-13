@@ -16,11 +16,11 @@ class PintuController extends Controller
     {
         $pintus = Pintu::where('status_aksesoris', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
         
         $aksesorisPintus = Pintu::where('status_aksesoris', 1)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('admin.pintu.index', compact('pintus', 'aksesorisPintus'));
     }
