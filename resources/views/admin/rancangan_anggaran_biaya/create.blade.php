@@ -497,11 +497,13 @@
         }
 
         function formatRupiah(amount) {
+            const roundedAmount = Math.round(amount);
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(amount);
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(roundedAmount);
         }
 
         function prepareFormData() {
@@ -649,7 +651,11 @@
 
         // Function to format number to Indonesian Rupiah format
         function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID').format(angka);
+            const roundedAngka = Math.round(angka);
+            return new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(roundedAngka);
         }
 
         // Calculate total from produk penawaran

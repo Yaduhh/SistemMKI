@@ -296,6 +296,10 @@ Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->
                 Route::patch('rab/{rab}/update-kerja-tambah', [App\Http\Controllers\Supervisi\RabController::class, 'updateKerjaTambah'])->name('rab.update-kerja-tambah');
                 Route::get('rab/{rab}/edit-material-tambahan', [App\Http\Controllers\Supervisi\RabController::class, 'editMaterialTambahan'])->name('rab.edit-material-tambahan');
                 Route::patch('rab/{rab}/update-material-tambahan', [App\Http\Controllers\Supervisi\RabController::class, 'updateMaterialTambahan'])->name('rab.update-material-tambahan');
+                
+                // Dokumentasi Routes
+                Route::post('rab/{rab}/upload-dokumentasi', [App\Http\Controllers\Supervisi\RabDokumentasiController::class, 'upload'])->name('rab.upload-dokumentasi');
+                Route::delete('rab/dokumentasi/{dokumentasi}/delete', [App\Http\Controllers\Supervisi\RabDokumentasiController::class, 'delete'])->name('rab.dokumentasi.delete');
 
     // Settings Route
     Route::view('/setting', 'supervisi.setting.index')->name('setting.index');

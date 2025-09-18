@@ -393,7 +393,7 @@
                     @endif
                     @if ($rab->status !== 'selesai')
                         <div class="border-t border-gray-200 dark:border-zinc-600 pt-6">
-                            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+                            <div class="flex flex-col lg:justify-between lg:items-center gap-4">
                                 <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Pengajuan Material &
                                     Dana</h4>
                                 <div class="flex flex-col sm:flex-row gap-3">
@@ -415,7 +415,7 @@
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                             </path>
                                         </svg>
-                                        PengajuanTukang
+                                        Pengajuan Tukang
                                     </a>
                                     <a href="{{ route('supervisi.rab.edit-kerja-tambah', $rab) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 bg-orange-600 dark:bg-orange-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-orange-700 dark:hover:bg-orange-600 focus:outline-none focus:border-orange-700 focus:ring focus:ring-orange-200 active:bg-orange-900 disabled:opacity-25 transition">
@@ -733,10 +733,6 @@
                     count($rab->json_pengeluaran_tukang) > 0)
                 <div class="mt-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Tukang</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">
-                        Data pengeluaran tukang untuk proyek ini
-                    </p>
-
                     <div class="space-y-6">
                         @foreach ($rab->json_pengeluaran_tukang as $sectionIndex => $section)
                             <div

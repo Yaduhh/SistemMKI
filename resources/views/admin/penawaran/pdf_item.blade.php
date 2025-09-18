@@ -209,7 +209,7 @@
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['dimensi'] ?? '-' }}</td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                            {{ $item['panjang'] ? rtrim(rtrim(number_format($item['panjang'] / 1000, 2), '0'), '.') : '-' }}
+                                            {{ $item['panjang'] ? rtrim(rtrim(number_format($item['panjang'] / 1, 2), '0'), '.') : '-' }}
                                         </td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['finishing'] ?? '-' }}</td>

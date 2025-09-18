@@ -103,6 +103,11 @@ class RancanganAnggaranBiaya extends Model
         return $this->belongsTo(User::class, 'supervisi_id');
     }
 
+    public function dokumentasi()
+    {
+        return $this->hasMany(RabDokumentasi::class)->where('status_deleted', false);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

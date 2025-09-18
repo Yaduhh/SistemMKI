@@ -105,7 +105,7 @@ class RabController extends Controller
      */
     public function editTukang(RancanganAnggaranBiaya $rab)
     {
-        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi']);
+        $rab->load(['penawaran', 'pemasangan', 'user', 'supervisi', 'dokumentasi']);
         
         return view('supervisi.tukang.edit-tukang', compact('rab'));
     }

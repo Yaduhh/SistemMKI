@@ -118,11 +118,11 @@
                                                         class="border w-full rounded-xl px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                                                 </div>
                                                 <div class="w-full">
-                                                    <label class="block  font-medium mb-1">Tanggal <span class="text-red-500">*</span></label>
+                                                    <label class="block  font-medium mb-1">Tanggal <span
+                                                            class="text-red-500">*</span></label>
                                                     <input type="date" data-mr-field="tanggal"
                                                         name="json_pengeluaran_entertaiment[{{ $mrIndex }}][tanggal]"
-                                                        value="{{ $mr['tanggal'] ?? '' }}"
-                                                        required
+                                                        value="{{ $mr['tanggal'] ?? '' }}" required
                                                         class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                                                 </div>
                                                 <div class="flex gap-2 items-end">
@@ -174,13 +174,14 @@
                                                         </div>
                                                         <div>
                                                             <label class="block text-xs font-medium mb-1">Qty</label>
-                                                            <input type="number" min="0"
+                                                            <input type="number" min="0" step="0.01"
                                                                 data-material-field="qty"
                                                                 name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][qty]"
                                                                 value="{{ $material['qty'] ?? '' }}"
                                                                 placeholder="Qty"
                                                                 class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white qty-input {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
-                                                                {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'readonly' : '' }} />
+                                                                {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'readonly' : '' }}
+                                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                                                         </div>
                                                         <div>
                                                             <label
@@ -200,7 +201,8 @@
                                                                 value="{{ $material['harga_satuan'] ?? '' }}"
                                                                 placeholder="Harga Satuan"
                                                                 class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
-                                                                {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'readonly' : '' }} />
+                                                                {{ ($material['status'] ?? '') === 'Disetujui' || ($material['status'] ?? '') === 'Ditolak' ? 'readonly' : '' }}
+                                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                                                             <input type="hidden"
                                                                 name="json_pengeluaran_entertaiment[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan_raw]"
                                                                 value="{{ $material['harga_satuan'] ?? '' }}" />
@@ -275,19 +277,19 @@
                 <div class="w-full">
                     <label class="block  font-medium mb-1">Tanggal <span class="text-red-500">*</span></label>
                     <input type="date" data-mr-field="tanggal"
-                        name="json_pengeluaran_entertaiment[__MRIDX__][tanggal]"
-                        required
+                        name="json_pengeluaran_entertaiment[__MRIDX__][tanggal]" required
                         class="border rounded-xl w-full px-4 py-2 dark:bg-zinc-700 dark:text-white" />
                 </div>
-                <div class="flex items-end">
+                <div class="flex gap-2">
                     <button type="button"
                         class="dark:bg-teal-600 bg-teal-600 text-white px-4 py-2 rounded-xl add-entertaiment-material truncate"
-                        data-mr-index="__MRIDX__">+ Material</button>
-                </div>
-                <div class="flex items-end">
+                        data-mr-index="__MRIDX__">
+                        + Material
+                    </button>
                     <button type="button"
-                        class="dark:bg-red-600 bg-red-600 text-white px-4 py-2 rounded-xl remove-entertaiment-mr-group truncate">Hapus
-                        MR</button>
+                        class="dark:bg-red-600 bg-red-600 text-white px-4 py-2 rounded-xl remove-entertaiment-mr-group truncate">
+                        Hapus MR
+                    </button>
                 </div>
             </div>
         </div>
@@ -295,7 +297,7 @@
 
     <template id="entertaiment-material-row-template">
         <div
-            class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end p-6 rounded-xl mt-4 bg-gray-100 dark:bg-zinc-700/30 relative entertaiment-material-row pt-12">
+            class="grid grid-cols-1 md:grid-cols-7 gap-4 relative entertaiment-material-row pt-12">
             <div>
                 <label class="block text-xs font-medium mb-1">Supplier</label>
                 <input type="text" data-material-field="supplier"
@@ -311,9 +313,10 @@
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Qty</label>
-                <input type="number" min="0" data-material-field="qty"
+                <input type="number" min="0" step="0.01" data-material-field="qty"
                     name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][qty]" placeholder="Qty"
-                    class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white qty-input" />
+                    class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white qty-input"
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
             </div>
             <div>
                 <label class="block text-xs font-medium mb-1">Satuan</label>
@@ -327,7 +330,8 @@
                 <input type="text" data-material-field="harga_satuan"
                     name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][harga_satuan]"
                     placeholder="Harga Satuan"
-                    class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input" />
+                    class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-input"
+                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                 <input type="hidden"
                     name="json_pengeluaran_entertaiment[__MRIDX__][materials][__MATIDX__][harga_satuan_raw]"
                     value="" />
@@ -407,7 +411,7 @@
         // Remove MR Group
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('remove-entertaiment-mr-group')) {
-                if (confirm('Apakah Anda yakin ingin menghapus MR group ini?')) {
+                if (confirm('Yakin mau hapus MR group ini?')) {
                     e.target.closest('.mr-group').remove();
                 }
             }
@@ -416,27 +420,29 @@
         // Remove Material Row
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('remove-material')) {
-                const materialRow = e.target.closest('.entertaiment-material-row');
-                const mrGroup = materialRow.closest('.mr-group');
-                materialRow.remove();
+                if (confirm('Yakin mau hapus material ini?')) {
+                    const materialRow = e.target.closest('.entertaiment-material-row');
+                    const mrGroup = materialRow.closest('.mr-group');
+                    materialRow.remove();
 
-                // Reindex remaining materials in this MR group
-                const remainingMaterials = mrGroup.querySelectorAll('.entertaiment-material-row');
-                remainingMaterials.forEach((material, index) => {
-                    const mrIndex = mrGroup.querySelector('.add-entertaiment-material').getAttribute(
-                        'data-mr-index');
+                    // Reindex remaining materials in this MR group
+                    const remainingMaterials = mrGroup.querySelectorAll('.entertaiment-material-row');
+                    remainingMaterials.forEach((material, index) => {
+                        const mrIndex = mrGroup.querySelector('.add-entertaiment-material').getAttribute(
+                            'data-mr-index');
 
-                    // Update all input names with new index
-                    material.querySelectorAll('input[name*="[materials]"]').forEach(input => {
-                        const oldName = input.name;
-                        const newName = oldName.replace(/\[materials\]\[\d+\]/,
-                            `[materials][${index}]`);
-                        input.name = newName;
+                        // Update all input names with new index
+                        material.querySelectorAll('input[name*="[materials]"]').forEach(input => {
+                            const oldName = input.name;
+                            const newName = oldName.replace(/\[materials\]\[\d+\]/,
+                                `[materials][${index}]`);
+                            input.name = newName;
+                        });
                     });
-                });
 
-                // Update grand total after reindexing
-                updateGrandTotal();
+                    // Update grand total after reindexing
+                    updateGrandTotal();
+                }
             }
         });
 
