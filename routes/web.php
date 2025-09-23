@@ -182,6 +182,12 @@ Route::post('penawaran/{penawaran}/revisi', [App\Http\Controllers\Admin\Penawara
 Route::get('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'createRevisi'])->name('penawaran-pintu.create-revisi');
 Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranPintuController::class, 'storeRevisi'])->name('penawaran-pintu.store-revisi');
 
+    // File Manager Routes
+    Route::resource('file-manager', App\Http\Controllers\Admin\FileManagerController::class);
+    Route::get('file-manager/{fileManager}/download', [App\Http\Controllers\Admin\FileManagerController::class, 'download'])->name('file-manager.download');
+    Route::patch('file-manager/{fileManager}/toggle-public', [App\Http\Controllers\Admin\FileManagerController::class, 'togglePublic'])->name('file-manager.toggle-public');
+    Route::patch('file-manager/{fileManager}/toggle-featured', [App\Http\Controllers\Admin\FileManagerController::class, 'toggleFeatured'])->name('file-manager.toggle-featured');
+
     Route::resource('pengajuan', PengajuanController::class);
     Route::put('pengajuan/{pengajuan}/approve', [PengajuanController::class, 'approve'])->name('pengajuan.approve');
     Route::put('pengajuan/{pengajuan}/reject', [PengajuanController::class, 'reject'])->name('pengajuan.reject');

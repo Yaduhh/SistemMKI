@@ -251,10 +251,10 @@
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                         {{ $no++ }}</td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                        {{ $product['nama_produk'] ?? ($product['item'] ?? '-') }}</td>
+                                        {{ $product['nama_produk'] ?? '-' }}</td>
                                     <td width="25%"
                                         style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                        {{ $product['item'] ?? ($product['item'] ?? '-') }}</td>
+                                        {{ $product['code'] ?? '-' }}</td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                         {{ isset($product['lebar']) && (int)$product['lebar'] > 0 ? (int) $product['lebar'] . ' cm' : '-' }}</td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">

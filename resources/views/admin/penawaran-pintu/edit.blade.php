@@ -531,7 +531,7 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Produk Pintu</label>
                                 <select name="json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][item]" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" data-section="${sectionIndex}" data-product="${productIndex}">
                                     <option value="">Pilih Produk Pintu</option>
-                                    ${this.products.pintu.map(p => `<option value="${p.code}">${p.code} - ${p.nama_produk} (${this.formatNumber(p.lebar)}x${this.formatNumber(p.tebal)}x${this.formatNumber(p.tinggi)} cm) - Rp ${p.harga_satuan ? p.harga_satuan.toLocaleString('id-ID') : '0'}</option>`).join('')}
+                                    ${this.products.pintu.map(p => `<option value="${p.id}">${p.code} - ${p.nama_produk} (${this.formatNumber(p.lebar)}x${this.formatNumber(p.tebal)}x${this.formatNumber(p.tinggi)} cm) - Rp ${p.harga_satuan ? p.harga_satuan.toLocaleString('id-ID') : '0'}</option>`).join('')}
                                 </select>
                             </div>
                             <div>
@@ -807,10 +807,10 @@
                      });
                  },
 
-                 autofillPintuProduct(sectionIndex, productIndex, code) {
-                    if (!code) return;
+                 autofillPintuProduct(sectionIndex, productIndex, id) {
+                    if (!id) return;
 
-                    const produk = this.products.pintu.find(p => p.code === code);
+                    const produk = this.products.pintu.find(p => p.id == id);
                     if (produk) {
                         const container = document.getElementById(`pintu-products-${sectionIndex}`);
                         const productDiv = container.children[productIndex];
@@ -832,6 +832,19 @@
                                 // Simpan harga sebagai angka biasa, bukan format currency
                                 hargaInput.value = produk.harga_satuan || 0;
                                 hargaInput.dataset.rawValue = produk.harga_satuan || 0;
+                            }
+
+                            // Simpan code produk ke hidden input
+                            const codeInput = productDiv.querySelector('input[name*="[code]"]');
+                            if (!codeInput) {
+                                // Buat hidden input untuk code jika belum ada
+                                const hiddenCodeInput = document.createElement('input');
+                                hiddenCodeInput.type = 'hidden';
+                                hiddenCodeInput.name = `json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][code]`;
+                                productDiv.appendChild(hiddenCodeInput);
+                                hiddenCodeInput.value = produk.code || '';
+                            } else {
+                                codeInput.value = produk.code || '';
                             }
 
                             // Tampilkan/sembunyikan field jumlah individual berdasarkan status_aksesoris

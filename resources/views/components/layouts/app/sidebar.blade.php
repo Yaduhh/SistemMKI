@@ -22,6 +22,9 @@
                 <flux:navlist.item icon="document-text" :href="route('admin.arsip-file.index')"
                     :current="request()->routeIs('admin.arsip-file.*')" wire:navigate>{{ __('File Purchase Order') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="cloud-arrow-up" :href="route('admin.file-manager.index')"
+                    :current="request()->routeIs('admin.file-manager.*')" wire:navigate>{{ __('File Manager') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Manajemen Proyek')" class="mt-10">
