@@ -9,10 +9,12 @@ use App\Models\Penawaran;
 use App\Models\Client;
 use App\Models\User;
 use App\Models\SyaratPemasangan;
+use App\Traits\NomorPemasanganGenerator;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PemasanganController extends Controller
 {
+    use NomorPemasanganGenerator;
     /**
      * Display a listing of the resource.
      */
@@ -204,5 +206,72 @@ class PemasanganController extends Controller
         $pdf = Pdf::loadView('admin.pemasangan.pdf_item', compact('pemasangan', 'json_produk', 'json_pemasangan', 'json_syarat_kondisi', 'logo', 'ttd'));
         $safeFilename = str_replace(['/', '\\'], '-', $pemasangan->nomor_pemasangan);
         return $pdf->download('pemasangan_' . $safeFilename . '.pdf');
+    }
+
+    /**
+     * Buat revisi pemasangan
+     */
+    public function createRevisi(Pemasangan $pemasangan)
+    {
+        // Cek apakah bisa dibuat revisi
+        if (!$this->canCreateRevisiPemasangan($pemasangan->nomor_pemasangan)) {
+            return redirect()->back()->with('error', 'Maksimal revisi hanya 3 kali');
+        }
+
+        // Ambil data pemasangan asli
+        $penawaran = $pemasangan->penawaran;
+        $client = $pemasangan->client;
+        $sales = $pemasangan->sales;
+        
+        // Filter syarat pemasangan berdasarkan jenis penawaran
+        if ($penawaran->penawaran_pintu) {
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 1)
+                ->get();
+        } else {
+            $syaratPemasangan = SyaratPemasangan::where('status_deleted', 0)
+                ->where('syarat_pintu', 0)
+                ->get();
+        }
+
+        return view('admin.pemasangan.create-revisi', compact('pemasangan', 'penawaran', 'client', 'sales', 'syaratPemasangan'));
+    }
+
+    /**
+     * Simpan revisi pemasangan
+     */
+    public function storeRevisi(Request $request, Pemasangan $pemasangan)
+    {
+        $request->validate([
+            'tanggal_pemasangan' => 'required|date',
+            'judul_pemasangan' => 'required|string|max:255',
+            'json_pemasangan' => 'required|array',
+            'total' => 'required|numeric',
+            'diskon' => 'nullable|numeric',
+            'grand_total' => 'required|numeric',
+            'json_syarat_kondisi' => 'nullable|array',
+            'logo' => 'nullable|string|max:100',
+            'catatan_revisi' => 'nullable|string',
+        ]);
+
+        $data = $request->all();
+        $data['created_by'] = auth()->id();
+        $data['status'] = 0; // Default status 0
+        $data['status_deleted'] = 0; // Default status_deleted 0
+        $data['is_revisi'] = true; // Set sebagai revisi
+        $data['revisi_from'] = $pemasangan->id; // Set referensi ke pemasangan asli
+        
+        // Copy data dari pemasangan asli
+        $data['id_penawaran'] = $pemasangan->id_penawaran;
+        $data['id_client'] = $pemasangan->id_client;
+        $data['id_sales'] = $pemasangan->id_sales;
+        
+        // Generate nomor revisi
+        $nomorAsli = preg_replace('/\s+R\d+$/', '', $pemasangan->nomor_pemasangan);
+        $data['nomor_pemasangan'] = $this->generateNomorRevisiPemasangan($nomorAsli);
+        
+        $revisiPemasangan = Pemasangan::create($data);
+        
+        return redirect()->route('admin.pemasangan.show', $revisiPemasangan->id)->with('success', 'Revisi pemasangan berhasil dibuat.');
     }
 }

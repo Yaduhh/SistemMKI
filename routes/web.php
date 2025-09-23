@@ -217,6 +217,10 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     Route::resource('pemasangan', App\Http\Controllers\Admin\PemasanganController::class);
     Route::patch('pemasangan/{pemasangan}/update-status', [App\Http\Controllers\Admin\PemasanganController::class, 'updateStatus'])->name('pemasangan.update-status');
     
+    // Routes untuk revisi pemasangan
+    Route::get('pemasangan/{pemasangan}/revisi', [App\Http\Controllers\Admin\PemasanganController::class, 'createRevisi'])->name('pemasangan.create-revisi');
+    Route::post('pemasangan/{pemasangan}/revisi', [App\Http\Controllers\Admin\PemasanganController::class, 'storeRevisi'])->name('pemasangan.store-revisi');
+    
     // Rancangan Anggaran Biaya Routes
     Route::resource('rancangan-anggaran-biaya', App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class);
     Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/export-pdf', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'exportPdf'])->name('rancangan-anggaran-biaya.export-pdf');

@@ -5,9 +5,30 @@
                 <div class="mb-4 lg:mb-0">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Detail Pemasangan</h1>
                     <p class="text-gray-600 dark:text-gray-400">Informasi lengkap pemasangan <span
-                            class="font-semibold">{{ $pemasangan->nomor_pemasangan }}</span></p>
+                            class="font-semibold">{{ $pemasangan->nomor_pemasangan }}</span>
+                        @if($pemasangan->is_revisi)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 ml-2">
+                                {{ $pemasangan->status_revisi }}
+                            </span>
+                        @endif
+                    </p>
+                    @if($pemasangan->is_revisi && $pemasangan->pemasanganAsli)
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Revisi dari: <a href="{{ route('admin.pemasangan.show', $pemasangan->pemasanganAsli->id) }}" class="font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">{{ $pemasangan->pemasanganAsli->nomor_pemasangan }}</a></p>
+                    @endif
+                    @if($pemasangan->catatan_revisi)
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Catatan Revisi: <span class="font-semibold">{{ $pemasangan->catatan_revisi }}</span></p>
+                    @endif
                 </div>
                 <div class="flex-wrap gap-2 flex">
+                    @if(!$pemasangan->is_revisi && $pemasangan->canCreateRevisi())
+                        <a href="{{ route('admin.pemasangan.create-revisi', $pemasangan->id) }}"
+                            class="inline-flex items-center px-4 py-2 bg-orange-600 dark:bg-orange-600 border border-transparent rounded-lg font-semibold text-white hover:bg-orange-700 dark:hover:bg-orange-600 focus:bg-orange-700 dark:focus:bg-orange-600 active:bg-orange-900 dark:active:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Buat Revisi
+                        </a>
+                    @endif
                     <a href="{{ $pemasangan->penawaran && $pemasangan->penawaran->penawaran_pintu ? route('admin.penawaran-pintu.show', $pemasangan->id_penawaran) : route('admin.penawaran.show', $pemasangan->id_penawaran) }}"
                         class="inline-flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-600 border border-transparent rounded-lg font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:bg-emerald-700 dark:focus:bg-emerald-600 active:bg-emerald-900 dark:active:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,6 +313,76 @@
                     Cetak PDF
                 </a>
             </div>
+
+            <!-- Daftar Revisi -->
+            @if($pemasangan->revisi->count() > 0 || $pemasangan->is_revisi)
+                <div class="mt-8">
+                    <div class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Riwayat Revisi
+                        </h2>
+                        
+                        @if($pemasangan->is_revisi && $pemasangan->pemasanganAsli)
+                            <!-- Jika ini adalah revisi, tampilkan pemasangan asli -->
+                            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <h3 class="font-semibold text-blue-900 dark:text-blue-300 mb-2">Pemasangan Asli</h3>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-blue-800 dark:text-blue-200">
+                                            <a href="{{ route('admin.pemasangan.show', $pemasangan->pemasanganAsli->id) }}" 
+                                               class="font-semibold hover:underline">{{ $pemasangan->pemasanganAsli->nomor_pemasangan }}</a>
+                                            - {{ $pemasangan->pemasanganAsli->judul_pemasangan }}
+                                        </p>
+                                        <p class="text-xs text-blue-600 dark:text-blue-400">
+                                            Dibuat: {{ $pemasangan->pemasanganAsli->created_at->format('d M Y H:i') }}
+                                        </p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                        Asli
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($pemasangan->revisi->count() > 0)
+                            <!-- Daftar revisi -->
+                            <div class="space-y-3">
+                                @foreach($pemasangan->revisi as $revisi)
+                                    <div class="p-4 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-700">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm text-orange-800 dark:text-orange-200">
+                                                    <a href="{{ route('admin.pemasangan.show', $revisi->id) }}" 
+                                                       class="font-semibold hover:underline">{{ $revisi->nomor_pemasangan }}</a>
+                                                    - {{ $revisi->judul_pemasangan }}
+                                                </p>
+                                                <p class="text-xs text-orange-600 dark:text-orange-400">
+                                                    Dibuat: {{ $revisi->created_at->format('d M Y H:i') }}
+                                                    @if($revisi->catatan_revisi)
+                                                        | Catatan: {{ $revisi->catatan_revisi }}
+                                                    @endif
+                                                </p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
+                                                {{ $revisi->status_revisi }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if(!$pemasangan->is_revisi && $pemasangan->revisi->count() == 0)
+                            <div class="text-center py-4 text-gray-500 dark:text-gray-400">
+                                <p class="text-sm">Belum ada revisi untuk pemasangan ini</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-layouts.app>
