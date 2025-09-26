@@ -95,12 +95,21 @@
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
             Tgl:
-            @if($penawaran->updated_at)
+            @if ($penawaran->updated_at)
                 @php
                     $bulanIndonesia = [
-                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        1 => 'Januari',
+                        2 => 'Februari',
+                        3 => 'Maret',
+                        4 => 'April',
+                        5 => 'Mei',
+                        6 => 'Juni',
+                        7 => 'Juli',
+                        8 => 'Agustus',
+                        9 => 'September',
+                        10 => 'Oktober',
+                        11 => 'November',
+                        12 => 'Desember',
                     ];
                     $tanggal = $penawaran->updated_at;
                     $bulan = $bulanIndonesia[$tanggal->month];
@@ -209,7 +218,8 @@
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['dimensi'] ?? '-' }}</td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                            {{ $item['panjang'] ? rtrim(rtrim(number_format($item['panjang'] / 1, 2), '0'), '.') : '-' }}
+                                            
+                                            {{ $item['panjang'] ? rtrim(rtrim(number_format($item['panjang'] / 1000, 2), '0'), '.') : '-' }}
                                         </td>
                                         <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                             {{ $item['finishing'] ?? '-' }}</td>
@@ -529,8 +539,7 @@
                     <p>Hormat Kami,</p>
                     @if ($penawaran->user && $penawaran->user->tandaTangan)
                         <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}"
-                            alt="Tanda Tangan"
-                            style="width: 140px; height: 100px; object-fit: contain;">
+                            alt="Tanda Tangan" style="width: 140px; height: 100px; object-fit: contain;">
                     @endif
                     <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
                 </div>
