@@ -246,6 +246,11 @@
                     const input = row.querySelector(`[data-material-field="${key}"]`);
                     if (input) input.value = data[key];
                 }
+                
+                // Update total setelah data dimuat
+                setTimeout(() => {
+                    updateRowTotal(row);
+                }, 50);
             }
             function fillMrGroup(mrGroup, data) {
                 if (!data) return;
@@ -408,15 +413,20 @@
 
             function updateGrandTotal() {
                 let grandTotal = 0;
-                mrList.querySelectorAll('.mr-group').forEach(mrGroup => {
+                console.log('Updating grand total...');
+                mrList.querySelectorAll('.mr-group').forEach((mrGroup, mrIndex) => {
                     let totalMr = 0;
-                    mrGroup.querySelectorAll('.material-row').forEach(materialRow => {
+                    console.log(`Processing MR group ${mrIndex + 1}`);
+                    mrGroup.querySelectorAll('.material-row').forEach((materialRow, matIndex) => {
                         const itemInput = materialRow.querySelector('[data-material-field="item"]');
                         const subTotalInput = materialRow.querySelector('.sub-total-input');
                         
                         if (itemInput && subTotalInput) {
                             const itemValue = itemInput.value.trim();
-                            const val = parseFloat(getAngkaFromRupiah(subTotalInput.value || '0'));
+                            const subTotalValue = subTotalInput.value || '0';
+                            const val = parseFloat(getAngkaFromRupiah(subTotalValue));
+                            
+                            console.log(`  Material ${matIndex + 1}: ${itemValue}, sub_total: "${subTotalValue}", parsed: ${val}`);
                             
                             if (!isNaN(val)) {
                                 // Jika item adalah Diskon, kurangkan dari total
@@ -430,10 +440,12 @@
                         }
                     });
                     
+                    console.log(`  Total MR ${mrIndex + 1}: ${totalMr}`);
                     const totalMrEl = mrGroup.querySelector('.total-mr');
                     if (totalMrEl) totalMrEl.textContent = totalMr.toLocaleString('id-ID');
                     grandTotal += totalMr;
                 });
+                console.log(`Grand Total: ${grandTotal}`);
                 grandTotalEl.textContent = grandTotal.toLocaleString('id-ID');
                 grandTotalEl.className = 'material-tambahan-grand-total';
             }
@@ -651,7 +663,37 @@
             // Inisialisasi dari old input jika ada
             if (window.oldMaterialTambahan && Array.isArray(window.oldMaterialTambahan) && window.oldMaterialTambahan.length) {
                 window.oldMaterialTambahan.forEach(mr => addMrGroup(mr));
+                // Update grand total setelah data dimuat
+                setTimeout(() => {
+                    updateGrandTotal();
+                }, 100);
             }
+            
+            // Inisialisasi dari existing data untuk edit mode
+            if (window.existingMaterialTambahan && Array.isArray(window.existingMaterialTambahan) && window.existingMaterialTambahan.length) {
+                console.log('Loading existing material tambahan data:', window.existingMaterialTambahan);
+                window.existingMaterialTambahan.forEach(mr => addMrGroup(mr));
+                // Update grand total setelah data dimuat
+                setTimeout(() => {
+                    updateGrandTotal();
+                }, 100);
+            }
+            
+            // Expose function untuk load existing data dari halaman edit
+            window.materialTambahanFunctions = {
+                loadExistingData: function(data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        // Clear existing data first
+                        mrList.innerHTML = '';
+                        // Load new data
+                        data.forEach(mr => addMrGroup(mr));
+                        // Update grand total setelah data dimuat
+                        setTimeout(() => {
+                            updateGrandTotal();
+                        }, 100);
+                    }
+                }
+            };
 
             addMrBtn.addEventListener('click', function () {
                 addMrGroup();
@@ -746,10 +788,15 @@
                 // Format existing values
                 setTimeout(() => {
                     document.querySelectorAll('.harga-satuan-input, .sub-total-input, .ongkir-subtotal-input').forEach(function(input) {
-                        if (input.value && !input.value.includes('Rp ')) {
-                            formatRupiahInput(input);
+                        if (input.value) {
+                            // Jika sudah dalam format Rp, biarkan saja
+                            if (!input.value.includes('Rp ')) {
+                                formatRupiahInput(input);
+                            }
                         }
                     });
+                    // Update grand total setelah formatting
+                    updateGrandTotal();
                 }, 100);
                 
                 // Saat submit form, ubah ke angka murni

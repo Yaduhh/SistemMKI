@@ -277,7 +277,7 @@
                                 </td>
                                 <td class="text-right">
                                     Rp
-                                    {{ number_format($totalHargaDenganJumlah, 0, ',', '.') }}
+                                    {{ number_format((float) $totalHargaDenganJumlah, 0, ',', '.') }}
                                 </td>
                             </tr>
                         @endforeach
@@ -496,8 +496,139 @@
         </tbody>
     </table>
 
-    {{-- III. Pengeluaran Non Material --}}
-    <div class="section-title">III. PENGELUARAN NON MATERIAL</div>
+    {{-- III. Pengeluaran Material Tambahan --}}
+    <div class="section-title">III. PENGELUARAN MATERIAL TAMBAHAN</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 8%">MR</th>
+                <th style="width: 12%">Tanggal</th>
+                <th style="width: 15%">Supplier</th>
+                <th style="width: 18%">Item</th>
+                <th style="width: 8%">Ukuran</th>
+                <th style="width: 8%">Panjang</th>
+                <th style="width: 6%">Qty</th>
+                <th style="width: 6%">Satuan</th>
+                <th style="width: 10%">Harga Satuan</th>
+                <th style="width: 11%">Sub Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalTambahan = 0;
+                $lastMr = null;
+                $hasApprovedMaterialTambahan = false;
+                foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan ?? [] as $mrGroup) {
+                    $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                        return isset($material['status']) && $material['status'] === 'Disetujui';
+                    });
+                    if (!empty($approvedMaterials)) {
+                        $hasApprovedMaterialTambahan = true;
+                        break;
+                    }
+                }
+            @endphp
+
+            @if ($hasApprovedMaterialTambahan)
+                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan ?? [] as $mrGroup)
+                    @php
+                        // Filter hanya material dengan status Disetujui
+                        $approvedMaterials = array_filter($mrGroup['materials'] ?? [], function ($material) {
+                            return isset($material['status']) && $material['status'] === 'Disetujui';
+                        });
+
+                        // Skip MR jika tidak ada material yang disetujui
+                        if (empty($approvedMaterials)) {
+                            continue;
+                        }
+                    @endphp
+                    @php
+                        $isFirst = true;
+                        $subtotalMr = 0;
+                        $materialCount = count($approvedMaterials);
+                        $materialIndex = 0;
+                    @endphp
+                    @foreach ($approvedMaterials as $material)
+                    @php
+                        if ($lastMr !== null && $lastMr !== ($mrGroup['mr'] ?? '-')) {
+                            // Baris kosong biru muda antar MR
+                            echo '<tr>';
+                            for ($i = 0; $i < 10; $i++) {
+                                echo '<td style="padding:10px 0; background:#e3e9f7;"></td>';
+                            }
+                            echo '</tr>';
+                        }
+                        $lastMr = $mrGroup['mr'] ?? '-';
+                        $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
+                            ? $material['harga_satuan']
+                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                        $subTotal = is_numeric($material['sub_total'] ?? null)
+                            ? $material['sub_total']
+                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                        $itemName = strtolower(trim($material['item'] ?? ''));
+                        if ($itemName === 'diskon') {
+                            $totalTambahan -= $subTotal;
+                            $subtotalMr -= $subTotal;
+                        } else {
+                            $totalTambahan += $subTotal;
+                            $subtotalMr += $subTotal;
+                        }
+                        $materialIndex++;
+                    @endphp
+                    <tr>
+                        <td class="text-center">
+                            @if ($isFirst)
+                                {{ !empty($mrGroup['mr']) ? $mrGroup['mr'] : '' }}
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            @if ($isFirst)
+                                {{ !empty($mrGroup['tanggal']) ? formatTanggalIndo($mrGroup['tanggal']) : '' }}
+                            @endif
+                        </td>
+                        <td>{{ !empty($material['supplier']) ? $material['supplier'] : '' }}</td>
+                        <td>{{ !empty($material['item']) ? $material['item'] : '' }}</td>
+                        <td class="text-center">{{ !empty($material['ukuran']) ? $material['ukuran'] : '' }}</td>
+                        <td class="text-center">{{ !empty($material['panjang']) ? $material['panjang'] : '' }}</td>
+                        <td class="text-center">
+                            {{ isset($material['qty']) && $material['qty'] !== null && $material['qty'] !== '' ? $material['qty'] : '' }}
+                        </td>
+                        <td class="text-center">{{ !empty($material['satuan']) ? $material['satuan'] : '' }}</td>
+                        <td class="text-right">
+                            @php
+                                $itemName = strtolower(trim($material['item'] ?? ''));
+                            @endphp
+                            @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
+                                {{-- kosong --}}
+                            @else
+                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                            @endif
+                        </td>
+                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
+                    </tr>
+                    @php $isFirst = false; @endphp
+                    @if ($materialIndex === $materialCount)
+                        <tr class="highlightTotal">
+                            <td colspan="10" style="text-align:center;">Total: Rp
+                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                        </tr>
+                    @endif
+                    @endforeach
+                @endforeach
+            @else
+                <tr>
+                    <td colspan="10" class="text-center">-</td>
+                </tr>
+            @endif
+            <tr class="highlight">
+                <td colspan="9" class="text-right">GRAND TOTAL</td>
+                <td class="text-right">Rp {{ number_format($totalTambahan, 0, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {{-- IV. Pengeluaran Non Material --}}
+    <div class="section-title">IV. PENGELUARAN NON MATERIAL</div>
     <table>
         <thead>
             <tr>
@@ -653,8 +784,8 @@
 
 
 
-    {{-- VI. Pengeluaran Tukang --}}
-    <div class="section-title">VI. PENGELUARAN TUKANG</div>
+    {{-- V. Pengeluaran Tukang --}}
+    <div class="section-title">V. PENGELUARAN TUKANG</div>
     @php
         $hasApprovedTukang = false;
         foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section) {
@@ -789,8 +920,8 @@
         </table>
     @endif
 
-    {{-- VII. Kerja Tambah --}}
-    <div class="section-title">VII. KERJA TAMBAH</div>
+    {{-- VI. Kerja Tambah --}}
+    <div class="section-title">VI. KERJA TAMBAH</div>
     @php
         $hasApprovedKerjaTambah = false;
         foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section) {
@@ -927,6 +1058,7 @@
         $grandTotal = 0;
         $grandTotal += $totalUtama;
         $grandTotal += $totalPendukung;
+        $grandTotal += $totalTambahan;
         $grandTotal += $totalEntertaiment;
 
         // Hitung total tukang dari kredit - hanya yang status Disetujui
@@ -967,6 +1099,7 @@
         // Nilai Kontrak (Material + Pemasangan)
         $materialUtama = $totalUtama ?? 0;
         $materialPemasangan = $totalPendukung ?? 0;
+        $materialTambahan = $totalTambahan ?? 0;
         $biayaEntertaint = $totalEntertaiment ?? 0;
         $biayaTukang = $totalTukangDebet ?? 0;
         $kerjaTambah = $totalKerjaTambahDebet ?? 0;
@@ -974,6 +1107,7 @@
         $totalPengeluaran =
             $materialUtama +
             $materialPemasangan +
+            $materialTambahan +
             $biayaEntertaint +
             $biayaTukang +
             $kerjaTambah;
@@ -982,7 +1116,7 @@
         // Nilai Kontrak (Pemasangan Saja) - FIX sesuai permintaan user
         $nilaiKontrakPemasanganFix = $rancanganAnggaranBiaya->pemasangan->grand_total ?? 0;
         $totalPengeluaranPemasangan =
-            $materialPemasangan + $biayaEntertaint + $biayaTukang + $kerjaTambah;
+            $materialPemasangan + $materialTambahan + $biayaEntertaint + $biayaTukang + $kerjaTambah;
         $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasangan;
     @endphp
     <div class="section-title grand-total">GRAND TOTAL : Rp {{ number_format($grandTotal, 0, ',', '.') }}</div>
@@ -1074,6 +1208,11 @@
                 <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
             </tr>
             <tr>
+                <td class="no-border">MATERIAL TAMBAHAN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($materialTambahan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
                 <td class="no-border">BIAYA NON MATERIAL</td>
                 <td class="no-border">:</td>
                 <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
@@ -1119,6 +1258,11 @@
                 <td class="no-border">MATERIAL PEMASANGAN</td>
                 <td class="no-border">:</td>
                 <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">MATERIAL TAMBAHAN</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">Rp {{ number_format($materialTambahan, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">BIAYA NON MATERIAL</td>

@@ -312,7 +312,7 @@
                                                     </td>
                                                     <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                                         @if (isset($product['diskon']) && $product['diskon'] > 0)
-                                                            {{ number_format($product['diskon'], 0, ',', '.') }}%
+                                                            {{ number_format((float) $product['diskon'], 0, ',', '.') }}%
                                                         @else
                                                             -
                                                         @endif

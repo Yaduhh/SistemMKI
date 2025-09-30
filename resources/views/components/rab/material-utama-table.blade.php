@@ -113,14 +113,14 @@
                         <input type="hidden" name="material_utama[{{ $i }}][harga_satuan]" 
                                value="{{ $item['harga'] ?? 0 }}">
                         <div class="w-full px-2 py-1 text-right">
-                            Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }}
+                            Rp {{ number_format((float) $item['harga'], 0, ',', '.') }}
                         </div>
                     </td>
                     <td class="border px-3 py-2 dark:border-zinc-700 truncate">
                         <input type="hidden" name="material_utama[{{ $i }}][total]" 
                                value="{{ $item['total_harga'] ?? 0 }}">
                         <div class="w-full px-2 py-1 text-right font-semibold">
-                            Rp {{ number_format($item['total_harga'] ?? 0, 0, ',', '.') }}
+                            Rp {{ number_format((float) $item['total_harga'], 0, ',', '.') }}
                         </div>
                     </td>
                 </tr>

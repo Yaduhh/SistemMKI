@@ -42,8 +42,8 @@ class MaterialTambahanController extends Controller
                                     'item' => $material['item'] ?? '-',
                                     'qty' => $material['qty'] ?? '-',
                                     'satuan' => $material['satuan'] ?? '-',
-                                    'harga_satuan' => $material['harga_satuan'] ?? 0,
-                                    'sub_total' => $material['sub_total'] ?? 0,
+                                    'harga_satuan' => $this->extractNumericValue($material['harga_satuan'] ?? 0),
+                                    'sub_total' => $this->extractNumericValue($material['sub_total'] ?? 0),
                                     'status' => $material['status'] ?? 'Pengajuan',
                                     'mr_index' => $mrIndex,
                                     'material_index' => $materialIndex,
@@ -104,5 +104,35 @@ class MaterialTambahanController extends Controller
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Extract numeric value from formatted currency string
+     */
+    private function extractNumericValue($value)
+    {
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+        
+        if (is_string($value)) {
+            // Remove Rp, spaces, and commas, but keep dots for decimal
+            $cleanValue = str_replace(['Rp', ' ', ','], '', $value);
+            
+            // If it contains dots, check if it's thousands separator or decimal
+            if (strpos($cleanValue, '.') !== false) {
+                $parts = explode('.', $cleanValue);
+                if (count($parts) == 2) {
+                    // If last part has 3 digits, it's likely thousands separator
+                    if (strlen($parts[1]) == 3) {
+                        $cleanValue = str_replace('.', '', $cleanValue);
+                    }
+                }
+            }
+            
+            return $cleanValue ? (float) $cleanValue : 0;
+        }
+        
+        return 0;
     }
 }

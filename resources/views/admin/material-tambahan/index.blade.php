@@ -184,7 +184,7 @@
                                 </svg>
                                 <span class="text-sm font-medium text-green-700 dark:text-green-300">Harga Satuan</span>
                             </div>
-                            <p class="text-sm font-semibold text-green-600 dark:text-green-400">Rp {{ number_format($materialTambahan['harga_satuan'], 0, ',', '.') }}</p>
+                            <p class="text-sm font-semibold text-green-600 dark:text-green-400">Rp {{ number_format((float) $materialTambahan['harga_satuan'], 0, ',', '.') }}</p>
                         </div>
                         <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                             <div class="flex items-center gap-2 mb-1">
@@ -193,7 +193,7 @@
                                 </svg>
                                 <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">Sub Total</span>
                             </div>
-                            <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Rp {{ number_format($materialTambahan['sub_total'], 0, ',', '.') }}</p>
+                            <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Rp {{ number_format((float) $materialTambahan['sub_total'], 0, ',', '.') }}</p>
                         </div>
                     </div>
 
