@@ -64,13 +64,24 @@ class DailyActivityController extends Controller
 
         $dokumentasi = [];
         if ($request->hasFile('dokumentasi')) {
-            $dokumentasi = ImageService::compressAndStoreMultiple(
-                $request->file('dokumentasi'),
-                'dokumentasi',
-                80,
-                1920,
-                1080
-            );
+            try {
+                $dokumentasi = ImageService::compressAndStoreMultiple(
+                    $request->file('dokumentasi'),
+                    'dokumentasi',
+                    80,
+                    1920,
+                    1080
+                );
+            } catch (\Exception $e) {
+                \Log::error('Upload dokumentasi error', [
+                    'error' => $e->getMessage(),
+                    'user_id' => auth()->id(),
+                    'files_count' => count($request->file('dokumentasi'))
+                ]);
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Gagal mengupload dokumentasi: ' . $e->getMessage());
+            }
         }
 
         $activity = DailyActivity::create([

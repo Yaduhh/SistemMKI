@@ -18,14 +18,29 @@ class ImageService
      */
     public static function compressAndStore($image, $path = 'images', $quality = 80, $maxWidth = 1920, $maxHeight = 1080)
     {
-        // Generate unique filename
-        $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-        $fullPath = $path . '/' . $filename;
+        try {
+            // Generate unique filename
+            $filename = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
+            $fullPath = $path . '/' . $filename;
 
-        // Store the image directly without compression for now
-        Storage::disk('public')->put($fullPath, file_get_contents($image));
+            // Ensure directory exists
+            $directory = storage_path('app/public/' . $path);
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
 
-        return $fullPath;
+            // Store the image directly without compression for now
+            Storage::disk('public')->put($fullPath, file_get_contents($image));
+
+            return $fullPath;
+        } catch (\Exception $e) {
+            \Log::error('ImageService compressAndStore error', [
+                'error' => $e->getMessage(),
+                'path' => $path,
+                'filename' => $image->getClientOriginalName()
+            ]);
+            throw new \Exception('Gagal menyimpan gambar: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -41,9 +56,20 @@ class ImageService
     public static function compressAndStoreMultiple($images, $path = 'images', $quality = 50, $maxWidth = 1920, $maxHeight = 1080)
     {
         $paths = [];
-        foreach ($images as $image) {
-            $paths[] = self::compressAndStore($image, $path, $quality, $maxWidth, $maxHeight);
+        $errors = [];
+        
+        foreach ($images as $index => $image) {
+            try {
+                $paths[] = self::compressAndStore($image, $path, $quality, $maxWidth, $maxHeight);
+            } catch (\Exception $e) {
+                $errors[] = "File " . ($index + 1) . ": " . $e->getMessage();
+            }
         }
+        
+        if (!empty($errors)) {
+            throw new \Exception('Beberapa file gagal diupload: ' . implode(', ', $errors));
+        }
+        
         return $paths;
     }
 } 
