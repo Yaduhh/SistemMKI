@@ -60,9 +60,10 @@ class DailyActivityController extends Controller
             'user_id' => auth()->id(),
             'has_files' => $request->hasFile('dokumentasi'),
             'files_count' => $request->hasFile('dokumentasi') ? count($request->file('dokumentasi')) : 0,
-            'request_size' => strlen(serialize($request->all())),
             'perihal' => $request->perihal,
-            'pihak_bersangkutan' => $request->pihak_bersangkutan
+            'pihak_bersangkutan' => $request->pihak_bersangkutan,
+            'summary' => $request->summary,
+            'lokasi' => $request->lokasi
         ]);
 
         try {
@@ -84,7 +85,12 @@ class DailyActivityController extends Controller
             \Log::error('Validation error in DailyActivity store', [
                 'errors' => $e->errors(),
                 'user_id' => auth()->id(),
-                'request_data' => $request->except(['dokumentasi'])
+                'perihal' => $request->perihal,
+                'pihak_bersangkutan' => $request->pihak_bersangkutan,
+                'summary' => $request->summary,
+                'lokasi' => $request->lokasi,
+                'has_files' => $request->hasFile('dokumentasi'),
+                'files_count' => $request->hasFile('dokumentasi') ? count($request->file('dokumentasi')) : 0
             ]);
             
             return redirect()->back()
@@ -290,7 +296,11 @@ class DailyActivityController extends Controller
                 'errors' => $e->errors(),
                 'user_id' => auth()->id(),
                 'activity_id' => $dailyActivity->id,
-                'request_data' => $request->except(['dokumentasi'])
+                'perihal' => $request->perihal,
+                'pihak_bersangkutan' => $request->pihak_bersangkutan,
+                'summary' => $request->summary,
+                'has_files' => $request->hasFile('dokumentasi'),
+                'files_count' => $request->hasFile('dokumentasi') ? count($request->file('dokumentasi')) : 0
             ]);
             
             return redirect()->back()
