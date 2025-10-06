@@ -77,6 +77,10 @@ Route::middleware(['auth', 'role:2'])->prefix('sales')->name('sales.')->group(fu
 
     // Absensi Route
     Route::get('/absensi', [App\Http\Controllers\Sales\AbsensiController::class, 'index'])->name('absensi.index');
+    
+    // System Info Routes for debugging
+    Route::get('/system-info', [App\Http\Controllers\Sales\SystemInfoController::class, 'uploadInfo'])->name('system-info');
+    Route::post('/test-upload', [App\Http\Controllers\Sales\SystemInfoController::class, 'testUpload'])->name('test-upload');
 
     // Arsip File Routes
     Route::post('/arsip-file', [App\Http\Controllers\Sales\ArsipFileController::class, 'store'])->name('arsip-file.store');

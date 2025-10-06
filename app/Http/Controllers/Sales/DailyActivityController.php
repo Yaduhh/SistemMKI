@@ -55,16 +55,57 @@ class DailyActivityController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|exists:clients,id',
-            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            'summary' => 'nullable|string',
+        // Debug logging untuk request
+        \Log::info('Sales DailyActivity Store Request', [
+            'user_id' => auth()->id(),
+            'has_files' => $request->hasFile('dokumentasi'),
+            'files_count' => $request->hasFile('dokumentasi') ? count($request->file('dokumentasi')) : 0,
+            'request_size' => strlen(serialize($request->all())),
+            'perihal' => $request->perihal,
+            'pihak_bersangkutan' => $request->pihak_bersangkutan
         ]);
+
+        try {
+            $validated = $request->validate([
+                'perihal' => 'required|string|max:255',
+                'pihak_bersangkutan' => 'required|exists:clients,id',
+                'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'summary' => 'nullable|string',
+            ], [
+                'perihal.required' => 'Tujuan kegiatan harus diisi',
+                'perihal.max' => 'Tujuan kegiatan maksimal 255 karakter',
+                'pihak_bersangkutan.required' => 'Pelanggan harus dipilih',
+                'pihak_bersangkutan.exists' => 'Pelanggan yang dipilih tidak valid',
+                'dokumentasi.*.image' => 'File harus berupa gambar',
+                'dokumentasi.*.mimes' => 'Format file harus JPEG, PNG, JPG, atau GIF',
+                'summary.string' => 'Pembahasan harus berupa teks'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in DailyActivity store', [
+                'errors' => $e->errors(),
+                'user_id' => auth()->id(),
+                'request_data' => $request->except(['dokumentasi'])
+            ]);
+            
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        }
 
         $dokumentasi = [];
         if ($request->hasFile('dokumentasi')) {
             try {
+                // Log file details sebelum upload
+                $files = $request->file('dokumentasi');
+                foreach ($files as $index => $file) {
+                    \Log::info("File {$index} details", [
+                        'name' => $file->getClientOriginalName(),
+                        'size' => $file->getSize(),
+                        'mime' => $file->getMimeType(),
+                        'extension' => $file->getClientOriginalExtension()
+                    ]);
+                }
+
                 $dokumentasi = ImageService::compressAndStoreMultiple(
                     $request->file('dokumentasi'),
                     'dokumentasi',
@@ -72,26 +113,57 @@ class DailyActivityController extends Controller
                     1920,
                     1080
                 );
+
+                \Log::info('Upload successful', [
+                    'uploaded_paths' => $dokumentasi,
+                    'count' => count($dokumentasi)
+                ]);
             } catch (\Exception $e) {
                 \Log::error('Upload dokumentasi error', [
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                     'user_id' => auth()->id(),
                     'files_count' => count($request->file('dokumentasi'))
                 ]);
+                
+                // Berikan pesan error yang lebih spesifik
+                $errorMessage = 'Gagal mengupload dokumentasi. ';
+                if (strpos($e->getMessage(), 'file_get_contents') !== false) {
+                    $errorMessage .= 'File terlalu besar atau rusak. Coba kompres file atau pilih file yang lebih kecil.';
+                } elseif (strpos($e->getMessage(), 'Permission denied') !== false) {
+                    $errorMessage .= 'Tidak ada izin untuk menyimpan file. Hubungi administrator.';
+                } elseif (strpos($e->getMessage(), 'No space left') !== false) {
+                    $errorMessage .= 'Penyimpanan penuh. Hubungi administrator.';
+                } else {
+                    $errorMessage .= 'Detail error: ' . $e->getMessage();
+                }
+                
                 return redirect()->back()
                     ->withInput()
-                    ->with('error', 'Gagal mengupload dokumentasi: ' . $e->getMessage());
+                    ->with('error', $errorMessage);
             }
         }
 
-        $activity = DailyActivity::create([
-            'perihal' => $validated['perihal'],
-            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
-            'dokumentasi' => $dokumentasi,
-            'summary' => $validated['summary'],
-            'lokasi' => $request->lokasi,
-            'created_by' => auth()->id(),
-        ]);
+        try {
+            $activity = DailyActivity::create([
+                'perihal' => $validated['perihal'],
+                'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+                'dokumentasi' => $dokumentasi,
+                'summary' => $validated['summary'],
+                'lokasi' => $request->lokasi,
+                'created_by' => auth()->id(),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Database error in DailyActivity store', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'data' => $validated
+            ]);
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal menyimpan aktivitas. Silakan coba lagi atau hubungi administrator jika masalah berlanjut.');
+        }
 
         // Create or update attendance record
         $today = now()->format('Y-m-d');
@@ -197,13 +269,34 @@ class DailyActivityController extends Controller
      */
     public function update(Request $request, DailyActivity $dailyActivity)
     {
-        $validated = $request->validate([
-            'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|exists:clients,id',
-            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-            'deleted_images' => 'nullable|string',
-            'summary' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'perihal' => 'required|string|max:255',
+                'pihak_bersangkutan' => 'required|exists:clients,id',
+                'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'deleted_images' => 'nullable|string',
+                'summary' => 'nullable|string',
+            ], [
+                'perihal.required' => 'Tujuan kegiatan harus diisi',
+                'perihal.max' => 'Tujuan kegiatan maksimal 255 karakter',
+                'pihak_bersangkutan.required' => 'Pelanggan harus dipilih',
+                'pihak_bersangkutan.exists' => 'Pelanggan yang dipilih tidak valid',
+                'dokumentasi.*.image' => 'File harus berupa gambar',
+                'dokumentasi.*.mimes' => 'Format file harus JPEG, PNG, JPG, atau GIF',
+                'summary.string' => 'Pembahasan harus berupa teks'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in DailyActivity update', [
+                'errors' => $e->errors(),
+                'user_id' => auth()->id(),
+                'activity_id' => $dailyActivity->id,
+                'request_data' => $request->except(['dokumentasi'])
+            ]);
+            
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        }
 
         // Simpan data lama untuk logging
         $oldData = $dailyActivity->toArray();
@@ -226,22 +319,60 @@ class DailyActivityController extends Controller
 
         // Upload dan compress gambar baru
         if ($request->hasFile('dokumentasi')) {
-            $newImages = ImageService::compressAndStoreMultiple(
-                $request->file('dokumentasi'),
-                'dokumentasi',
-                80,
-                1920,
-                1080
-            );
-            $dokumentasi = array_merge($dokumentasi, $newImages);
+            try {
+                $newImages = ImageService::compressAndStoreMultiple(
+                    $request->file('dokumentasi'),
+                    'dokumentasi',
+                    80,
+                    1920,
+                    1080
+                );
+                $dokumentasi = array_merge($dokumentasi, $newImages);
+            } catch (\Exception $e) {
+                \Log::error('Upload dokumentasi error in update', [
+                    'error' => $e->getMessage(),
+                    'user_id' => auth()->id(),
+                    'activity_id' => $dailyActivity->id,
+                    'files_count' => count($request->file('dokumentasi'))
+                ]);
+                
+                // Berikan pesan error yang lebih spesifik
+                $errorMessage = 'Gagal mengupload dokumentasi. ';
+                if (strpos($e->getMessage(), 'file_get_contents') !== false) {
+                    $errorMessage .= 'File terlalu besar atau rusak. Coba kompres file atau pilih file yang lebih kecil.';
+                } elseif (strpos($e->getMessage(), 'Permission denied') !== false) {
+                    $errorMessage .= 'Tidak ada izin untuk menyimpan file. Hubungi administrator.';
+                } elseif (strpos($e->getMessage(), 'No space left') !== false) {
+                    $errorMessage .= 'Penyimpanan penuh. Hubungi administrator.';
+                } else {
+                    $errorMessage .= 'Detail error: ' . $e->getMessage();
+                }
+                
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', $errorMessage);
+            }
         }
 
-        $dailyActivity->update([
-            'perihal' => $validated['perihal'],
-            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
-            'dokumentasi' => $dokumentasi,
-            'summary' => $validated['summary'],
-        ]);
+        try {
+            $dailyActivity->update([
+                'perihal' => $validated['perihal'],
+                'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+                'dokumentasi' => $dokumentasi,
+                'summary' => $validated['summary'],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Database error in DailyActivity update', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'activity_id' => $dailyActivity->id,
+                'data' => $validated
+            ]);
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui aktivitas. Silakan coba lagi atau hubungi administrator jika masalah berlanjut.');
+        }
 
         // Log aktivitas
         ActivityLogService::logUpdate(
