@@ -29,8 +29,37 @@ class ImageService
                 mkdir($directory, 0755, true);
             }
 
-            // Store the image directly without compression for now
-            Storage::disk('public')->put($fullPath, file_get_contents($image));
+            $fileSize = $image->getSize();
+            $maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+            // Jika file lebih dari 2MB, kompres
+            if ($fileSize > $maxSize) {
+                \Log::info('File size exceeds 2MB, compressing', [
+                    'original_size' => $fileSize,
+                    'filename' => $image->getClientOriginalName()
+                ]);
+
+                $compressedImage = self::compressImage($image, $quality, $maxWidth, $maxHeight);
+                Storage::disk('public')->put($fullPath, $compressedImage);
+                
+                // Log hasil kompresi
+                $compressedSize = strlen($compressedImage);
+                $compressionRatio = round((($fileSize - $compressedSize) / $fileSize) * 100, 2);
+                
+                \Log::info('Image compression completed', [
+                    'original_size' => $fileSize,
+                    'compressed_size' => $compressedSize,
+                    'compression_ratio' => $compressionRatio . '%',
+                    'filename' => $image->getClientOriginalName()
+                ]);
+            } else {
+                // File kecil, simpan langsung
+                Storage::disk('public')->put($fullPath, file_get_contents($image));
+                \Log::info('File size under 2MB, stored without compression', [
+                    'file_size' => $fileSize,
+                    'filename' => $image->getClientOriginalName()
+                ]);
+            }
 
             return $fullPath;
         } catch (\Exception $e) {
@@ -41,6 +70,79 @@ class ImageService
             ]);
             throw new \Exception('Gagal menyimpan gambar: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Compress image using GD library
+     */
+    private static function compressImage($image, $quality = 80, $maxWidth = 1920, $maxHeight = 1080)
+    {
+        $imagePath = $image->getPathname();
+        $mimeType = $image->getMimeType();
+        
+        // Create image resource based on MIME type
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $sourceImage = imagecreatefromjpeg($imagePath);
+                break;
+            case 'image/png':
+                $sourceImage = imagecreatefrompng($imagePath);
+                break;
+            case 'image/gif':
+                $sourceImage = imagecreatefromgif($imagePath);
+                break;
+            default:
+                throw new \Exception('Unsupported image format: ' . $mimeType);
+        }
+
+        if (!$sourceImage) {
+            throw new \Exception('Failed to create image resource');
+        }
+
+        // Get original dimensions
+        $originalWidth = imagesx($sourceImage);
+        $originalHeight = imagesy($sourceImage);
+
+        // Calculate new dimensions maintaining aspect ratio
+        $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+        $newWidth = (int)($originalWidth * $ratio);
+        $newHeight = (int)($originalHeight * $ratio);
+
+        // Create new image with calculated dimensions
+        $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Preserve transparency for PNG and GIF
+        if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+            $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+            imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+        }
+
+        // Resize image
+        imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+        // Output to buffer
+        ob_start();
+        switch ($mimeType) {
+            case 'image/jpeg':
+                imagejpeg($newImage, null, $quality);
+                break;
+            case 'image/png':
+                imagepng($newImage, null, 9); // PNG compression level 0-9
+                break;
+            case 'image/gif':
+                imagegif($newImage);
+                break;
+        }
+        $compressedData = ob_get_contents();
+        ob_end_clean();
+
+        // Clean up
+        imagedestroy($sourceImage);
+        imagedestroy($newImage);
+
+        return $compressedData;
     }
 
     /**
