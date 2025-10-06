@@ -24,15 +24,14 @@ class RabDokumentasiController extends Controller
 
         $request->validate([
             'dokumentasi' => 'required|array|min:1',
-            'dokumentasi.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240'
+            'dokumentasi.*' => 'required|image|mimes:jpeg,png,jpg,gif'
         ], [
             'dokumentasi.required' => 'File dokumentasi harus diisi',
             'dokumentasi.array' => 'File dokumentasi harus berupa array',
             'dokumentasi.min' => 'Minimal 1 file dokumentasi',
             'dokumentasi.*.required' => 'File dokumentasi harus diisi',
             'dokumentasi.*.image' => 'File harus berupa gambar',
-            'dokumentasi.*.mimes' => 'Format file harus jpeg, png, jpg, atau gif',
-            'dokumentasi.*.max' => 'Ukuran file maksimal 10MB'
+            'dokumentasi.*.mimes' => 'Format file harus jpeg, png, jpg, atau gif'
         ]);
 
         try {

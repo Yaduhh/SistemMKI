@@ -84,7 +84,7 @@ class DailyActivityController extends Controller
             'perihal' => 'required|string',
             'pihak_bersangkutan' => 'required|string',
             'summary' => 'nullable|string',
-            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg'
         ]);
         
         $dokumentasi = [];
@@ -138,7 +138,7 @@ class DailyActivityController extends Controller
             'perihal' => 'required|string',
             'pihak_bersangkutan' => 'required|string',
             'summary' => 'nullable|string',
-            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg'
         ]);
         
         // Handle file uploads
