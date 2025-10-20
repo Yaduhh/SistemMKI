@@ -315,6 +315,16 @@ Route::middleware(['auth', 'role:4'])->prefix('supervisi')->name('supervisi.')->
                 Route::post('rab/{rab}/upload-dokumentasi', [App\Http\Controllers\Supervisi\RabDokumentasiController::class, 'upload'])->name('rab.upload-dokumentasi');
                 Route::delete('rab/dokumentasi/{dokumentasi}/delete', [App\Http\Controllers\Supervisi\RabDokumentasiController::class, 'delete'])->name('rab.dokumentasi.delete');
 
+    // Daily Activity Routes for Supervisi
+    Route::get('/daily-activity', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'index'])->name('daily-activity.index');
+    Route::get('/daily-activity/create', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'create'])->name('daily-activity.create');
+    Route::post('/daily-activity', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'store'])->name('daily-activity.store');
+    Route::get('/daily-activity/{dailyActivity}', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'show'])->name('daily-activity.show');
+    Route::get('/daily-activity/{dailyActivity}/edit', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'edit'])->name('daily-activity.edit');
+    Route::put('/daily-activity/{dailyActivity}', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'update'])->name('daily-activity.update');
+    Route::delete('/daily-activity/{dailyActivity}', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'destroy'])->name('daily-activity.destroy');
+    Route::post('/daily-activity/{dailyActivity}/comment', [App\Http\Controllers\Supervisi\DailyActivityController::class, 'comment'])->name('daily-activity.comment');
+
     // Settings Route
     Route::view('/setting', 'supervisi.setting.index')->name('setting.index');
 });

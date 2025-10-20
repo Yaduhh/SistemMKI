@@ -110,6 +110,20 @@
                             </div>
                         </a>
 
+                        <a href="{{ route('supervisi.daily-activity.index') }}" class="flex items-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200 border border-emerald-200 dark:border-emerald-800">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-800 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Kunjungan Harian</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Kelola aktivitas harian Anda</p>
+                            </div>
+                        </a>
+
                         <a href="{{ route('supervisi.logs') }}" class="flex items-center p-4 bg-gray-50 dark:bg-gray-900/20 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/30 transition-colors duration-200 border border-gray-200 dark:border-gray-800">
                             <div class="flex-shrink-0">
                                 <div class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">

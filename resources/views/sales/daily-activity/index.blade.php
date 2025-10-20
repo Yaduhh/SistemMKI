@@ -179,7 +179,7 @@
                                     <div>
                                         <h4 class="font-medium text-gray-900 dark:text-white">Pelanggan</h4>
                                         <p class="mt-1 text-gray-600 dark:text-gray-400">
-                                            @if ($activity->client)
+                                            @if ($activity->client && $activity->client->nama)
                                                 {{ Str::limit($activity->client->nama, 100) }}
                                             @else
                                                 <span class="text-gray-400 dark:text-gray-500">Pelanggan tidak

@@ -27,6 +27,7 @@
         <flux:navbar class="-mb-px max-lg:hidden space-x-4">
             <flux:navbar.item icon="home" href="{{ route('supervisi.dashboard') }}" :current="request()->routeIs('supervisi.dashboard')">Dashboard</flux:navbar.item>
             <flux:navbar.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">RAB</flux:navbar.item>
+            <flux:navbar.item icon="clipboard-document-list" href="{{ route('supervisi.daily-activity.index') }}" :current="request()->routeIs('supervisi.daily-activity.*')">Kunjungan Harian</flux:navbar.item>
             <flux:navbar.item icon="clipboard-document-list" href="{{ route('supervisi.logs') }}" :current="request()->routeIs('supervisi.logs')">Log</flux:navbar.item>
 
             <flux:separator vertical variant="subtle" class="my-2"/>
@@ -82,6 +83,10 @@
             
             <flux:navlist.group :heading="__('Rancangan Anggaran Biaya')" class="grid mt-10">
                 <flux:navlist.item icon="calculator" href="{{ route('supervisi.rab.index') }}" :current="request()->routeIs('supervisi.rab.*')">Daftar RAB</flux:navlist.item>
+            </flux:navlist.group>
+
+            <flux:navlist.group :heading="__('Aktivitas')" class="grid mt-10">
+                <flux:navlist.item icon="clipboard-document-list" href="{{ route('supervisi.daily-activity.index') }}" :current="request()->routeIs('supervisi.daily-activity.*')">Kunjungan Harian</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Sistem')" class="grid mt-10">

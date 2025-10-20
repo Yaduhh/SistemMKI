@@ -55,10 +55,15 @@ class DailyActivity extends Model
     
     /**
      * Get the client related to this daily activity.
+     * Note: This relationship is only valid when pihak_bersangkutan contains a valid client ID.
      */
     public function client()
     {
-        return $this->belongsTo(Client::class, 'pihak_bersangkutan');
+        // Only return client relationship if pihak_bersangkutan is numeric (client ID)
+        if (is_numeric($this->pihak_bersangkutan)) {
+            return $this->belongsTo(Client::class, 'pihak_bersangkutan');
+        }
+        return null;
     }
 
     // Accessor untuk mendapatkan semua gambar dokumentasi

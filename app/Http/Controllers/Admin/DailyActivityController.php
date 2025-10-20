@@ -19,7 +19,7 @@ class DailyActivityController extends Controller
      */ 
     public function index(Request $request)
     {
-        $query = DailyActivity::with(['creator', 'client'])
+        $query = DailyActivity::with(['creator'])
             ->where('deleted_status', false);
 
         // Filter by user
@@ -51,10 +51,7 @@ class DailyActivityController extends Controller
     public function create()
     {
         $users = User::where('status_deleted', 0)->get();
-        $clients = Client::where('status_deleted', false)
-                        ->orderBy('nama')
-                        ->get();
-        return view('admin.daily-activity.create', compact('users', 'clients'));
+        return view('admin.daily-activity.create', compact('users'));
     }
 
     /**
@@ -64,7 +61,7 @@ class DailyActivityController extends Controller
     {
         $validated = $request->validate([
             'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|exists:clients,id',
+            'pihak_bersangkutan' => 'nullable|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'summary' => 'nullable|string',
         ]);
@@ -82,7 +79,7 @@ class DailyActivityController extends Controller
 
         $activity = DailyActivity::create([
             'perihal' => $validated['perihal'],
-            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+            'pihak_bersangkutan' => $validated['pihak_bersangkutan'] ?? null,
             'dokumentasi' => $dokumentasi,
             'summary' => $validated['summary'],
             'lokasi' => $request->lokasi,
@@ -106,7 +103,7 @@ class DailyActivityController extends Controller
      */
     public function show(DailyActivity $dailyActivity)
     {
-        $dailyActivity->load(['creator', 'client']);
+        $dailyActivity->load(['creator']);
         return view('admin.daily-activity.show', compact('dailyActivity'));
     }
 
@@ -116,10 +113,7 @@ class DailyActivityController extends Controller
     public function edit(DailyActivity $dailyActivity)
     {
         $users = User::where('status_deleted', 0)->get();
-        $clients = Client::where('status_deleted', false)
-                        ->orderBy('nama')
-                        ->get();
-        return view('admin.daily-activity.edit', compact('dailyActivity', 'users', 'clients'));
+        return view('admin.daily-activity.edit', compact('dailyActivity', 'users'));
     }
 
     /**
@@ -154,7 +148,7 @@ class DailyActivityController extends Controller
     {
         $validated = $request->validate([
             'perihal' => 'required|string|max:255',
-            'pihak_bersangkutan' => 'required|exists:clients,id',
+            'pihak_bersangkutan' => 'nullable|string|max:255',
             'dokumentasi.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'deleted_images' => 'nullable|string',
             'summary' => 'nullable|string',
@@ -193,7 +187,7 @@ class DailyActivityController extends Controller
 
         $dailyActivity->update([
             'perihal' => $validated['perihal'],
-            'pihak_bersangkutan' => $validated['pihak_bersangkutan'],
+            'pihak_bersangkutan' => $validated['pihak_bersangkutan'] ?? null,
             'dokumentasi' => $dokumentasi,
             'summary' => $validated['summary'],
         ]);

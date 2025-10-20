@@ -85,17 +85,25 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
-                            <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            Pelanggan
-                        </h3>
-                        <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
-                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->client ? $dailyActivity->client->nama : 'Client tidak ditemukan' }}</p>
+                    @if($dailyActivity->pihak_bersangkutan)
+                        <div class="space-y-2">
+                            <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                                <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Pihak Bersangkutan
+                            </h3>
+                            <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
+                                <p class="text-zinc-700 dark:text-zinc-300">
+                                    @if($dailyActivity->client)
+                                        {{ $dailyActivity->client->nama }}
+                                    @else
+                                        {{ $dailyActivity->pihak_bersangkutan }}
+                                    @endif
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     <div class="space-y-2">
                         <h3 class="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
                             <svg class="h-5 w-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

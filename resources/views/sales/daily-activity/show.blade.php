@@ -93,7 +93,7 @@
                             Pelanggan
                         </h3>
                         <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-700/50">
-                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->client ? $dailyActivity->client->nama : 'Client tidak ditemukan' }}</p>
+                            <p class="text-zinc-700 dark:text-zinc-300">{{ $dailyActivity->client && $dailyActivity->client->nama ? $dailyActivity->client->nama : 'Client tidak ditemukan' }}</p>
                         </div>
                     </div>
                     <div class="space-y-2">

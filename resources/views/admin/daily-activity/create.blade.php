@@ -51,18 +51,14 @@
                 </div>
 
                 <div>
-                    <flux:select
+                    <flux:input
                         name="pihak_bersangkutan"
                         id="pihak_bersangkutan"
-                        label="Pelanggan"
-                        placeholder="Pilih client..."
+                        label="Pihak Bersangkutan (Opsional)"
+                        placeholder="Masukkan nama pihak bersangkutan..."
                         :value="old('pihak_bersangkutan')"
                         :has-error="$errors->has('pihak_bersangkutan')"
-                    >
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}" :selected="old('pihak_bersangkutan') == $client->id">{{ $client->nama }}</option>
-                        @endforeach
-                    </flux:select>
+                    />
                     @error('pihak_bersangkutan')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
