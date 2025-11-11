@@ -290,11 +290,9 @@
                         </span></p>
                     <p style="margin-top: -10px;">
                         @if ($pemasangan->logo === 'WPC MAKMUR ABADI')
-                            <br>Ruko Boulevard Tekno Blok B No.21 Lt.3 <br>Jl. Tekno Widya, Setu, Tangerang Selatan <br>
-                            Banten 15314, Indonesia
+                            <br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640
                         @else
-                            <br>Ruko Boulevard Tekno Block B No.21 <br>Jl.Tekno Widya, Setu, Tangerang Selatan, Banten
-                            15314, Indonesia <br>Email : mega.komposit.indonesia@gmail.com - Website:
+                            <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640 <br>Email : mega.komposit.indonesia@gmail.com - Website:
                             www.megakomposit.com
                         @endif
                     </p>

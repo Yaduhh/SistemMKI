@@ -549,8 +549,7 @@
                     <p><span style="font-weight: bold; text-decoration: underline; color: #000000;">PT. MEGA KOMPOSIT
                             INDONESIA</span></p>
                     <p style="margin-top: -10px;">
-                        <br>Ruko Boulevard Tekno Block B No.21 <br>Jl.Tekno Widya, Setu, Tangerang Selatan, Banten
-                        15314, Indonesia <br>Email : mega.komposit.indonesia@gmail.com -
+                        <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640<br>Email : mega.komposit.indonesia@gmail.com -
                         Website: www.megakomposit.com
                     </p>
                 </div>
