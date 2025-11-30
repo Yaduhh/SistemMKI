@@ -77,6 +77,8 @@
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
+            <!-- Hidden status field to preserve approval status -->
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -94,6 +96,8 @@
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
+            <!-- Hidden status field to preserve approval status -->
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -111,6 +115,8 @@
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
+            <!-- Hidden status field to preserve approval status -->
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -124,6 +130,8 @@
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input ongkir-subtotal-input" />
             </div>
+            <!-- Hidden status field to preserve approval status -->
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>

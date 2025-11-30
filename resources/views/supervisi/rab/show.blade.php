@@ -83,6 +83,206 @@
                 </div>
             </div>
 
+            {{-- Material Utama --}}
+            @if ($rab->json_pengeluaran_material_utama)
+                <div class="w-full mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Material Utama</h3>
+
+                    @php
+                        // Check if this is a pintu penawaran by looking for section structure
+                        $isPintuPenawaran = false;
+                        if (is_array($rab->json_pengeluaran_material_utama)) {
+                            foreach ($rab->json_pengeluaran_material_utama as $key => $value) {
+                                if (strpos($key, 'section_') === 0 && isset($value['products'])) {
+                                    $isPintuPenawaran = true;
+                                    break;
+                                }
+                            }
+                        }
+                    @endphp
+
+                    @if ($isPintuPenawaran)
+                        {{-- Tampilan untuk Penawaran Pintu --}}
+                        @foreach ($rab->json_pengeluaran_material_utama as $sectionKey => $section)
+                            @if (isset($section['judul_1']) && isset($section['products']))
+                                <div class="mb-6">
+                                    <div class="mb-4">
+                                        <h4 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                                            {{ $section['judul_1'] }}</h4>
+                                        @if (isset($section['judul_2']))
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                                {{ $section['judul_2'] }}</p>
+                                        @endif
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            <thead class="bg-zinc-50 dark:bg-zinc-700">
+                                                <tr>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Item</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Nama Produk</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Lebar</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Tebal</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Tinggi</th>
+                                                    <th
+                                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                                        Warna</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                                @foreach ($section['products'] as $product)
+                                                    <tr>
+                                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                            {{ $product['item'] ?? '-' }}</td>
+                                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                            {{ $product['nama_produk'] ?? '-' }}</td>
+                                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                            {{ $product['lebar'] ?? '-' }}</td>
+                                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                            {{ $product['tebal'] ?? '-' }}</td>
+                                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                            {{ $product['tinggi'] ?? '-' }}</td>
+                                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                            {{ $product['warna'] ?? '-' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @else
+                        {{-- Tampilan untuk Penawaran Biasa --}}
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                <thead class="bg-zinc-50 dark:bg-zinc-700">
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Item</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Type</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Dimensi</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Panjang</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Qty</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Satuan</th>
+                                        <th
+                                            class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                            Warna</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    @foreach ($rab->json_pengeluaran_material_utama as $item)
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                {{ $item['item'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['type'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['dimensi'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['panjang'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['qty'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['satuan'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['warna'] ?? '-' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            {{-- Pengeluaran Pemasangan --}}
+            @if ($rab->json_pengeluaran_pemasangan)
+                <div class="w-full mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Pengeluaran Pemasangan</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                            <thead class="bg-zinc-50 dark:bg-zinc-700">
+                                <tr>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Item</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Qty</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Harga Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase">
+                                        Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($rab->json_pengeluaran_pemasangan as $item)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                            {{ $item['item'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['satuan'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['qty'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Total Pemasangan --}}
+                    @php
+                        $totalPemasangan = 0;
+                        foreach ($rab->json_pengeluaran_pemasangan as $item) {
+                            $totalPemasangan += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        }
+                    @endphp
+                    <div class="mt-4 p-4 bg-gray-100 dark:bg-zinc-700 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Grand Total Pemasangan:</span>
+                            <span class="text-lg font-bold text-gray-900 dark:text-white">
+                                Rp {{ number_format($totalPemasangan, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Pengeluaran Entertainment -->
             <div class="w-full">
                 <div class="pb-4">
@@ -1044,4 +1244,157 @@
     </div>
 
 
+
+            {{-- Kesimpulan / Summary --}}
+            <div class="w-full mb-6 mt-8">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 uppercase">Kesimpulan</h3>
+
+                @php
+                    // 1. Total Pemasangan
+                    $totalPemasangan = 0;
+                    if ($rab->json_pengeluaran_pemasangan && is_array($rab->json_pengeluaran_pemasangan)) {
+                        foreach ($rab->json_pengeluaran_pemasangan as $item) {
+                            $totalPemasangan += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        }
+                    }
+
+                    // 2. Material Pendukung (Total semua)
+                    $totalMaterialPendukung = 0;
+                    if ($rab->json_pengeluaran_material_pendukung && is_array($rab->json_pengeluaran_material_pendukung)) {
+                        foreach ($rab->json_pengeluaran_material_pendukung as $mr) {
+                            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                foreach ($mr['materials'] as $material) {
+                                    $totalMaterialPendukung += (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. Entertainment (Disetujui)
+                    $totalEntertainment = 0;
+                    if ($rab->json_pengeluaran_entertaiment && is_array($rab->json_pengeluaran_entertaiment)) {
+                        foreach ($rab->json_pengeluaran_entertaiment as $mr) {
+                            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                foreach ($mr['materials'] as $material) {
+                                    if (($material['status'] ?? '') === 'Disetujui') {
+                                        $totalEntertainment += (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 4. Material Tambahan (Disetujui)
+                    $totalMaterialTambahan = 0;
+                    if ($rab->json_pengeluaran_material_tambahan && is_array($rab->json_pengeluaran_material_tambahan)) {
+                        foreach ($rab->json_pengeluaran_material_tambahan as $mr) {
+                            if (isset($mr['materials']) && is_array($mr['materials'])) {
+                                foreach ($mr['materials'] as $material) {
+                                    if (($material['status'] ?? '') === 'Disetujui') {
+                                        $totalMaterialTambahan += (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 5. Tukang (Disetujui)
+                    $totalTukang = 0;
+                    if ($rab->json_pengeluaran_tukang && is_array($rab->json_pengeluaran_tukang)) {
+                        foreach ($rab->json_pengeluaran_tukang as $section) {
+                            if (isset($section['termin']) && is_array($section['termin'])) {
+                                foreach ($section['termin'] as $termin) {
+                                    if (($termin['status'] ?? '') === 'Disetujui') {
+                                        $totalTukang += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 6. Kerja Tambah (Disetujui)
+                    $totalKerjaTambah = 0;
+                    if ($rab->json_kerja_tambah && is_array($rab->json_kerja_tambah)) {
+                        foreach ($rab->json_kerja_tambah as $section) {
+                            if (isset($section['termin']) && is_array($section['termin'])) {
+                                foreach ($section['termin'] as $termin) {
+                                    if (($termin['status'] ?? '') === 'Disetujui') {
+                                        $totalKerjaTambah += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Total Pengeluaran
+                    $totalPengeluaran = $totalMaterialPendukung + $totalEntertainment + $totalMaterialTambahan + $totalTukang + $totalKerjaTambah;
+
+                    // Sisa Kas
+                    $sisaKas = $totalPemasangan - $totalPengeluaran;
+                @endphp
+
+                <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
+                    <div class="space-y-3">
+                        {{-- Pemasangan --}}
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-zinc-700">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Pemasangan</span>
+                            <span class="text-sm font-semibold text-green-600 dark:text-green-400">
+                                Rp {{ number_format($totalPemasangan, 0, ',', '.') }}
+                            </span>
+                        </div>
+
+                        {{-- Pengeluaran --}}
+                        <div class="pl-4 space-y-2">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Material Pendukung</span>
+                                <span class="text-red-600 dark:text-red-400">
+                                    - Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Non Material (Disetujui)</span>
+                                <span class="text-red-600 dark:text-red-400">
+                                    - Rp {{ number_format($totalEntertainment, 0, ',', '.') }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Material Tambahan (Disetujui)</span>
+                                <span class="text-red-600 dark:text-red-400">
+                                    - Rp {{ number_format($totalMaterialTambahan, 0, ',', '.') }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Tukang (Disetujui)</span>
+                                <span class="text-red-600 dark:text-red-400">
+                                    - Rp {{ number_format($totalTukang, 0, ',', '.') }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Kerja Tambah (Disetujui)</span>
+                                <span class="text-red-600 dark:text-red-400">
+                                    - Rp {{ number_format($totalKerjaTambah, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Total Pengeluaran --}}
+                        <div class="flex justify-between items-center pt-2 pb-3 border-b border-gray-200 dark:border-zinc-700">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Pengeluaran</span>
+                            <span class="text-sm font-semibold text-red-600 dark:text-red-400">
+                                Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
+                            </span>
+                        </div>
+
+                        {{-- Sisa Kas --}}
+                        <div class="flex justify-between items-center pt-3 bg-{{ $sisaKas >= 0 ? 'green' : 'red' }}-50 dark:bg-{{ $sisaKas >= 0 ? 'green' : 'red' }}-900/20 p-4 rounded-lg">
+                            <span class="text-base font-bold text-gray-900 dark:text-white">Sisa Kas</span>
+                            <span class="text-xl font-bold text-{{ $sisaKas >= 0 ? 'green' : 'red' }}-600 dark:text-{{ $sisaKas >= 0 ? 'green' : 'red' }}-400">
+                                Rp {{ number_format($sisaKas, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-layouts.supervisi>
