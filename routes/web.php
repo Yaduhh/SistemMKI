@@ -170,6 +170,7 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
     Route::resource('pintu', PintuController::class);
+    Route::resource('hollow', App\Http\Controllers\Admin\HollowController::class);
     Route::resource('syarat-pemasangan', SyaratPemasanganController::class);
     Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
     Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');

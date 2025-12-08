@@ -72,6 +72,7 @@
                                     'border-yellow-400': section.kategori === 'wallpanel',
                                     'border-purple-400': section.kategori === 'ceiling',
                                     'border-pink-400': section.kategori === 'decking',
+                                    'border-orange-400': section.kategori === 'hollow',
                                 }">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="section.label"></h3>
@@ -97,7 +98,7 @@
                                                         <select :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][item]'" x-model="row.slug" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" @change="autofillProduk(section, row)">
                                                             <option value="">Pilih Produk</option>
                                                             <template x-for="p in section.master" :key="p.slug">
-                                                                <option :value="p.slug" x-text="p.code + ' - ' + (p.lebar ? p.lebar + 'x' + (p.tebal ?? '') + 'x' + (p.panjang ?? '') : '') + (p.warna ? ' - ' + p.warna : '') + ' (Rp ' + (p.harga ? p.harga.toLocaleString('id-ID') : '0') + ')'" :selected="p.slug === row.slug"></option>
+                                                                <option :value="p.slug" x-text="p.code + ' - ' + (p.nama_produk || '') + (p.lebar ? ' (' + p.lebar + 'x' + (p.tebal ?? '') + 'x' + (p.panjang ?? '') + ')' : '') + (p.warna ? ' - ' + p.warna : '') + ' (Rp ' + (p.harga ? p.harga.toLocaleString('id-ID') : '0') + ')'" :selected="p.slug === row.slug"></option>
                                                             </template>
                                                         </select>
                                                     </div>
@@ -121,7 +122,7 @@
                                                     </div>
 
                                                     <!-- VOL(m²) -->
-                                                    <div>
+                                                    <div x-show="section.kategori !== 'hollow'">
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VOL(m²)</label>
                                                         <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][qty_area]'" x-model="row.qty_area" @input="calculateQty(section, row)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Volume" />
                                                     </div>
@@ -133,7 +134,7 @@
                                                     </div>
 
                                                     <!-- Panjang -->
-                                                    <div>
+                                                    <div x-show="section.kategori !== 'hollow'">
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Panjang</label>
                                                         <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-700 text-gray-500 dark:text-zinc-400 cursor-not-allowed" placeholder="Panjang" readonly />
                                                     </div>
@@ -191,6 +192,7 @@
                                                 'border-yellow-400 text-yellow-700': option.kategori === 'wallpanel',
                                                 'border-purple-400 text-purple-700': option.kategori === 'ceiling',
                                                 'border-pink-400 text-pink-700': option.kategori === 'decking',
+                                                'border-orange-400 text-orange-700': option.kategori === 'hollow',
                                             }">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <x-icon name="plus" class="w-5 h-5" />
@@ -216,6 +218,7 @@
                                                     'border-yellow-400 text-yellow-700': option.kategori === 'wallpanel',
                                                     'border-purple-400 text-purple-700': option.kategori === 'ceiling',
                                                     'border-pink-400 text-pink-700': option.kategori === 'decking',
+                                                    'border-orange-400 text-orange-700': option.kategori === 'hollow',
                                                 }">
                                                     <div class="flex items-center justify-center gap-2">
                                                         <x-icon name="plus" class="w-5 h-5" />
@@ -355,6 +358,7 @@ function penawaranForm() {
             { kategori: 'wallpanel', label: 'WALLPANEL', master: @json($wallpanels) },
             { kategori: 'ceiling', label: 'CEILING', master: @json($ceilings) },
             { kategori: 'decking', label: 'DECKING', master: @json($deckings) },
+            { kategori: 'hollow', label: 'HOLLOW', master: @json($hollows) },
         ],
         
         subtotal: 0,
@@ -559,6 +563,8 @@ function penawaranForm() {
                         return this.sectionOptions.find(opt => opt.kategori === 'ceiling')?.master || [];
                     case 'decking':
                         return this.sectionOptions.find(opt => opt.kategori === 'decking')?.master || [];
+                    case 'hollow':
+                        return this.sectionOptions.find(opt => opt.kategori === 'hollow')?.master || [];
                     default:
                         return [];
                 }
@@ -574,18 +580,12 @@ function penawaranForm() {
             if (produk) {
                 console.log('=== DEBUG AUTOFILL PRODUK ===');
                 console.log('Produk dipilih:', produk.code);
-                console.log('luas_btg produk:', produk.luas_btg);
-                console.log('luas_m2 produk:', produk.luas_m2);
-                console.log('VOL(m²) saat ini:', row.qty_area);
                 
                 row.item = produk.nama_produk || section.label;
                 row.code = produk.code ?? '';
                 row.slug = produk.slug ?? '';
                 row.nama_produk = produk.nama_produk || section.label;
                 row.type = produk.code ?? '';
-                row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
-                row.panjang = produk.panjang ?? '';
-                row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
                 row.harga = produk.harga || 0;
                 row.harga_display = this.formatCurrency(produk.harga || 0);
                 
@@ -600,16 +600,33 @@ function penawaranForm() {
                     row.total_harga_display = this.formatCurrency(0);
                 }
                 
-                // Gunakan luas_m2 dari database produk
-                let luas_m2 = produk.luas_m2 || 1;
-                
-                // Jika vol (qty_area) sudah diisi, hitung qty
-                if (row.qty_area && luas_m2 > 0) {
-                    const qty = Math.ceil(parseFloat(row.qty_area) / luas_m2);
-                    row.qty = qty.toString();
-                    console.log('Perhitungan qty di autofill:', parseFloat(row.qty_area), '/', luas_m2, '=', qty);
+                // Untuk produk dengan dimensi (bukan hollow)
+                if (section.kategori !== 'hollow') {
+                    console.log('luas_btg produk:', produk.luas_btg);
+                    console.log('luas_m2 produk:', produk.luas_m2);
+                    console.log('VOL(m²) saat ini:', row.qty_area);
+                    
+                    row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
+                    row.panjang = produk.panjang ?? '';
+                    row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
+                    
+                    // Gunakan luas_m2 dari database produk
+                    let luas_m2 = produk.luas_m2 || 1;
+                    
+                    // Jika vol (qty_area) sudah diisi, hitung qty
+                    if (row.qty_area && luas_m2 > 0) {
+                        const qty = Math.ceil(parseFloat(row.qty_area) / luas_m2);
+                        row.qty = qty.toString();
+                        console.log('Perhitungan qty di autofill:', parseFloat(row.qty_area), '/', luas_m2, '=', qty);
+                    } else {
+                        console.log('qty_area kosong atau luas_m2 tidak valid');
+                    }
                 } else {
-                    console.log('qty_area kosong atau luas_m2 tidak valid');
+                    // Untuk hollow, tidak ada dimensi dan perhitungan luas
+                    row.dimensi = '';
+                    row.panjang = '';
+                    row.tebal_panjang = '';
+                    row.qty_area = '';
                 }
                 
                 // Hitung total harga otomatis jika belum ada
@@ -668,6 +685,9 @@ function penawaranForm() {
         },
 
         calculateQty(section, row) {
+            // Hollow tidak perlu perhitungan qty dari qty_area
+            if (section.kategori === 'hollow') return;
+            
             if (!row.slug || !row.qty_area) return;
             
             const produk = section.master.find(p => p.slug === row.slug);

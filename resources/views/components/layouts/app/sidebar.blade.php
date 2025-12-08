@@ -112,6 +112,9 @@
                     <flux:navlist.item icon="home-modern" :href="route('admin.pintu.index')"
                         :current="request()->routeIs('admin.pintu.*')" wire:navigate>{{ __('Pintu') }}
                     </flux:navlist.item>
+                    <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.hollow.index')"
+                        :current="request()->routeIs('admin.hollow.*')" wire:navigate>{{ __('Hollow') }}
+                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
             {{--<flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">

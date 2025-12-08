@@ -11,6 +11,7 @@ use App\Models\Ceiling;
 use App\Models\Wallpanel;
 use App\Models\Flooring;
 use App\Models\Facade;
+use App\Models\Hollow;
 use App\Models\SyaratKetentuan;
 use App\Traits\NomorPenawaranGenerator;
 use Illuminate\Http\Request;
@@ -65,8 +66,9 @@ class PenawaranController extends Controller
         $wallpanels = Wallpanel::active()->get();
         $floorings = Flooring::active()->get();
         $facades = Facade::active()->get();
+        $hollows = Hollow::active()->get();
         $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
-        return view('admin.penawaran.create', compact('users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
+        return view('admin.penawaran.create', compact('users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'hollows', 'syaratKetentuan'));
     }
 
     public function store(StorePenawaranRequest $request)
@@ -108,8 +110,9 @@ class PenawaranController extends Controller
         $wallpanels = Wallpanel::active()->get();
         $floorings = Flooring::active()->get();
         $facades = Facade::active()->get();
+        $hollows = Hollow::active()->get();
         $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
-        return view('admin.penawaran.edit', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
+        return view('admin.penawaran.edit', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'hollows', 'syaratKetentuan'));
     }
 
     public function update(StorePenawaranRequest $request, Penawaran $penawaran)
@@ -179,12 +182,13 @@ class PenawaranController extends Controller
         $wallpanels = Wallpanel::active()->get();
         $floorings = Flooring::active()->get();
         $facades = Facade::active()->get();
+        $hollows = Hollow::active()->get();
         $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
 
         // Load relasi yang diperlukan
         $penawaran->load(['client', 'user']);
 
-        return view('admin.penawaran.create-revisi', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'syaratKetentuan'));
+        return view('admin.penawaran.create-revisi', compact('penawaran', 'users', 'deckings', 'ceilings', 'wallpanels', 'floorings', 'facades', 'hollows', 'syaratKetentuan'));
     }
 
     /**
