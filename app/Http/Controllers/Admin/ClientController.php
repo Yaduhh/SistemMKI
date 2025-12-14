@@ -60,7 +60,8 @@ class ClientController extends Controller
      */
     public function create()
     {
-        return view('admin.client.create');
+        $users = User::where('status_deleted', false)->orderBy('name')->get();
+        return view('admin.client.create', compact('users'));
     }
 
     /**
@@ -78,10 +79,11 @@ class ClientController extends Controller
             'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
+            'created_by' => 'nullable|exists:users,id',
         ]);
 
         $data = $request->all();
-        $data['created_by'] = Auth::id();
+        $data['created_by'] = $request->filled('created_by') ? $request->created_by : Auth::id();
         $data['status'] = $request->has('status') ? true : false;
         $data['status_deleted'] = false;
 
@@ -121,7 +123,8 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        return view('admin.client.edit', compact('client'));
+        $users = User::where('status_deleted', false)->orderBy('name')->get();
+        return view('admin.client.edit', compact('client', 'users'));
     }
 
     /**
@@ -140,6 +143,7 @@ class ClientController extends Controller
             'descriptions.*' => 'required|string|max:255',
             'file_input' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'status' => 'boolean',
+            'created_by' => 'nullable|exists:users,id',
         ]);
 
         // Store old data for comparison
@@ -147,6 +151,11 @@ class ClientController extends Controller
 
         $data = $request->all();
         $data['status'] = $request->has('status') ? true : false;
+        
+        // Update created_by if provided, otherwise keep existing
+        if ($request->filled('created_by')) {
+            $data['created_by'] = $request->created_by;
+        }
 
         // Convert descriptions array to JSON
         $data['description_json'] = json_encode(['items' => $request->descriptions]);

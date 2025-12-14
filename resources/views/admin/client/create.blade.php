@@ -35,6 +35,18 @@
                         @csrf
 
                         <div class="space-y-4">
+                            <flux:select 
+                                name="created_by" 
+                                :label="__('Dibuat Oleh')"
+                            >
+                                <option value="">{{ __('Pilih Pengguna (Opsional)') }}</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}" {{ old('created_by', auth()->id()) == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </flux:select>
+
                             <flux:input 
                                 name="nama" 
                                 :label="__('Nama')" 

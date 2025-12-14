@@ -265,6 +265,192 @@
     {{ $slot }}
 
     @stack('scripts')
+    
+    <script>
+        // Global variable to store scroll position
+        let sidebarScrollPos = 0;
+        let isRestoring = false;
+        let scrollTimeout = null;
+        let savedScrollBeforeNav = null;
+        
+        function findSidebar() {
+            return document.querySelector('[data-flux-sidebar]') || 
+                   document.querySelector('flux-sidebar') ||
+                   document.querySelector('aside') || 
+                   document.querySelector('nav[class*="sidebar"]') ||
+                   document.querySelector('[class*="bg-zinc-50"]');
+        }
+        
+        function getScrollContainer(sidebar) {
+            if (!sidebar) return null;
+            
+            // Try to find scrollable container in shadow DOM
+            if (sidebar.shadowRoot) {
+                const shadowContainer = sidebar.shadowRoot.querySelector('[part="content"]') ||
+                                      sidebar.shadowRoot.querySelector('.overflow-y-auto') ||
+                                      sidebar.shadowRoot.querySelector('[style*="overflow"]');
+                if (shadowContainer && shadowContainer.scrollHeight > shadowContainer.clientHeight) {
+                    return shadowContainer;
+                }
+            }
+            
+            // Fallback to sidebar itself
+            if (sidebar.scrollHeight > sidebar.clientHeight) {
+                return sidebar;
+            }
+            
+            return sidebar;
+        }
+        
+        function saveSidebarScroll() {
+            if (isRestoring) return;
+            
+            const sidebar = findSidebar();
+            const scrollContainer = getScrollContainer(sidebar);
+            
+            if (scrollContainer && scrollContainer.scrollTop !== undefined) {
+                sidebarScrollPos = scrollContainer.scrollTop;
+                sessionStorage.setItem('sidebarScrollPosition', sidebarScrollPos);
+                savedScrollBeforeNav = sidebarScrollPos;
+            }
+        }
+        
+        function restoreSidebarScroll(immediate = false) {
+            const sidebar = findSidebar();
+            const savedPos = savedScrollBeforeNav || sessionStorage.getItem('sidebarScrollPosition');
+            
+            if (!sidebar || !savedPos) return;
+            
+            const scrollContainer = getScrollContainer(sidebar);
+            if (!scrollContainer || scrollContainer.scrollTop === undefined) {
+                // Retry if container not ready
+                if (!immediate) {
+                    setTimeout(() => restoreSidebarScroll(false), 10);
+                }
+                return;
+            }
+            
+            const targetScroll = parseInt(savedPos, 10);
+            if (isNaN(targetScroll) || targetScroll < 0) return;
+            
+            // Check if already at target position
+            if (Math.abs(scrollContainer.scrollTop - targetScroll) < 5) {
+                isRestoring = false;
+                return;
+            }
+            
+            isRestoring = true;
+            
+            // Immediate restore to prevent visible reset
+            scrollContainer.scrollTop = targetScroll;
+            
+            // Verify and fix if needed
+            requestAnimationFrame(() => {
+                if (Math.abs(scrollContainer.scrollTop - targetScroll) > 10) {
+                    scrollContainer.scrollTop = targetScroll;
+                }
+                
+                // One more check after a tiny delay
+                setTimeout(() => {
+                    if (Math.abs(scrollContainer.scrollTop - targetScroll) > 10) {
+                        scrollContainer.scrollTop = targetScroll;
+                    }
+                    isRestoring = false;
+                }, 20);
+            });
+        }
+        
+        // Save on scroll with debounce
+        document.addEventListener('scroll', function(e) {
+            const sidebar = findSidebar();
+            if (sidebar && !isRestoring && 
+                (sidebar.contains(e.target) || 
+                 (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(saveSidebarScroll, 100);
+            }
+        }, { capture: true, passive: true });
+        
+        // Save BEFORE navigation happens
+        document.addEventListener('click', function(e) {
+            const sidebar = findSidebar();
+            if (sidebar &&
+                (sidebar.contains(e.target) || 
+                 (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
+                const link = e.target.closest('a[wire\\:navigate], a[href]');
+                if (link) {
+                    // Save immediately before navigation
+                    saveSidebarScroll();
+                }
+            }
+        }, { capture: true });
+        
+        // Intercept BEFORE Livewire navigation
+        document.addEventListener('livewire:before-navigate', function() {
+            saveSidebarScroll();
+        });
+        
+        // Restore IMMEDIATELY after navigation - multiple quick attempts
+        document.addEventListener('livewire:navigated', function() {
+            // Restore immediately (0ms)
+            restoreSidebarScroll(true);
+            
+            // Quick retries to catch any reset
+            setTimeout(() => restoreSidebarScroll(true), 0);
+            setTimeout(() => restoreSidebarScroll(true), 10);
+            setTimeout(() => restoreSidebarScroll(true), 30);
+            setTimeout(() => restoreSidebarScroll(true), 50);
+        });
+        
+        // Also restore on DOM mutations (catch any DOM changes)
+        const observer = new MutationObserver(function() {
+            const savedPos = sessionStorage.getItem('sidebarScrollPosition');
+            if (savedPos && !isRestoring) {
+                const sidebar = findSidebar();
+                const scrollContainer = getScrollContainer(sidebar);
+                if (scrollContainer && scrollContainer.scrollTop === 0) {
+                    // If reset to 0, restore immediately
+                    restoreSidebarScroll(true);
+                }
+            }
+        });
+        
+        // Observe sidebar for changes
+        function observeSidebar() {
+            const sidebar = findSidebar();
+            if (sidebar) {
+                observer.observe(sidebar, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true
+                });
+                if (sidebar.shadowRoot) {
+                    observer.observe(sidebar.shadowRoot, {
+                        childList: true,
+                        subtree: true
+                    });
+                }
+            } else {
+                setTimeout(observeSidebar, 100);
+            }
+        }
+        observeSidebar();
+        
+        // Restore on initial load
+        let hasRestored = false;
+        function tryInitialRestore() {
+            if (hasRestored) return;
+            hasRestored = true;
+            setTimeout(() => restoreSidebarScroll(false), 200);
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryInitialRestore);
+        } else {
+            tryInitialRestore();
+        }
+    </script>
+    
     @fluxScripts
 </body>
 
