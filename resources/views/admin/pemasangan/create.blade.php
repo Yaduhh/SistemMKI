@@ -114,7 +114,7 @@
                         <span>Tambah Section</span>
                     </button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total</label>
                         <input type="text" :value="formatRupiah(totalHarga())" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold">
@@ -125,13 +125,27 @@
                         <input name="diskon" type="number" min="0" max="100" step="any" :value="hitungDiskon()" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand Total</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand Total (Setelah Diskon)</label>
                         <input type="text"
                             :value="formatRupiah(grandTotalManual)"
                             @input="e => { grandTotalManual = parseRupiah(e.target.value); e.target.value = formatRupiah(grandTotalManual); }"
                             class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold"
                             placeholder="Rp 0">
-                        <input type="hidden" name="grand_total" :value="grandTotalManual">
+                        <input type="hidden" name="grand_total" :value="grandTotalFinal">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN (%)</label>
+                        <input name="ppn" type="number" min="0" max="100" step="0.01" x-model="ppn" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" value="11">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nominal PPN</label>
+                        <input type="text" :value="formatRupiah(ppnNominal())" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Final (Grand Total + PPN)</label>
+                        <input type="text" :value="formatRupiah(grandTotalFinal)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-bold">
                     </div>
                 </div>
                 <div class="mt-6">
@@ -201,6 +215,7 @@
                     { sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] }
                 ],
                 grandTotalManual: 0,
+                ppn: 11,
                 addSection() {
                     this.sections.push({ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] });
                 },
@@ -237,6 +252,16 @@
                     let selisih = total - this.grandTotalManual;
                     let diskonPersen = (selisih / total) * 100;
                     return diskonPersen > 0 ? Math.round(diskonPersen * 100) / 100 : 0;
+                },
+                ppnNominal() {
+                    // PPN dihitung dari Grand Total (setelah diskon)
+                    let grandTotal = this.grandTotalManual || 0;
+                    let ppnValue = Number(this.ppn) || 0;
+                    return grandTotal * (ppnValue / 100);
+                },
+                get grandTotalFinal() {
+                    // Total Final = Grand Total (setelah diskon) + PPN
+                    return this.grandTotalManual + this.ppnNominal();
                 }
             }
         }

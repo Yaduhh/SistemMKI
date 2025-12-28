@@ -95,12 +95,21 @@
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
             Tgl:
-            @if($penawaran->updated_at)
+            @if ($penawaran->updated_at)
                 @php
                     $bulanIndonesia = [
-                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        1 => 'Januari',
+                        2 => 'Februari',
+                        3 => 'Maret',
+                        4 => 'April',
+                        5 => 'Mei',
+                        6 => 'Juni',
+                        7 => 'Juli',
+                        8 => 'Agustus',
+                        9 => 'September',
+                        10 => 'Oktober',
+                        11 => 'November',
+                        12 => 'Desember',
                     ];
                     $tanggal = $penawaran->updated_at;
                     $bulan = $bulanIndonesia[$tanggal->month];
@@ -209,12 +218,10 @@
                                     style="padding: 5px; font-weight: bold; border: 1px solid #000000; text-align: left;">
                                     {{ $section['judul_1'] }}
                                 </td>
-                                @if (!empty($section['judul_2']))
-                                    <td colspan="10"
-                                        style="padding: 5px; font-weight: bold; border: 1px solid #000000; text-align: left;">
-                                        {{ $section['judul_2'] }}
-                                    </td>
-                                @endif
+                                <td colspan="10"
+                                    style="padding: 5px; font-weight: bold; border: 1px solid #000000; text-align: left;">
+                                    {{ $section['judul_2'] }}
+                                </td>
                             </tr>
                         @endif
 
@@ -256,11 +263,14 @@
                                         style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                         {{ $product['code'] ?? '-' }}</td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                        {{ isset($product['lebar']) && (int)$product['lebar'] > 0 ? (int) $product['lebar'] . ' cm' : '-' }}</td>
+                                        {{ isset($product['lebar']) && (int) $product['lebar'] > 0 ? (int) $product['lebar'] . ' cm' : '-' }}
+                                    </td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                        {{ isset($product['tebal']) && (int)$product['tebal'] > 0 ? (int) $product['tebal'] . ' cm' : '-' }}</td>
+                                        {{ isset($product['tebal']) && (int) $product['tebal'] > 0 ? (int) $product['tebal'] . ' cm' : '-' }}
+                                    </td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
-                                        {{ isset($product['tinggi']) && (int)$product['tinggi'] > 0 ? (int) $product['tinggi'] . ' cm' : '-' }}</td>
+                                        {{ isset($product['tinggi']) && (int) $product['tinggi'] > 0 ? (int) $product['tinggi'] . ' cm' : '-' }}
+                                    </td>
                                     <td style="padding: 5px; border: 1px solid #000000; text-align: center;">
                                         {{ $product['warna'] ?? '-' }}</td>
                                     <td style="padding: 5px; border: 1px solid #000000;">
@@ -277,13 +287,15 @@
                                         <table>
                                             <tr>
                                                 <td style="text-align: center;">
-                                                    {{ isset($product['diskon']) && (int)$product['diskon'] > 0 ? (int) $product['diskon'] . '%' : '-' }}
+                                                    {{ isset($product['diskon']) && (int) $product['diskon'] > 0 ? (int) $product['diskon'] . '%' : '-' }}
                                                 </td>
-                                                @if(isset($product['diskon_satu']) && (int)$product['diskon_satu'] > 0)
-                                                    <td style="text-align: right; padding-left: 10px;">{{ (int) $product['diskon_satu'] . '%' }}</td>
+                                                @if (isset($product['diskon_satu']) && (int) $product['diskon_satu'] > 0)
+                                                    <td style="text-align: right; padding-left: 10px;">
+                                                        {{ (int) $product['diskon_satu'] . '%' }}</td>
                                                 @endif
-                                                @if(isset($product['diskon_dua']) && (int)$product['diskon_dua'] > 0)
-                                                    <td style="text-align: right; padding-left: 10px;">{{ (int) $product['diskon_dua'] . '%' }}</td>
+                                                @if (isset($product['diskon_dua']) && (int) $product['diskon_dua'] > 0)
+                                                    <td style="text-align: right; padding-left: 10px;">
+                                                        {{ (int) $product['diskon_dua'] . '%' }}</td>
                                                 @endif
                                             </tr>
                                         </table>
@@ -481,10 +493,9 @@
             <tr>
                 <td style="width: 30%; vertical-align: top;">
                     <p>Hormat kami,</p>
-                    @if($penawaran->user && $penawaran->user->tandaTangan)
-                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}" 
-                             alt="Tanda Tangan" 
-                             style="width: 140px; height: 100px; object-fit: contain;">
+                    @if ($penawaran->user && $penawaran->user->tandaTangan)
+                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}"
+                            alt="Tanda Tangan" style="width: 140px; height: 100px; object-fit: contain;">
                     @endif
                     <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
                 </td>

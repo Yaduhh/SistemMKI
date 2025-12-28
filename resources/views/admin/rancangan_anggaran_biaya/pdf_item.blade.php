@@ -146,11 +146,11 @@
     </div>
     @php
         $penawaran = $rancanganAnggaranBiaya->penawaran;
-        $total = $penawaran->total ?? 0;
-        $total_diskon = ($penawaran->total_diskon ?? 0) > 0 ? $penawaran->total_diskon : 0;
-        $total_diskon_1 = ($penawaran->total_diskon_1 ?? 0) > 0 ? $penawaran->total_diskon_1 : 0;
-        $total_diskon_2 = ($penawaran->total_diskon_2 ?? 0) > 0 ? $penawaran->total_diskon_2 : 0;
-        $totalUtama = $total - $total_diskon - $total_diskon_1 - $total_diskon_2;
+        // Gunakan grand_total dari penawaran karena sudah termasuk:
+        // - Produk utama (setelah diskon)
+        // - Additional condition (tidak kena diskon)
+        // - PPN
+        $totalUtama = $penawaran->grand_total ?? 0;
     @endphp
     <div class="header">
         <table class="header-table">
@@ -1151,11 +1151,11 @@
     </div>
     @php
         $penawaran = $rancanganAnggaranBiaya->penawaran;
-        $total = $penawaran->total ?? 0;
-        $total_diskon = ($penawaran->total_diskon ?? 0) > 0 ? $penawaran->total_diskon : 0;
-        $total_diskon_1 = ($penawaran->total_diskon_1 ?? 0) > 0 ? $penawaran->total_diskon_1 : 0;
-        $total_diskon_2 = ($penawaran->total_diskon_2 ?? 0) > 0 ? $penawaran->total_diskon_2 : 0;
-        $totalUtama = $total - $total_diskon - $total_diskon_1 - $total_diskon_2;
+        // Gunakan grand_total dari penawaran karena sudah termasuk:
+        // - Produk utama (setelah diskon)
+        // - Additional condition (tidak kena diskon)
+        // - PPN
+        $totalUtama = $penawaran->grand_total ?? 0;
     @endphp
     <div class="header" style="font-size: 12px !important;">
         <table class="header-table">

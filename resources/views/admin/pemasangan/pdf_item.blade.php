@@ -236,28 +236,60 @@
                             <tr>
                                 <td style="width: 50%; font-weight: bold;">Rp</td>
                                 <td style="width: 50%; text-align: right; font-weight: bold;">
-                                    {{ number_format(($pemasangan->diskon * $pemasangan->total) / 100, 0, ',', '.') }}</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="table-none" style="width: 5%; text-align: center;"></td>
-                    <td class="table-none" style="width: 35%;"></td>
-                    <td class="table-none" style="width: 10%;"></td>
-                    <td class="table-none" style="width: 10%;"></td>
-                    <td class="table-style" style="width: 20%; text-align: right;"><strong>TOTAL</strong></td>
-                    <td class="table-style">
-                        <table>
-                            <tr>
-                                <td style="width: 50%; font-weight: bold;">Rp</td>
-                                <td style="width: 50%; text-align: right; font-weight: bold;">
-                                    {{ number_format($pemasangan->grand_total, 0, ',', '.') }}</td>
+                                    {{ number_format(($pemasangan->diskon * $pemasangan->total) / 100, 0, ',', '.') }}
+                                </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             @endif
+            @php
+                $ppn = $pemasangan->ppn ?? 0;
+                $grandTotal = (float) ($pemasangan->total ?? 0);
+                $ppnNominal = $grandTotal * ($ppn / 100);
+            @endphp
+            @if ($ppn > 0)
+                <tr>
+                    <td class="table-none" style="width: 5%; text-align: center;"></td>
+                    <td class="table-none" style="width: 35%;"></td>
+                    <td class="table-none" style="width: 10%;"></td>
+                    <td class="table-none" style="width: 10%;"></td>
+                    <td class="table-style" style="width: 20%;">
+                        <table>
+                            <tr>
+                                <td style="width: 50%; font-weight: bold;">PPn</td>
+                                <td style="width: 50%; text-align: right; font-weight: bold;">
+                                    {{ $ppn }}%</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="table-style">
+                        <table>
+                            <tr>
+                                <td style="width: 50%; font-weight: bold;">Rp</td>
+                                <td style="width: 50%; text-align: right; font-weight: bold;">
+                                    {{ number_format($ppnNominal, 0, ',', '.') }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            @endif
+            <tr>
+                <td class="table-none" style="width: 5%; text-align: center;"></td>
+                <td class="table-none" style="width: 35%;"></td>
+                <td class="table-none" style="width: 10%;"></td>
+                <td class="table-none" style="width: 10%;"></td>
+                <td class="table-style" style="width: 20%; text-align: right;"><strong>GRAND TOTAL</strong></td>
+                <td class="table-style">
+                    <table>
+                        <tr>
+                            <td style="width: 50%; font-weight: bold;">Rp</td>
+                            <td style="width: 50%; text-align: right; font-weight: bold;">
+                                {{ number_format($pemasangan->grand_total, 0, ',', '.') }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
         </table>
     @endif
     @if (is_array($json_syarat_kondisi) && count($json_syarat_kondisi) > 0)
@@ -278,21 +310,24 @@
             <td style="width: 30%; vertical-align: top;">
                 <div>
                     <p>Hormat Kami,</p>
-                    <img src="{{ $ttd }}"
-                        alt="Tanda Tangan" style="width: 140px; height: 100px; object-fit: contain;">
+                    <img src="{{ $ttd }}" alt="Tanda Tangan"
+                        style="width: 140px; height: 100px; object-fit: contain;">
                     <p>Yulianah</p>
                 </div>
             </td>
-            <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:100px;">
+            <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:150px;">
                 <div>
                     <p><span style="font-weight: bold; text-decoration: underline; color: #000000;">
                             PT. {{ $pemasangan->logo }}
                         </span></p>
                     <p style="margin-top: -10px;">
                         @if ($pemasangan->logo === 'WPC MAKMUR ABADI')
-                            <br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640
+                            <br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat,
+                            <br>Daerah Khusus Ibukota Jakarta 11640
                         @else
-                            <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640 <br>Email : mega.komposit.indonesia@gmail.com - Website:
+                            <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat,
+                            <br>Daerah Khusus Ibukota Jakarta 11640 <br>Email : mega.komposit.indonesia@gmail.com -
+                            Website:
                             www.megakomposit.com
                         @endif
                     </p>

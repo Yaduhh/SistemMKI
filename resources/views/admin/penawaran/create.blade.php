@@ -17,7 +17,7 @@
             @csrf
             <!-- Sales -->
             <flux:select name="id_user" :label="__('Sales')" required @change="loadClients($event.target.value)">
-                <option value="" disabled>{{ __('Pilih Pengguna') }}</option>
+                <option value="">{{ __('Pilih Pengguna') }}</option>
                 @foreach ($users as $user)
                     <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
                         {{ $user->name }}
@@ -28,18 +28,31 @@
             <!-- Section Data Penawaran -->
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran</h2>
+                @if($lastNomorPenawaran)
                 <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
                         <x-icon name="info" class="w-4 h-4 inline mr-1" />
-                        Nomor penawaran akan dibuat otomatis dengan format: <strong>A/MKI/MM/YY</strong>
+                        Nomor penawaran terakhir: <strong>{{ $lastNomorPenawaran }}</strong>
                     </p>
                 </div>
+                @endif
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Nomor Penawaran -->
+                    <flux:input 
+                        name="nomor_penawaran" 
+                        label="Nomor Penawaran" 
+                        type="text" 
+                        required 
+                        autocomplete="off"
+                        :placeholder="__('Masukkan nomor penawaran')" 
+                        :value="old('nomor_penawaran')"
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                    />
                     <!-- Client -->
                     <flux:select name="id_client" :label="__('Client')" required>
-                        <option value="" disabled selected>{{ __('Pilih Client') }}</option>
+                        <option value="" selected>{{ __('Pilih Client') }}</option>
                     </flux:select>
-                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" x-data="{ today: new Date().toISOString().split('T')[0] }" x-bind:min="today" />
+                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="judul_penawaran" label="Judul Penawaran" placeholder="masukkan judul penawaran" type="text" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                 </div>
@@ -111,7 +124,7 @@
                                                     <!-- Dimensi -->
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dimensi</label>
-                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][dimensi]'" x-model="row.dimensi" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Dimensi" readonly />
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][dimensi]'" x-model="row.dimensi" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Dimensi" />
                                                     </div>
 
 
@@ -143,13 +156,13 @@
                                                     <!-- Harga -->
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Harga</label>
-                                                        <input x-model="row.harga_display" @input="formatHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Rp 0" readonly />
+                                                        <input x-model="row.harga_display" @input="formatHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Rp 0" />
                                                     </div>
 
                                                     <!-- Total -->
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total</label>
-                                                        <input x-model="row.total_harga_display" @input="formatTotalHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" placeholder="Rp 0" readonly />
+                                                        <input x-model="row.total_harga_display" @input="formatTotalHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" placeholder="Rp 0" />
                                                     </div>
                                                 </div>
 
@@ -194,6 +207,7 @@
                                                 'border-purple-400 text-purple-700': option.kategori === 'ceiling',
                                                 'border-pink-400 text-pink-700': option.kategori === 'decking',
                                                 'border-orange-400 text-orange-700': option.kategori === 'hollow',
+                                                'border-cyan-400 text-cyan-700': option.kategori === 'rotan_sintetis',
                                             }">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <x-icon name="plus" class="w-5 h-5" />
@@ -268,7 +282,144 @@
                 </template>
             </div>
 
-            <!-- Section Syarat & Ketentuan -->
+            <!-- Section Additional Condition (Aksesoris/Hollow) -->
+            <div class="w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Additional Condition (Aksesoris)</h2>
+                    <div class="flex items-center gap-2">
+                        <template x-if="additionalConditions.length > 0">
+                            <button type="button" @click="refreshAllAdditionalProduk()" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors duration-200 flex items-center gap-2">
+                                <x-icon name="arrow-path" class="w-5 h-5" />
+                                <span>Refresh Harga Aksesoris</span>
+                            </button>
+                        </template>
+                        <button type="button" @click="addAdditionalCondition()" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2">
+                            <x-icon name="plus" class="w-5 h-5" />
+                            <span>Tambah Additional Condition</span>
+                        </button>
+                    </div>
+                </div>
+
+                <template x-if="additionalConditions.length > 0">
+                    <template x-for="(condition, condIdx) in additionalConditions" :key="condIdx">
+                        <div class="w-full rounded-lg mb-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex-1 mr-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Additional Condition</label>
+                                    <input 
+                                        type="text" 
+                                        :name="'additional_condition[' + condIdx + '][label]'" 
+                                        x-model="condition.label" 
+                                        class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" 
+                                        placeholder="Masukkan nama condition (contoh: Aksesoris Tambahan 1)"
+                                    />
+                                </div>
+                                <button type="button" @click="removeAdditionalCondition(condIdx)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none flex items-center gap-2 ml-4" x-show="additionalConditions.length > 1">
+                                    <x-icon name="trash" class="w-5 h-5" /> Hapus
+                                </button>
+                            </div>
+
+                            <div class="space-y-4">
+                                <template x-for="(row, i) in condition.produk" :key="i">
+                                    <div class="border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h4 class="font-semibold text-gray-900 dark:text-white">Aksesoris #<span x-text="i+1"></span></h4>
+                                            <button type="button" @click="removeAdditionalProduk(condIdx, i)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 focus:outline-none">
+                                                <x-icon name="trash" class="w-5 h-5" />
+                                            </button>
+                                        </div>
+
+                                        <!-- Baris Pertama: 5 Inputan -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                                            <!-- Product (Hollow) -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aksesoris</label>
+                                                <select :name="'additional_condition[' + condIdx + '][produk][' + i + '][item]'" x-model="row.slug" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" @change="autofillAdditionalProduk(condition, row)">
+                                                    <option value="">Pilih Aksesoris</option>
+                                                    <template x-for="p in getAvailableHollows(condition, row)" :key="p.slug">
+                                                        <option :value="p.slug" x-text="p.code + ' - ' + (p.nama_produk || '') + ' (Rp ' + (p.harga ? p.harga.toLocaleString('id-ID') : '0') + ')'"></option>
+                                                    </template>
+                                                </select>
+                                            </div>
+
+                                            <!-- Nama Produk -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Produk</label>
+                                                <input :name="'additional_condition[' + condIdx + '][produk][' + i + '][nama_produk]'" x-model="row.nama_produk" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Nama Produk" />
+                                            </div>
+
+                                            <!-- Satuan -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Satuan</label>
+                                                <input :name="'additional_condition[' + condIdx + '][produk][' + i + '][satuan]'" x-model="row.satuan" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Satuan" />
+                                            </div>
+
+                                            <!-- VOL(m²) -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VOL(m²)</label>
+                                                <input :name="'additional_condition[' + condIdx + '][produk][' + i + '][qty_area]'" x-model="row.qty_area" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Volume" />
+                                            </div>
+
+                                            <!-- Satuan VOL -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Satuan VOL</label>
+                                                <input :name="'additional_condition[' + condIdx + '][produk][' + i + '][satuan_vol]'" x-model="row.satuan_vol" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Satuan VOL" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Baris Kedua: 3 Inputan -->
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <!-- Quantity -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantity</label>
+                                                <input :name="'additional_condition[' + condIdx + '][produk][' + i + '][qty]'" x-model="row.qty" @input="calculateAdditionalTotalHarga(row)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Qty" />
+                                            </div>
+
+                                            <!-- Harga -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Harga</label>
+                                                <input x-model="row.harga_display" @input="formatAdditionalHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400" placeholder="Rp 0" />
+                                            </div>
+
+                                            <!-- Total -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total</label>
+                                                <input x-model="row.total_harga_display" @input="formatAdditionalTotalHargaInput(row)" type="text" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" placeholder="Rp 0" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Hidden inputs -->
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][label]'" x-model="condition.label" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][item]'" x-model="row.item" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][code]'" x-model="row.code" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][slug]'" x-model="row.slug" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][satuan]'" x-model="row.satuan" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][qty_area]'" x-model="row.qty_area" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][satuan_vol]'" x-model="row.satuan_vol" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][harga]'" x-model="row.harga" />
+                                        <input type="hidden" :name="'additional_condition[' + condIdx + '][produk][' + i + '][total_harga]'" x-model="row.total_harga" />
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" @click="addAdditionalProduk(condIdx)" class="w-full hover:cursor-pointer py-2 px-4 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 text-orange-600 dark:text-orange-400 rounded-lg border-2 border-orange-600 hover:border-orange-700 transition-colors duration-200 flex items-center justify-center gap-2">
+                                    <x-icon name="plus" class="w-5 h-5" />
+                                    <span>Tambah Aksesoris</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+
+                <template x-if="additionalConditions.length === 0">
+                    <div class="w-full p-6 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg text-center">
+                        <p class="text-gray-500 dark:text-gray-400">Belum ada Additional Condition. Klik tombol di atas untuk menambahkan.</p>
+                    </div>
+                </template>
+            </div>
+
+                    <!-- Section Syarat & Ketentuan -->
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Syarat & Ketentuan</h2>
                 <div class="grid grid-cols-1 gap-4">
@@ -286,52 +437,96 @@
             <!-- Section Perhitungan -->
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Perhitungan</h2>
-                <div class="bg-gray-50 dark:bg-zinc-800 rounded-lg p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subtotal</label>
-                            <input type="text" x-model="formatCurrency(subtotal)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
-                            <input type="hidden" name="total" :value="subtotal">
+                <div class="bg-white dark:bg-zinc-900 rounded-lg border-2 border-gray-200 dark:border-zinc-700 shadow-sm">
+                    <!-- Subtotal Section -->
+                    <div class="p-6 border-b border-gray-200 dark:border-zinc-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Subtotal Produk</h3>
+                            <div class="text-right">
+                                <input type="text" x-model="formatCurrency(subtotal)" class="text-lg font-bold text-gray-900 dark:text-white bg-transparent border-none p-0 w-auto min-w-[150px] text-right" />
+                                <input type="hidden" name="total" :value="subtotal">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon (%)</label>
-                            <input type="number" name="diskon" x-model="diskon" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                    </div>
+
+                    <!-- Diskon Section -->
+                    <div class="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50">
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Diskon</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon (%)</label>
+                                <input type="number" name="diskon" x-model="diskon" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 1 (%)</label>
+                                <input type="number" name="diskon_satu" x-model="diskon_satu" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 2 (%)</label>
+                                <input type="number" name="diskon_dua" x-model="diskon_dua" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 1 (%)</label>
-                            <input type="number" name="diskon_satu" x-model="diskon_satu" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Total Diskon</label>
+                                <input type="text" x-model="formatCurrency(total_diskon)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold text-gray-900 dark:text-white" />
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Total Diskon 1</label>
+                                <input type="text" x-model="formatCurrency(total_diskon_1)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold text-gray-900 dark:text-white" />
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Total Diskon 2</label>
+                                <input type="text" x-model="formatCurrency(total_diskon_2)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold text-gray-900 dark:text-white" />
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Setelah Diskon</label>
+                                <input type="text" x-model="formatCurrency(after_diskon)" class="w-full py-2 px-3 rounded-lg border-2 border-blue-300 dark:border-blue-600 dark:bg-zinc-800 dark:text-white font-semibold text-blue-700 dark:text-blue-400" />
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 2 (%)</label>
-                            <input type="number" name="diskon_dua" x-model="diskon_dua" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                    </div>
+
+                    <!-- Additional Condition Section -->
+                    <div class="p-6 border-b border-gray-200 dark:border-zinc-700 bg-orange-50 dark:bg-orange-900/10">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Total Additional Condition</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Tidak kena diskon</p>
+                            </div>
+                            <div class="text-right">
+                                <input type="text" x-model="formatCurrency(additional_condition_total)" class="text-lg font-bold text-orange-600 dark:text-orange-400 bg-transparent border-none p-0 w-auto min-w-[150px] text-right" />
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon</label>
-                            <input type="text" x-model="formatCurrency(total_diskon)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
+                    </div>
+
+                    <!-- PPN Section -->
+                    <div class="p-6 border-b border-gray-200 dark:border-zinc-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN (%)</label>
+                                <input type="number" name="ppn" x-model="ppn" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nominal PPN</label>
+                                <input type="text" x-model="formatCurrency((after_diskon + additional_condition_total) * (ppn / 100))" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold text-gray-900 dark:text-white" />
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon 1</label>
-                            <input type="text" x-model="formatCurrency(total_diskon_1)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Diskon 2</label>
-                            <input type="text" x-model="formatCurrency(total_diskon_2)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Setelah Diskon</label>
-                            <input type="text" x-model="formatCurrency(after_diskon)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white font-semibold" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN (%)</label>
-                            <input type="number" name="ppn" x-model="ppn" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Grand Total</label>
-                            <input type="text" x-model="formatCurrency(grand_total)" readonly class="w-full py-2 px-3 rounded-lg border-2 border-blue-500 dark:border-blue-400 dark:bg-zinc-800 dark:text-white font-bold text-lg text-blue-600 dark:text-blue-400" />
-                            <input type="hidden" name="grand_total" :value="grand_total">
-                            <input type="hidden" name="total_diskon" :value="total_diskon">
-                            <input type="hidden" name="total_diskon_1" :value="total_diskon_1">
-                            <input type="hidden" name="total_diskon_2" :value="total_diskon_2">
+                    </div>
+
+                    <!-- Grand Total Section -->
+                    <div class="p-6 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-t-4 border-blue-500 dark:border-blue-400">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Grand Total</h3>
+                                <p class="text-xs text-gray-600 dark:text-gray-400">Total akhir setelah semua perhitungan</p>
+                            </div>
+                            <div class="text-right">
+                                <input type="text" x-model="formatCurrency(grand_total)" class="text-2xl font-bold text-blue-600 dark:text-blue-400 bg-transparent border-none p-0 w-auto min-w-[200px] text-right" />
+                                <input type="hidden" name="grand_total" :value="grand_total">
+                                <input type="hidden" name="total_diskon" :value="total_diskon">
+                                <input type="hidden" name="total_diskon_1" :value="total_diskon_1">
+                                <input type="hidden" name="total_diskon_2" :value="total_diskon_2">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -339,7 +534,13 @@
 
             <!-- Section Catatan -->
             <div class="w-full">
-                <flux:input name="catatan" label="Catatan" placeholder="Tambahkan catatan jika diperlukan" type="textarea" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Catatan</label>
+                <textarea 
+                    name="catatan" 
+                    rows="4" 
+                    placeholder="Tambahkan catatan jika diperlukan" 
+                    class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 resize-y"
+                >{{ old('catatan') }}</textarea>
             </div>
 
             <!-- Submit Button -->
@@ -360,6 +561,7 @@
 function penawaranForm() {
     return {
         mainSections: [], // Array untuk main sections
+        additionalConditions: [], // Array untuk additional condition (aksesoris/hollow)
         sectionOptions: [
             { kategori: 'flooring', label: 'FLOORING', master: @json($floorings) },
             { kategori: 'facade', label: 'FACADE', master: @json($facades) },
@@ -367,10 +569,12 @@ function penawaranForm() {
             { kategori: 'ceiling', label: 'CEILING', master: @json($ceilings) },
             { kategori: 'decking', label: 'DECKING', master: @json($deckings) },
             { kategori: 'hollow', label: 'HOLLOW', master: @json($hollows) },
+            { kategori: 'rotan_sintetis', label: 'ROTAN SINTETIS', master: @json($rotanSintetis ?? []) },
         ],
-        
+        hollows: @json($hollows), // Data hollow untuk additional condition
 
         subtotal: 0,
+        additional_condition_total: 0, // Total dari additional condition (tidak kena diskon)
         diskon: 0,
         diskon_satu: 0,
         diskon_dua: 0,
@@ -466,6 +670,10 @@ function penawaranForm() {
                         return this.sectionOptions.find(opt => opt.kategori === 'decking')?.master || [];
                     case 'hollow':
                         return this.sectionOptions.find(opt => opt.kategori === 'hollow')?.master || [];
+                    case 'rotan_sintetis':
+                        const rotanData = this.sectionOptions.find(opt => opt.kategori === 'rotan_sintetis')?.master || [];
+                        console.log('Rotan Sintetis data:', rotanData);
+                        return rotanData;
                     default:
                         return [];
                 }
@@ -537,7 +745,7 @@ function penawaranForm() {
             if (!userId) {
                 // Reset client dropdown jika tidak ada user yang dipilih
                 const clientSelect = document.querySelector('select[name="id_client"]');
-                clientSelect.innerHTML = '<option value="" disabled selected>{{ __("Pilih Client") }}</option>';
+                clientSelect.innerHTML = '<option value="" selected>{{ __("Pilih Client") }}</option>';
                 return;
             }
 
@@ -546,7 +754,7 @@ function penawaranForm() {
                 .then(response => response.json())
                 .then(clients => {
                     const clientSelect = document.querySelector('select[name="id_client"]');
-                    clientSelect.innerHTML = '<option value="" disabled selected>{{ __("Pilih Client") }}</option>';
+                    clientSelect.innerHTML = '<option value="" selected>{{ __("Pilih Client") }}</option>';
                     
                     clients.forEach(client => {
                         const option = document.createElement('option');
@@ -558,7 +766,7 @@ function penawaranForm() {
                 .catch(error => {
                     console.error('Error loading clients:', error);
                     const clientSelect = document.querySelector('select[name="id_client"]');
-                    clientSelect.innerHTML = '<option value="" disabled selected>{{ __("Error loading clients") }}</option>';
+                    clientSelect.innerHTML = '<option value="" selected>{{ __("Error loading clients") }}</option>';
                 });
         },
 
@@ -639,6 +847,7 @@ function penawaranForm() {
         },
 
         calculateSubtotal() {
+            // Hitung subtotal dari produk utama saja (tidak termasuk additional condition)
             this.subtotal = 0;
             this.mainSections.forEach(mainSection => {
                 mainSection.productSections.forEach(section => {
@@ -650,13 +859,26 @@ function penawaranForm() {
             this.calculateTotal();
         },
 
+        calculateAdditionalConditionTotal() {
+            // Hitung total dari additional condition (tidak kena diskon)
+            this.additional_condition_total = 0;
+            this.additionalConditions.forEach(condition => {
+                condition.produk.forEach(produk => {
+                    this.additional_condition_total += parseFloat(produk.total_harga) || 0;
+                });
+            });
+            this.calculateTotal();
+        },
+
         calculateTotal() {
             const subtotal = parseFloat(this.subtotal) || 0;
             const diskon = parseFloat(this.diskon) || 0;
             const diskon_satu = parseFloat(this.diskon_satu) || 0;
             const diskon_dua = parseFloat(this.diskon_dua) || 0;
             const ppn = parseFloat(this.ppn) || 0;
+            const additionalTotal = parseFloat(this.additional_condition_total) || 0;
 
+            // Hitung diskon hanya dari subtotal (produk utama), tidak termasuk additional condition
             const total_diskon = subtotal * (diskon / 100);
             const total_diskon_1 = (subtotal - total_diskon) * (diskon_satu / 100);
             const total_diskon_2 = (subtotal - total_diskon - total_diskon_1) * (diskon_dua / 100);
@@ -667,8 +889,15 @@ function penawaranForm() {
             this.total_diskon_2 = total_diskon_2;
             this.total_diskon_all = total_diskon + total_diskon_1 + total_diskon_2;
             this.after_diskon = subtotal - this.total_diskon_all;
-            const ppn_nominal = this.after_diskon * (ppn / 100);
-            this.grand_total = Math.round(this.after_diskon + ppn_nominal);
+            
+            // Hitung PPN dari (after_diskon + additional condition total)
+            // PPN dikenakan pada total setelah diskon + additional condition
+            const total_sebelum_ppn = this.after_diskon + additionalTotal;
+            const ppn_nominal = total_sebelum_ppn * (ppn / 100);
+            
+            // Grand total = (subtotal setelah diskon + additional condition) + PPN
+            // Additional condition tidak kena diskon, tapi kena PPN
+            this.grand_total = Math.round(total_sebelum_ppn + ppn_nominal);
         },
 
         formatCurrency(amount) {
@@ -697,6 +926,108 @@ function penawaranForm() {
 
         updateCalculations() {
             this.calculateSubtotal();
+        },
+
+        // Additional Condition Functions
+        addAdditionalCondition() {
+            const defaultLabel = `Additional Condition ${this.additionalConditions.length + 1}`;
+            this.additionalConditions.push({
+                label: defaultLabel,
+                produk: [{
+                    item: '',
+                    code: '',
+                    slug: '',
+                    nama_produk: '',
+                    satuan: '',
+                    qty_area: '',
+                    satuan_vol: '',
+                    qty: '0',
+                    harga: 0,
+                    harga_display: 'Rp 0',
+                    total_harga: 0,
+                    total_harga_display: 'Rp 0'
+                }]
+            });
+        },
+
+        removeAdditionalCondition(index) {
+            this.additionalConditions.splice(index, 1);
+            // Update total setelah hapus condition
+            this.calculateAdditionalConditionTotal();
+        },
+
+        addAdditionalProduk(condIdx) {
+            this.additionalConditions[condIdx].produk.push({
+                item: '',
+                code: '',
+                slug: '',
+                nama_produk: '',
+                satuan: '',
+                qty_area: '',
+                satuan_vol: '',
+                qty: '0',
+                harga: 0,
+                harga_display: 'Rp 0',
+                total_harga: 0,
+                total_harga_display: 'Rp 0'
+            });
+        },
+
+        removeAdditionalProduk(condIdx, productIdx) {
+            this.additionalConditions[condIdx].produk.splice(productIdx, 1);
+            // Update total setelah hapus
+            this.calculateAdditionalConditionTotal();
+        },
+
+        getAvailableHollows(condition, row) {
+            const selectedSlugs = condition.produk
+                .filter(p => p.slug && p.slug !== row.slug)
+                .map(p => p.slug);
+            return this.hollows.filter(hollow => !selectedSlugs.includes(hollow.slug));
+        },
+
+        autofillAdditionalProduk(condition, row) {
+            if (!row.slug) return;
+            const hollow = this.hollows.find(h => h.slug === row.slug);
+            if (hollow) {
+                row.item = hollow.nama_produk || '';
+                row.code = hollow.code ?? '';
+                row.slug = hollow.slug ?? '';
+                row.nama_produk = hollow.nama_produk || '';
+                row.satuan = hollow.satuan || '';
+                row.harga = hollow.harga || 0;
+                row.harga_display = this.formatCurrency(hollow.harga || 0);
+                row.qty = '0';
+                row.total_harga = 0;
+                row.total_harga_display = this.formatCurrency(0);
+                // Update total setelah autofill
+                this.calculateAdditionalConditionTotal();
+            }
+        },
+
+        calculateAdditionalTotalHarga(row) {
+            if (!row.qty || !row.harga) return;
+            row.total_harga = row.qty * row.harga;
+            row.total_harga_display = this.formatCurrency(row.total_harga);
+            // Update total additional condition dan recalculate grand total
+            this.calculateAdditionalConditionTotal();
+        },
+
+        formatAdditionalHargaInput(row) {
+            const numericValue = this.parseCurrency(row.harga_display);
+            if (numericValue) {
+                row.harga = numericValue;
+                row.harga_display = this.formatInputCurrency(numericValue);
+                this.calculateAdditionalTotalHarga(row);
+            }
+        },
+
+        formatAdditionalTotalHargaInput(row) {
+            const numericValue = this.parseCurrency(row.total_harga_display);
+            if (numericValue) {
+                row.total_harga = numericValue;
+                row.total_harga_display = this.formatInputCurrency(numericValue);
+            }
         },
 
         refreshAllProduk() {
@@ -779,6 +1110,116 @@ function penawaranForm() {
             } else {
                 alert('Tidak ada produk yang bisa di-refresh. Pastikan produk sudah dipilih.');
             }
+        },
+
+        refreshAllAdditionalProduk() {
+            // Fetch data hollow terbaru dari server
+            const url = '/admin/penawaran/hollows';
+            console.log('Fetching from:', url);
+            
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    
+                    if (!response.ok) {
+                        // Coba baca response sebagai text untuk melihat error
+                        return response.text().then(text => {
+                            console.error('Error response:', text);
+                            throw new Error(`HTTP ${response.status}: ${text.substring(0, 200)}`);
+                        });
+                    }
+                    
+                    // Cek content type
+                    const contentType = response.headers.get('content-type');
+                    console.log('Content-Type:', contentType);
+                    
+                    if (!contentType || !contentType.includes('application/json')) {
+                        return response.text().then(text => {
+                            console.error('Response is not JSON:', text);
+                            throw new Error('Response is not JSON');
+                        });
+                    }
+                    
+                    return response.json();
+                })
+                .then(hollowsData => {
+                    console.log('Hollows data received:', hollowsData);
+                    console.log('Number of hollows:', hollowsData?.length || 0);
+                    
+                    if (!Array.isArray(hollowsData)) {
+                        console.error('Invalid data format:', hollowsData);
+                        throw new Error('Data format tidak valid');
+                    }
+                    
+                    // Update this.hollows dengan data terbaru dari server
+                    this.hollows = hollowsData;
+                    
+                    let refreshedCount = 0;
+                    let notFoundCount = 0;
+
+                    this.additionalConditions.forEach(condition => {
+                        condition.produk.forEach(row => {
+                            if (!row.slug) return;
+
+                            // Cari hollow terbaru dari data yang baru di-fetch
+                            const hollow = this.hollows.find(h => h.slug === row.slug);
+                            if (!hollow) {
+                                notFoundCount++;
+                                return;
+                            }
+
+                            // Simpan data yang sudah diisi user (jangan diubah)
+                            const savedQty = row.qty || '0';
+                            const savedQtyArea = row.qty_area || '';
+                            const savedSatuanVol = row.satuan_vol || '';
+
+                            // Update informasi hollow dari data terbaru (dari server)
+                            row.item = hollow.nama_produk || '';
+                            row.code = hollow.code ?? '';
+                            row.nama_produk = hollow.nama_produk || '';
+                            row.satuan = hollow.satuan || '';
+                            row.harga = parseFloat(hollow.harga) || 0;
+                            row.harga_display = this.formatCurrency(row.harga);
+
+                            // Tetap gunakan qty, qty_area, dan satuan_vol yang sudah diisi user
+                            row.qty = savedQty;
+                            row.qty_area = savedQtyArea;
+                            row.satuan_vol = savedSatuanVol;
+
+                            // Hitung ulang total harga dengan harga baru
+                            if (row.harga && row.qty) {
+                                row.total_harga = parseFloat(row.harga) * parseFloat(row.qty);
+                                row.total_harga_display = this.formatCurrency(row.total_harga);
+                            }
+
+                            refreshedCount++;
+                        });
+                    });
+
+                    // Update perhitungan setelah refresh
+                    this.calculateAdditionalConditionTotal();
+
+                    // Tampilkan notifikasi
+                    if (refreshedCount > 0) {
+                        alert(`Berhasil refresh ${refreshedCount} aksesoris${notFoundCount > 0 ? `\n${notFoundCount} aksesoris tidak ditemukan` : ''}`);
+                    } else {
+                        alert('Tidak ada aksesoris yang bisa di-refresh. Pastikan aksesoris sudah dipilih.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching hollows:', error);
+                    console.error('Error message:', error.message);
+                    console.error('Error stack:', error.stack);
+                    alert('Gagal mengambil data terbaru dari server.\n\nError: ' + error.message + '\n\nCek console untuk detail lebih lanjut.');
+                });
         }
     }
 }

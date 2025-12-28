@@ -64,7 +64,16 @@ class PenawaranPintuController extends Controller
         $users = User::where('status_deleted', 0)->get();
         $pintus = Pintu::where('status_deleted', false)->get();
         $syaratKetentuan = SyaratKetentuan::where('status_deleted', false)->where('syarat_pintu', 0)->get();
-        return view('admin.penawaran-pintu.create', compact('users', 'pintus', 'syaratKetentuan'));
+        
+        // Get nomor penawaran pintu terakhir sebagai referensi
+        $lastPenawaran = Penawaran::where('status_deleted', false)
+            ->where('penawaran_pintu', true)
+            ->latest()
+            ->first();
+        
+        $lastNomorPenawaran = $lastPenawaran ? $lastPenawaran->nomor_penawaran : null;
+        
+        return view('admin.penawaran-pintu.create', compact('users', 'pintus', 'syaratKetentuan', 'lastNomorPenawaran'));
     }
 
     public function store(StorePenawaranRequest $request)
@@ -102,8 +111,8 @@ class PenawaranPintuController extends Controller
             $data['json_penawaran_pintu'] = [];
         }
         
-        // Generate nomor penawaran otomatis berdasarkan bulan
-        $data['nomor_penawaran'] = $this->generateNomorPenawaran();
+        // Nomor penawaran sekarang input manual, tidak auto-generate
+        // Pastikan nomor_penawaran sudah ada dari request (required di validation)
         
         // Debug: Log data yang akan disimpan
         \Log::info('Penawaran Pintu data to be saved:', $data);

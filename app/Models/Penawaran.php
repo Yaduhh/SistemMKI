@@ -34,6 +34,7 @@ class Penawaran extends Model
         'catatan_revisi',
         'json_penawaran_pintu',
         'syarat_kondisi',
+        'additional_condition',
         'catatan',
         'status',
         'status_deleted',
@@ -57,6 +58,8 @@ class Penawaran extends Model
         'revisi_from' => 'integer',
         'json_penawaran_pintu' => 'array',
         'syarat_kondisi' => 'array',
+        // additional_condition stored as JSON string in text field, will be decoded automatically
+        'additional_condition' => 'array',
         'status' => 'integer',
         'status_deleted' => 'boolean',
     ];

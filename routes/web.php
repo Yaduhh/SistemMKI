@@ -169,12 +169,16 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('flooring', FlooringController::class);
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
+    Route::resource('rotan-sintetis', App\Http\Controllers\Admin\RotanSintetisController::class);
     Route::resource('pintu', PintuController::class);
     Route::resource('hollow', App\Http\Controllers\Admin\HollowController::class);
     Route::resource('syarat-pemasangan', SyaratPemasanganController::class);
-    Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
+    // Route khusus harus didefinisikan SEBELUM resource route
     Route::get('penawaran/clients/{salesId}', [App\Http\Controllers\Admin\PenawaranController::class, 'getClientsBySales'])->name('penawaran.clients');
+    Route::get('penawaran/hollows', [App\Http\Controllers\Admin\PenawaranController::class, 'getHollows'])->name('penawaran.hollows');
     Route::get('penawaran/cetak/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetak'])->name('penawaran.cetak');
+    Route::get('penawaran/cetak-full/{id}', [App\Http\Controllers\Admin\PenawaranController::class, 'cetakFull'])->name('penawaran.cetak-full');
+    Route::resource('penawaran', App\Http\Controllers\Admin\PenawaranController::class);
     Route::patch('penawaran/{penawaran}/update-status', [App\Http\Controllers\Admin\PenawaranController::class, 'updateStatus'])->name('penawaran.update-status');
 Route::get('penawaran/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranController::class, 'createRevisi'])->name('penawaran.create-revisi');
 Route::post('penawaran/{penawaran}/revisi', [App\Http\Controllers\Admin\PenawaranController::class, 'storeRevisi'])->name('penawaran.store-revisi');

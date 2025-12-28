@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Edit Hollow') }}
+                {{ __('Edit Aksesoris') }}
             </h2>
             <x-button href="{{ route('admin.hollow.index') }}" variant="secondary">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
@@ -71,7 +71,7 @@
 
                     <div class="flex items-center justify-end">
                         <x-button type="submit" variant="secondary">
-                            {{ __('Update Hollow') }}
+                            {{ __('Update Aksesoris') }}
                         </x-button>
                     </div>
                 </form>

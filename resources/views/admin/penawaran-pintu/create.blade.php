@@ -25,32 +25,41 @@
                         {{ $user->name }}
                     </option>
                 @endforeach
+
             </flux:select>
 
             <!-- Section Data Penawaran -->
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran Pintu</h2>
-                <div
-                    class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                        <x-icon name="info" class="w-4 h-4 inline mr-1" />
-                        Nomor penawaran pintu akan dibuat otomatis dengan format: <strong>A/MKI/MM/YY</strong>
-                    </p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Client -->
-                    <flux:select name="id_client" :label="__('Client')" required>
-                        <option value="" disabled selected>{{ __('Pilih Client') }}</option>
-                    </flux:select>
+                    <div>
+                        <flux:select name="id_client" :label="__('Client')" required>
+                            <option value="" disabled selected>{{ __('Pilih Client') }}</option>
+                        </flux:select>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Nomor terakhir: <span class="font-medium">Jika Client belum ada, silahkan tambahkan terlebih dahulu</span>
+                        </p>
+                    </div>
+                    <!-- Nomor Penawaran -->
+                    <div>
+                        <flux:input name="nomor_penawaran" label="Nomor Penawaran"
+                            placeholder="Masukkan nomor penawaran (contoh: A/MKI/01/25)" type="text" required
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                            value="{{ old('nomor_penawaran') }}" />
+                        @if (isset($lastNomorPenawaran) && $lastNomorPenawaran)
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Nomor terakhir: <span class="font-medium">{{ $lastNomorPenawaran }}</span>
+                            </p>
+                        @endif
+                    </div>
                     <flux:input name="judul_penawaran" label="Judul Penawaran"
                         placeholder="masukkan judul penawaran pintu" type="text" required
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                                         <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
-                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                     <input type="hidden" name="tanggal_penawaran" value="{{ date('Y-m-d') }}" />
-                 </div>
-
-
+                    <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    <input type="hidden" name="tanggal_penawaran" value="{{ date('Y-m-d') }}" />
+                </div>
             </div>
 
             <!-- Section Produk Pintu -->
@@ -104,8 +113,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PPN
                                 (%)</label>
-                            <input type="number" name="ppn" x-model="ppn" @input="calculateTotal"
-                                step="0.01"
+                            <input type="number" name="ppn" x-model="ppn" @input="calculateTotal" step="0.01"
                                 class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
                         </div>
                         <div>
@@ -128,7 +136,8 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end">
-                <x-button type="submit" @click="submitForm($event)" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+                <x-button type="submit" @click="submitForm($event)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
                     <x-icon name="save" class="w-4 h-4 mr-2" />
                     Simpan Penawaran Pintu
                 </x-button>
@@ -163,7 +172,7 @@
                     console.log('=== ALPINE.JS INIT ===');
                     console.log('Products pintu:', this.products.pintu);
                     console.log('Initializing penawaran form...');
-                    
+
                     try {
                         this.addPintuSection();
                         console.log('✅ Section pertama berhasil ditambahkan');
@@ -171,7 +180,7 @@
                         console.error('❌ Error saat menambahkan section pertama:', error);
                         alert('Error saat inisialisasi: ' + error.message);
                     }
-                    
+
                     console.log('=== INIT COMPLETE ===');
                 },
 
@@ -208,19 +217,20 @@
                 addPintuSection() {
                     console.log('=== ADD PINTU SECTION ===');
                     console.log('Section index:', this.pintuSections.length);
-                    
+
                     const container = document.getElementById('pintu-sections-container');
                     if (!container) {
                         console.error('❌ Container pintu-sections-container tidak ditemukan!');
                         alert('Error: Container sections tidak ditemukan!');
                         return;
                     }
-                    
+
                     console.log('✅ Container ditemukan:', container);
                     const sectionIndex = this.pintuSections.length;
 
                     const sectionDiv = document.createElement('div');
-                    sectionDiv.className = 'border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-white dark:bg-zinc-900';
+                    sectionDiv.className =
+                        'border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-white dark:bg-zinc-900';
                     sectionDiv.innerHTML = `
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Section ${sectionIndex + 1}</h3>
@@ -263,14 +273,14 @@
                     const addProductBtn = sectionDiv.querySelector('[data-action="add-product"]');
                     const jumlahSectionInput = sectionDiv.querySelector('input[name*="[jumlah]"]');
                     const self = this;
-                    
+
                     removeBtn.addEventListener('click', function() {
                         self.removePintuSection(sectionIndex);
                     });
                     addProductBtn.addEventListener('click', function() {
                         self.addPintuProduk(sectionIndex);
                     });
-                    
+
                     // Event listener untuk jumlah section
                     if (jumlahSectionInput) {
                         jumlahSectionInput.addEventListener('input', function() {
@@ -283,7 +293,7 @@
                         element: sectionDiv,
                         products: []
                     });
-                    
+
                     // Tambahkan produk pintu pertama secara otomatis
                     try {
                         this.addPintuProduk(sectionIndex);
@@ -291,7 +301,7 @@
                     } catch (error) {
                         console.error(`❌ Error saat menambahkan produk pertama ke section ${sectionIndex}:`, error);
                     }
-                    
+
                     console.log(`=== SECTION ${sectionIndex} COMPLETE ===`);
                 },
 
@@ -301,7 +311,7 @@
                     if (sectionDiv) {
                         sectionDiv.remove();
                         this.pintuSections.splice(sectionIndex, 1);
-                        
+
                         // Update section numbers and indices
                         this.updateSectionIndices();
                         this.calculateSubtotal();
@@ -316,7 +326,8 @@
                     const productIndex = this.pintuSections[sectionIndex].products.length;
 
                     const productDiv = document.createElement('div');
-                    productDiv.className = 'border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800';
+                    productDiv.className =
+                        'border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-4 bg-gray-50 dark:bg-zinc-800';
                     productDiv.innerHTML = `
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-semibold text-gray-900 dark:text-white">Produk Pintu #${productIndex + 1}</h4>
@@ -387,12 +398,12 @@
                     const diskonSatuInput = productDiv.querySelector('input[name*="[diskon_satu]"]');
                     const diskonDuaInput = productDiv.querySelector('input[name*="[diskon_dua]"]');
                     const self = this;
-                    
+
                     // Event listener untuk tombol hapus dengan arrow function untuk binding yang lebih baik
                     removeBtn.addEventListener('click', () => {
                         this.removePintuProduk(sectionIndex, productIndex);
                     });
-                    
+
                     selectProduct.addEventListener('change', function(e) {
                         self.autofillPintuProduct(sectionIndex, productIndex, e.target.value);
                     });
@@ -415,7 +426,7 @@
                     this.pintuSections[sectionIndex].products.push({
                         element: productDiv
                     });
-                                },
+                },
 
                 recalculateSectionProducts(sectionIndex) {
                     const container = document.getElementById(`pintu-products-${sectionIndex}`);
@@ -428,71 +439,72 @@
                 },
 
                 removePintuProduk(sectionIndex, productIndex) {
-                     const container = document.getElementById(`pintu-products-${sectionIndex}`);
-                     if (!container) return;
-                     
-                     // Hapus dari array terlebih dahulu
-                     this.pintuSections[sectionIndex].products.splice(productIndex, 1);
-                     
-                     // Hapus dari DOM
-                     const productDiv = container.children[productIndex];
-                     if (productDiv) {
-                         productDiv.remove();
-                     }
-                     
-                     // Update product numbers and indices
-                     this.updateProductIndices(sectionIndex);
-                     this.calculateSubtotal();
-                 },
+                    const container = document.getElementById(`pintu-products-${sectionIndex}`);
+                    if (!container) return;
 
-                                   updateProductIndices(sectionIndex) {
-                      const container = document.getElementById(`pintu-products-${sectionIndex}`);
-                      if (!container) return;
-                      
-                      // Ambil semua produk div yang tersisa
-                      const productDivs = container.querySelectorAll('div[class*="border-2"]');
-                      
-                      productDivs.forEach((productDiv, newIndex) => {
-                          // Update product title
-                          const title = productDiv.querySelector('h4');
-                          if (title) {
-                              title.textContent = `Produk Pintu #${newIndex + 1}`;
-                          }
-                          
-                          // Update all input names and data attributes
-                          const inputs = productDiv.querySelectorAll('input, select');
-                          inputs.forEach(input => {
-                              if (input.name) {
-                                  // Gunakan regex yang lebih spesifik untuk mengganti index
-                                  input.name = input.name.replace(/products\]\[\d+\]/, `products][${newIndex}]`);
-                              }
-                              if (input.dataset.product !== undefined) {
-                                  input.dataset.product = newIndex;
-                              }
-                          });
-                          
-                          // Update button data attributes
-                          const buttons = productDiv.querySelectorAll('button[data-product]');
-                          buttons.forEach(button => {
-                              button.dataset.product = newIndex;
-                          });
-                          
-                          // Update event listener untuk tombol hapus
-                          const removeBtn = productDiv.querySelector('[data-action="remove-product"]');
-                          if (removeBtn) {
-                              // Hapus event listener lama
-                              removeBtn.replaceWith(removeBtn.cloneNode(true));
-                              const newRemoveBtn = productDiv.querySelector('[data-action="remove-product"]');
-                              
-                              // Pasang event listener baru
-                              newRemoveBtn.addEventListener('click', () => {
-                                  this.removePintuProduk(sectionIndex, newIndex);
-                              });
-                          }
-                      });
-                  },
+                    // Hapus dari array terlebih dahulu
+                    this.pintuSections[sectionIndex].products.splice(productIndex, 1);
 
-                 autofillPintu(pintu) {
+                    // Hapus dari DOM
+                    const productDiv = container.children[productIndex];
+                    if (productDiv) {
+                        productDiv.remove();
+                    }
+
+                    // Update product numbers and indices
+                    this.updateProductIndices(sectionIndex);
+                    this.calculateSubtotal();
+                },
+
+                updateProductIndices(sectionIndex) {
+                    const container = document.getElementById(`pintu-products-${sectionIndex}`);
+                    if (!container) return;
+
+                    // Ambil semua produk div yang tersisa
+                    const productDivs = container.querySelectorAll('div[class*="border-2"]');
+
+                    productDivs.forEach((productDiv, newIndex) => {
+                        // Update product title
+                        const title = productDiv.querySelector('h4');
+                        if (title) {
+                            title.textContent = `Produk Pintu #${newIndex + 1}`;
+                        }
+
+                        // Update all input names and data attributes
+                        const inputs = productDiv.querySelectorAll('input, select');
+                        inputs.forEach(input => {
+                            if (input.name) {
+                                // Gunakan regex yang lebih spesifik untuk mengganti index
+                                input.name = input.name.replace(/products\]\[\d+\]/,
+                                    `products][${newIndex}]`);
+                            }
+                            if (input.dataset.product !== undefined) {
+                                input.dataset.product = newIndex;
+                            }
+                        });
+
+                        // Update button data attributes
+                        const buttons = productDiv.querySelectorAll('button[data-product]');
+                        buttons.forEach(button => {
+                            button.dataset.product = newIndex;
+                        });
+
+                        // Update event listener untuk tombol hapus
+                        const removeBtn = productDiv.querySelector('[data-action="remove-product"]');
+                        if (removeBtn) {
+                            // Hapus event listener lama
+                            removeBtn.replaceWith(removeBtn.cloneNode(true));
+                            const newRemoveBtn = productDiv.querySelector('[data-action="remove-product"]');
+
+                            // Pasang event listener baru
+                            newRemoveBtn.addEventListener('click', () => {
+                                this.removePintuProduk(sectionIndex, newIndex);
+                            });
+                        }
+                    });
+                },
+
+                autofillPintu(pintu) {
                     if (!pintu.id) return;
 
                     const produk = this.products.pintu.find(p => p.id == pintu.id);
@@ -504,7 +516,7 @@
                         pintu.code = produk.code || '';
                         pintu.slug = produk.slug || '';
                         pintu.nama_produk = produk.nama_produk || '';
-                                                 pintu.lebar = produk.lebar || 0;
+                        pintu.lebar = produk.lebar || 0;
                         pintu.tebal = produk.tebal || 0;
                         pintu.tinggi = produk.tinggi || 0;
                         pintu.warna = produk.warna || '';
@@ -517,54 +529,54 @@
                     }
                 },
 
-                 removePintuSection(sectionIndex) {
-                     const container = document.getElementById('pintu-sections-container');
-                     const sectionDiv = container.children[sectionIndex];
-                     if (sectionDiv) {
-                         sectionDiv.remove();
-                         this.pintuSections.splice(sectionIndex, 1);
-                         
-                         // Update section numbers and indices
-                         this.updateSectionIndices();
-                         this.calculateSubtotal();
-                     }
-                 },
+                removePintuSection(sectionIndex) {
+                    const container = document.getElementById('pintu-sections-container');
+                    const sectionDiv = container.children[sectionIndex];
+                    if (sectionDiv) {
+                        sectionDiv.remove();
+                        this.pintuSections.splice(sectionIndex, 1);
 
-                 updateSectionIndices() {
-                     const container = document.getElementById('pintu-sections-container');
-                     Array.from(container.children).forEach((sectionDiv, newIndex) => {
-                         // Update section title
-                         const title = sectionDiv.querySelector('h3');
-                         if (title) {
-                             title.textContent = `Section ${newIndex + 1}`;
-                         }
-                         
-                         // Update all input names and data attributes
-                         const inputs = sectionDiv.querySelectorAll('input, select');
-                         inputs.forEach(input => {
-                             if (input.name) {
-                                 input.name = input.name.replace(/section_\d+/, `section_${newIndex}`);
-                             }
-                             if (input.dataset.section !== undefined) {
-                                 input.dataset.section = newIndex;
-                             }
-                         });
-                         
-                         // Update button data attributes
-                         const buttons = sectionDiv.querySelectorAll('button[data-section]');
-                         buttons.forEach(button => {
-                             button.dataset.section = newIndex;
-                         });
-                         
-                         // Update product container id
-                         const productContainer = sectionDiv.querySelector('[id^="pintu-products-"]');
-                         if (productContainer) {
-                             productContainer.id = `pintu-products-${newIndex}`;
-                         }
-                     });
-                 },
+                        // Update section numbers and indices
+                        this.updateSectionIndices();
+                        this.calculateSubtotal();
+                    }
+                },
 
-                 autofillPintuProduct(sectionIndex, productIndex, id) {
+                updateSectionIndices() {
+                    const container = document.getElementById('pintu-sections-container');
+                    Array.from(container.children).forEach((sectionDiv, newIndex) => {
+                        // Update section title
+                        const title = sectionDiv.querySelector('h3');
+                        if (title) {
+                            title.textContent = `Section ${newIndex + 1}`;
+                        }
+
+                        // Update all input names and data attributes
+                        const inputs = sectionDiv.querySelectorAll('input, select');
+                        inputs.forEach(input => {
+                            if (input.name) {
+                                input.name = input.name.replace(/section_\d+/, `section_${newIndex}`);
+                            }
+                            if (input.dataset.section !== undefined) {
+                                input.dataset.section = newIndex;
+                            }
+                        });
+
+                        // Update button data attributes
+                        const buttons = sectionDiv.querySelectorAll('button[data-section]');
+                        buttons.forEach(button => {
+                            button.dataset.section = newIndex;
+                        });
+
+                        // Update product container id
+                        const productContainer = sectionDiv.querySelector('[id^="pintu-products-"]');
+                        if (productContainer) {
+                            productContainer.id = `pintu-products-${newIndex}`;
+                        }
+                    });
+                },
+
+                autofillPintuProduct(sectionIndex, productIndex, id) {
                     if (!id) return;
 
                     const produk = this.products.pintu.find(p => p.id == id);
@@ -597,7 +609,8 @@
                                 // Buat hidden input untuk code jika belum ada
                                 const hiddenCodeInput = document.createElement('input');
                                 hiddenCodeInput.type = 'hidden';
-                                hiddenCodeInput.name = `json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][code]`;
+                                hiddenCodeInput.name =
+                                    `json_penawaran_pintu[section_${sectionIndex}][products][${productIndex}][code]`;
                                 productDiv.appendChild(hiddenCodeInput);
                                 hiddenCodeInput.value = produk.code || '';
                             } else {
@@ -675,15 +688,16 @@
 
                 calculateSubtotal() {
                     this.subtotal = 0;
-                    
+
                     // Hitung total dari section pintu baru
                     this.pintuSections.forEach((section, sectionIndex) => {
                         const container = document.getElementById(`pintu-products-${sectionIndex}`);
                         if (container) {
                             // Ambil jumlah section
-                            const jumlahSectionInput = container.closest('.border-2').querySelector('input[name*="[jumlah]"]');
+                            const jumlahSectionInput = container.closest('.border-2').querySelector(
+                                'input[name*="[jumlah]"]');
                             const jumlahSection = parseFloat(jumlahSectionInput?.value) || 1;
-                            
+
                             // Hitung total harga semua produk dalam section ini
                             let totalHargaSection = 0;
                             const productDivs = container.querySelectorAll('div[class*="border-2"]');
@@ -694,7 +708,7 @@
                                     totalHargaSection += parseFloat(totalInput.value) || 0;
                                 }
                             });
-                            
+
                             // Total section = total harga produk × jumlah section
                             this.subtotal += totalHargaSection * jumlahSection;
                         }
@@ -752,15 +766,15 @@
                 // Fungsi untuk format angka yang menghilangkan desimal yang tidak perlu
                 formatNumber(number) {
                     if (number === null || number === undefined || number === '') return '0';
-                    
+
                     // Konversi ke string dan hapus trailing zeros
                     const numStr = parseFloat(number).toString();
-                    
+
                     // Jika ada desimal dan berakhir dengan .0 atau .00, hapus
                     if (numStr.includes('.')) {
                         return parseFloat(numStr).toString();
                     }
-                    
+
                     return numStr;
                 },
 
@@ -892,11 +906,11 @@
                 // Fungsi untuk submit form dengan validasi dan debugging lengkap
                 submitForm(event) {
                     event.preventDefault();
-                    
+
                     console.log('=== DEBUG SUBMIT FORM ===');
                     console.log('Event:', event);
                     console.log('Target:', event.target);
-                    
+
                     // Validasi form dasar
                     const form = event.target.closest('form');
                     if (!form) {
@@ -904,16 +918,16 @@
                         alert('Error: Form tidak ditemukan!');
                         return;
                     }
-                    
+
                     console.log('✅ Form ditemukan:', form);
                     console.log('Form action:', form.action);
                     console.log('Form method:', form.method);
                     console.log('Form ID:', form.id);
-                    
+
                     // Debug route
-                    console.log('Expected route:', '{{ route("admin.penawaran-pintu.store") }}');
+                    console.log('Expected route:', '{{ route('admin.penawaran-pintu.store') }}');
                     console.log('Current form action:', form.action);
-                    
+
                     // Validasi sales
                     const salesSelect = form.querySelector('select[name="id_user"]');
                     if (!salesSelect) {
@@ -921,16 +935,16 @@
                         alert('Error: Select sales tidak ditemukan!');
                         return;
                     }
-                    
+
                     if (!salesSelect.value) {
                         console.error('❌ Sales belum dipilih!');
                         alert('Pilih Sales terlebih dahulu!');
                         salesSelect.focus();
                         return;
                     }
-                    
+
                     console.log('✅ Sales ID:', salesSelect.value);
-                    
+
                     // Validasi client
                     const clientSelect = form.querySelector('select[name="id_client"]');
                     if (!clientSelect) {
@@ -938,16 +952,16 @@
                         alert('Error: Select client tidak ditemukan!');
                         return;
                     }
-                    
+
                     if (!clientSelect.value) {
                         console.error('❌ Client belum dipilih!');
                         alert('Pilih Client terlebih dahulu!');
                         clientSelect.focus();
                         return;
                     }
-                    
+
                     console.log('✅ Client ID:', clientSelect.value);
-                    
+
                     // Validasi judul penawaran
                     const judulInput = form.querySelector('input[name="judul_penawaran"]');
                     if (!judulInput) {
@@ -955,50 +969,50 @@
                         alert('Error: Input judul tidak ditemukan!');
                         return;
                     }
-                    
+
                     if (!judulInput.value.trim()) {
                         console.error('❌ Judul penawaran kosong!');
                         alert('Judul penawaran harus diisi!');
                         judulInput.focus();
                         return;
                     }
-                    
+
                     console.log('✅ Judul:', judulInput.value);
-                     
-                     // Validasi tanggal penawaran
-                     const tanggalInput = form.querySelector('input[name="tanggal_penawaran"]');
-                     if (!tanggalInput) {
-                         console.error('❌ Input tanggal tidak ditemukan!');
-                         alert('Error: Input tanggal tidak ditemukan!');
-                         return;
-                     }
-                     
-                     if (!tanggalInput.value) {
-                         console.error('❌ Tanggal penawaran kosong!');
-                         alert('Tanggal penawaran harus diisi!');
-                         tanggalInput.focus();
-                         return;
-                     }
-                     
-                     console.log('✅ Tanggal:', tanggalInput.value);
-                     
-                     // Validasi produk pintu
+
+                    // Validasi tanggal penawaran
+                    const tanggalInput = form.querySelector('input[name="tanggal_penawaran"]');
+                    if (!tanggalInput) {
+                        console.error('❌ Input tanggal tidak ditemukan!');
+                        alert('Error: Input tanggal tidak ditemukan!');
+                        return;
+                    }
+
+                    if (!tanggalInput.value) {
+                        console.error('❌ Tanggal penawaran kosong!');
+                        alert('Tanggal penawaran harus diisi!');
+                        tanggalInput.focus();
+                        return;
+                    }
+
+                    console.log('✅ Tanggal:', tanggalInput.value);
+
+                    // Validasi produk pintu
                     console.log('=== VALIDASI PRODUK PINTU ===');
                     console.log('Pintu sections:', this.pintuSections);
-                    
+
                     let hasProducts = false;
                     let productCount = 0;
-                    
+
                     this.pintuSections.forEach((section, sectionIndex) => {
                         console.log(`Section ${sectionIndex}:`, section);
-                        
+
                         const container = document.getElementById(`pintu-products-${sectionIndex}`);
                         if (container) {
                             console.log(`Container section ${sectionIndex}:`, container);
-                            
+
                             const productDivs = container.querySelectorAll('div[class*="border-2"]');
                             console.log(`Product divs di section ${sectionIndex}:`, productDivs.length);
-                            
+
                             productDivs.forEach((productDiv, productIndex) => {
                                 const selectProduct = productDiv.querySelector('select');
                                 if (selectProduct) {
@@ -1013,75 +1027,76 @@
                             console.error(`❌ Container section ${sectionIndex} tidak ditemukan!`);
                         }
                     });
-                    
+
                     console.log('Total produk yang dipilih:', productCount);
-                    
+
                     if (!hasProducts) {
                         console.error('❌ Tidak ada produk pintu yang dipilih!');
                         alert('Minimal harus ada 1 produk pintu yang dipilih!');
                         return;
                     }
-                    
+
                     console.log('✅ Produk pintu valid');
-                     
-                     // Debug data yang akan dikirim
-                     console.log('=== DATA YANG AKAN DIKIRIM ===');
-                     console.log('Sales ID:', salesSelect.value);
-                     console.log('Client ID:', clientSelect.value);
-                     console.log('Judul:', judulInput.value);
-                     console.log('Tanggal:', tanggalInput.value);
+
+                    // Debug data yang akan dikirim
+                    console.log('=== DATA YANG AKAN DIKIRIM ===');
+                    console.log('Sales ID:', salesSelect.value);
+                    console.log('Client ID:', clientSelect.value);
+                    console.log('Judul:', judulInput.value);
+                    console.log('Tanggal:', tanggalInput.value);
                     console.log('Subtotal:', this.subtotal);
                     console.log('Grand Total:', this.grand_total);
                     console.log('Pintu Sections:', this.pintuSections);
-                    
+
                     // Debug form data
                     const formData = new FormData(form);
                     console.log('=== FORM DATA ===');
                     for (let [key, value] of formData.entries()) {
                         console.log(`${key}:`, value);
                     }
-                    
+
                     // Jika semua validasi berhasil, submit form dengan AJAX
                     console.log('✅ Semua validasi berhasil!');
                     console.log('🚀 Submitting form dengan AJAX...');
-                    
+
                     // Tampilkan loading state
                     const submitBtn = form.querySelector('button[type="submit"]');
                     const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
+                    submitBtn.innerHTML =
+                        '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
                     submitBtn.disabled = true;
-                    
+
                     try {
                         // Submit dengan AJAX
                         fetch(form.action, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('✅ Response dari server:', data);
-                            
-                            if (data.success) {
-                                // Redirect ke halaman index dengan flash message
-                                window.location.href = '{{ route("admin.penawaran-pintu.index") }}';
-                            } else {
-                                // Tampilkan error
-                                alert('Error: ' + (data.message || 'Terjadi kesalahan saat menyimpan'));
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('✅ Response dari server:', data);
+
+                                if (data.success) {
+                                    // Redirect ke halaman index dengan flash message
+                                    window.location.href = '{{ route('admin.penawaran-pintu.index') }}';
+                                } else {
+                                    // Tampilkan error
+                                    alert('Error: ' + (data.message || 'Terjadi kesalahan saat menyimpan'));
+                                    submitBtn.innerHTML = originalText;
+                                    submitBtn.disabled = false;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('❌ Error AJAX:', error);
+                                alert('Error: ' + error.message);
                                 submitBtn.innerHTML = originalText;
                                 submitBtn.disabled = false;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('❌ Error AJAX:', error);
-                            alert('Error: ' + error.message);
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
-                        });
-                        
+                            });
+
                     } catch (error) {
                         console.error('❌ Error saat submit form:', error);
                         alert('Error saat submit form: ' + error.message);

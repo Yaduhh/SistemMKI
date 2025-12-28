@@ -154,6 +154,35 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
 
+        // Tambahkan additional_condition ke produkPenawaran
+        if ($penawaran->additional_condition) {
+            $additionalConditions = is_string($penawaran->additional_condition) 
+                ? json_decode($penawaran->additional_condition, true) 
+                : $penawaran->additional_condition;
+            
+            if (is_array($additionalConditions)) {
+                foreach ($additionalConditions as $condition) {
+                    $label = $condition['label'] ?? 'Additional Condition';
+                    if (isset($condition['produk']) && is_array($condition['produk'])) {
+                        foreach ($condition['produk'] as $produk) {
+                            $produkPenawaran[] = [
+                                'area' => $label,
+                                'section' => 'additional_condition',
+                                'item' => $produk['nama_produk'] ?? $produk['item'] ?? '',
+                                'type' => $produk['code'] ?? '',
+                                'dimensi' => '',
+                                'panjang' => '',
+                                'qty' => $produk['qty'] ?? 0,
+                                'satuan' => $produk['satuan'] ?? '',
+                                'harga' => $produk['harga'] ?? 0,
+                                'total_harga' => $produk['total_harga'] ?? 0,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
         return view('admin.rancangan_anggaran_biaya.create', compact('penawaran', 'pemasangan', 'produkPenawaran', 'pemasanganSisa'));
     }
 
@@ -446,6 +475,35 @@ class RancanganAnggaranBiayaController extends Controller
                                 ],
                                 $product
                             );
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tambahkan additional_condition ke produkPenawaran
+        if ($penawaran->additional_condition) {
+            $additionalConditions = is_string($penawaran->additional_condition) 
+                ? json_decode($penawaran->additional_condition, true) 
+                : $penawaran->additional_condition;
+            
+            if (is_array($additionalConditions)) {
+                foreach ($additionalConditions as $condition) {
+                    $label = $condition['label'] ?? 'Additional Condition';
+                    if (isset($condition['produk']) && is_array($condition['produk'])) {
+                        foreach ($condition['produk'] as $produk) {
+                            $produkPenawaran[] = [
+                                'area' => $label,
+                                'section' => 'additional_condition',
+                                'item' => $produk['nama_produk'] ?? $produk['item'] ?? '',
+                                'type' => $produk['code'] ?? '',
+                                'dimensi' => '',
+                                'panjang' => '',
+                                'qty' => $produk['qty'] ?? 0,
+                                'satuan' => $produk['satuan'] ?? '',
+                                'harga' => $produk['harga'] ?? 0,
+                                'total_harga' => $produk['total_harga'] ?? 0,
+                            ];
                         }
                     }
                 }

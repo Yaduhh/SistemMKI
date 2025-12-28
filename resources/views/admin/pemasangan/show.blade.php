@@ -231,9 +231,25 @@
                                     {{ number_format(((float) ($pemasangan->total ?? 0) * (float) ($pemasangan->diskon ?? 0)) / 100, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-lg font-semibold text-gray-900 dark:text-white">Grand Total:</span>
-                                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">Rp
+                                <span class="text-gray-600 dark:text-gray-400">Grand Total (Setelah Diskon):</span>
+                                <span class="font-medium text-gray-900 dark:text-white">Rp
                                     {{ number_format((float) ($pemasangan->grand_total ?? 0), 0, ',', '.') }}</span>
+                            </div>
+                            @php
+                                $ppn = $pemasangan->ppn ?? 0;
+                                $grandTotal = (float) ($pemasangan->grand_total ?? 0);
+                                $ppnNominal = $grandTotal * ($ppn / 100);
+                                $totalFinal = $grandTotal + $ppnNominal;
+                            @endphp
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">PPN ({{ $ppn }}%):</span>
+                                <span class="font-medium text-gray-900 dark:text-white">Rp
+                                    {{ number_format($ppnNominal, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-3">
+                                <span class="text-lg font-semibold text-gray-900 dark:text-white">Total Final (Grand Total + PPN):</span>
+                                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">Rp
+                                    {{ number_format($totalFinal, 0, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>

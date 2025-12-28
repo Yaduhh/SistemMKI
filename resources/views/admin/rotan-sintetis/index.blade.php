@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center mb-6">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Aksesoris Management') }}
+                {{ __('Rotan Sintetis Management') }}
             </h2>
-            <x-button href="{{ route('admin.hollow.create') }}" class="bg-white/30 hover:bg-gray-700">
+            <x-button href="{{ route('admin.rotan-sintetis.create') }}" class="bg-white/30 hover:bg-gray-700">
                 <x-icon name="plus" class="w-4 h-4 mr-2" />
-                {{ __('Add New Aksesoris') }}
+                {{ __('Add New Rotan Sintetis') }}
             </x-button>
         </div>
     </x-slot>
@@ -18,7 +18,7 @@
         <div class="w-full mx-auto">
             <x-card>
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Aksesoris Products</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Rotan Sintetis Products</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -33,24 +33,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($hollows as $hollow)
+                            @forelse ($rotanSintetis as $rotan)
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
                                     <td class="px-6 py-4 text-center">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4">{{ $hollow->code }}</td>
+                                    <td class="px-6 py-4">{{ $rotan->code }}</td>
                                     <td class="px-6 py-4">
-                                        <p class="truncate">{{ $hollow->nama_produk ?? '-' }}</p>
+                                        <p class="truncate">{{ $rotan->nama_produk ?? '-' }}</p>
                                     </td>
-                                    <td class="px-6 py-4">{{ $hollow->satuan ?? '-' }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($hollow->harga ?? 0, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">{{ $rotan->satuan ?? '-' }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($rotan->harga ?? 0, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex space-x-2">
-                                            <x-button href="{{ route('admin.hollow.edit', $hollow) }}" size="sm" variant="secondary">
+                                            <x-button href="{{ route('admin.rotan-sintetis.edit', $rotan) }}" size="sm" variant="secondary">
                                                 <x-icon name="pencil" class="w-4 h-4" />
                                             </x-button>
-                                            <form action="{{ route('admin.hollow.destroy', $hollow) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.rotan-sintetis.destroy', $rotan) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <x-button type="submit" size="sm" variant="danger" onclick="return confirm('Are you sure you want to delete this hollow?')">
+                                                <x-button type="submit" size="sm" variant="danger" onclick="return confirm('Are you sure you want to delete this rotan sintetis?')">
                                                     <x-icon name="trash" class="w-4 h-4" />
                                                 </x-button>
                                             </form>
@@ -60,7 +60,7 @@
                             @empty
                                 <tr class="bg-white border-b dark:bg-accent-foreground dark:border-gray-700">
                                     <td colspan="6" class="px-6 py-4 text-center">
-                                        {{ __('No hollow found.') }}
+                                        {{ __('No rotan sintetis found.') }}
                                     </td>
                                 </tr>
                             @endforelse
@@ -71,4 +71,3 @@
         </div>
     </div>
 </x-layouts.app>
-

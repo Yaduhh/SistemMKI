@@ -20,7 +20,7 @@ class PemasanganController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\Pemasangan::with(['client', 'sales'])->where('status_deleted', 0);
+        $query = \App\Models\Pemasangan::with(['client', 'sales', 'penawaran'])->where('status_deleted', 0);
         if ($request->filled('client')) {
             $query->where('id_client', $request->client);
         }
@@ -80,6 +80,7 @@ class PemasanganController extends Controller
             'total' => 'required|numeric',
             'diskon' => 'nullable|numeric',
             'grand_total' => 'required|numeric',
+            'ppn' => 'nullable|integer|min:0|max:100',
             'json_syarat_kondisi' => 'nullable|array',
             'logo' => 'nullable|string|max:100',
         ]);
@@ -149,6 +150,7 @@ class PemasanganController extends Controller
             'total' => 'required|numeric',
             'diskon' => 'nullable|numeric',
             'grand_total' => 'required|numeric',
+            'ppn' => 'nullable|integer|min:0|max:100',
             'json_syarat_kondisi' => 'nullable|array',
             'logo' => 'nullable|string|max:100',
         ]);
@@ -249,6 +251,7 @@ class PemasanganController extends Controller
             'total' => 'required|numeric',
             'diskon' => 'nullable|numeric',
             'grand_total' => 'required|numeric',
+            'ppn' => 'nullable|integer|min:0|max:100',
             'json_syarat_kondisi' => 'nullable|array',
             'logo' => 'nullable|string|max:100',
             'catatan_revisi' => 'nullable|string',

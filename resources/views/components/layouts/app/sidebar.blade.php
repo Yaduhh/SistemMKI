@@ -66,7 +66,8 @@
                         :current="request()->routeIs('admin.entertainment.*')" wire:navigate>{{ __('Non Material') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="cube" :href="route('admin.material-tambahan.index')"
-                        :current="request()->routeIs('admin.material-tambahan.*')" wire:navigate>{{ __('Material Tambahan') }}
+                        :current="request()->routeIs('admin.material-tambahan.*')" wire:navigate>
+                        {{ __('Material Tambahan') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="users" :href="route('admin.tukang.index')"
                         :current="request()->routeIs('admin.tukang.*')" wire:navigate>{{ __('Tukang') }}
@@ -76,7 +77,7 @@
                     </flux:navlist.item>
                 </flux:navlist.group>
             @endif
-            
+
             <flux:navlist.group :heading="__('Syarat & Kondisi')" class="mt-10">
                 <flux:navlist.item icon="document-text" :href="route('admin.syarat_ketentuan.index')"
                     :current="request()->routeIs('admin.syarat_ketentuan.index')" wire:navigate>
@@ -109,19 +110,24 @@
                     <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.ceiling.index')"
                         :current="request()->routeIs('admin.ceiling.*')" wire:navigate>{{ __('Ceiling') }}
                     </flux:navlist.item>
+                    <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.rotan-sintetis.index')"
+                        :current="request()->routeIs('admin.rotan-sintetis.*')" wire:navigate>{{ __('Rotan Sintetis') }}
+                    </flux:navlist.item>
                     <flux:navlist.item icon="home-modern" :href="route('admin.pintu.index')"
                         :current="request()->routeIs('admin.pintu.*')" wire:navigate>{{ __('Pintu') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.hollow.index')"
-                        :current="request()->routeIs('admin.hollow.*')" wire:navigate>{{ __('Hollow') }}
-                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
-            {{--<flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
+            <flux:navlist.group heading="Aksesoris" expandable :expanded="true">
+                <flux:navlist.item icon="square-3-stack-3d" :href="route('admin.hollow.index')"
+                    :current="request()->routeIs('admin.hollow.*')" wire:navigate>{{ __('Aksesoris') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
+            {{-- <flux:navlist.group :heading="__('Data Surat Jalan')" class="mt-10">
                 <flux:navlist.item icon="document" :href="route('admin.surat_jalan.index')"
                     :current="request()->routeIs('admin.surat_jalan.index')" wire:navigate>{{ __('Surat Jalan') }}
                 </flux:navlist.item>
-            </flux:navlist.group>--}}
+            </flux:navlist.group> --}}
 
             <!-- Event Management -->
             @if (auth()->user()->role === 1)
@@ -265,62 +271,62 @@
     {{ $slot }}
 
     @stack('scripts')
-    
+
     <script>
         // Global variable to store scroll position
         let sidebarScrollPos = 0;
         let isRestoring = false;
         let scrollTimeout = null;
         let savedScrollBeforeNav = null;
-        
+
         function findSidebar() {
-            return document.querySelector('[data-flux-sidebar]') || 
-                   document.querySelector('flux-sidebar') ||
-                   document.querySelector('aside') || 
-                   document.querySelector('nav[class*="sidebar"]') ||
-                   document.querySelector('[class*="bg-zinc-50"]');
+            return document.querySelector('[data-flux-sidebar]') ||
+                document.querySelector('flux-sidebar') ||
+                document.querySelector('aside') ||
+                document.querySelector('nav[class*="sidebar"]') ||
+                document.querySelector('[class*="bg-zinc-50"]');
         }
-        
+
         function getScrollContainer(sidebar) {
             if (!sidebar) return null;
-            
+
             // Try to find scrollable container in shadow DOM
             if (sidebar.shadowRoot) {
                 const shadowContainer = sidebar.shadowRoot.querySelector('[part="content"]') ||
-                                      sidebar.shadowRoot.querySelector('.overflow-y-auto') ||
-                                      sidebar.shadowRoot.querySelector('[style*="overflow"]');
+                    sidebar.shadowRoot.querySelector('.overflow-y-auto') ||
+                    sidebar.shadowRoot.querySelector('[style*="overflow"]');
                 if (shadowContainer && shadowContainer.scrollHeight > shadowContainer.clientHeight) {
                     return shadowContainer;
                 }
             }
-            
+
             // Fallback to sidebar itself
             if (sidebar.scrollHeight > sidebar.clientHeight) {
                 return sidebar;
             }
-            
+
             return sidebar;
         }
-        
+
         function saveSidebarScroll() {
             if (isRestoring) return;
-            
+
             const sidebar = findSidebar();
             const scrollContainer = getScrollContainer(sidebar);
-            
+
             if (scrollContainer && scrollContainer.scrollTop !== undefined) {
                 sidebarScrollPos = scrollContainer.scrollTop;
                 sessionStorage.setItem('sidebarScrollPosition', sidebarScrollPos);
                 savedScrollBeforeNav = sidebarScrollPos;
             }
         }
-        
+
         function restoreSidebarScroll(immediate = false) {
             const sidebar = findSidebar();
             const savedPos = savedScrollBeforeNav || sessionStorage.getItem('sidebarScrollPosition');
-            
+
             if (!sidebar || !savedPos) return;
-            
+
             const scrollContainer = getScrollContainer(sidebar);
             if (!scrollContainer || scrollContainer.scrollTop === undefined) {
                 // Retry if container not ready
@@ -329,27 +335,27 @@
                 }
                 return;
             }
-            
+
             const targetScroll = parseInt(savedPos, 10);
             if (isNaN(targetScroll) || targetScroll < 0) return;
-            
+
             // Check if already at target position
             if (Math.abs(scrollContainer.scrollTop - targetScroll) < 5) {
                 isRestoring = false;
                 return;
             }
-            
+
             isRestoring = true;
-            
+
             // Immediate restore to prevent visible reset
             scrollContainer.scrollTop = targetScroll;
-            
+
             // Verify and fix if needed
             requestAnimationFrame(() => {
                 if (Math.abs(scrollContainer.scrollTop - targetScroll) > 10) {
                     scrollContainer.scrollTop = targetScroll;
                 }
-                
+
                 // One more check after a tiny delay
                 setTimeout(() => {
                     if (Math.abs(scrollContainer.scrollTop - targetScroll) > 10) {
@@ -359,49 +365,54 @@
                 }, 20);
             });
         }
-        
+
         // Save on scroll with debounce
         document.addEventListener('scroll', function(e) {
             const sidebar = findSidebar();
-            if (sidebar && !isRestoring && 
-                (sidebar.contains(e.target) || 
-                 (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
+            if (sidebar && !isRestoring &&
+                (sidebar.contains(e.target) ||
+                    (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(saveSidebarScroll, 100);
             }
-        }, { capture: true, passive: true });
-        
+        }, {
+            capture: true,
+            passive: true
+        });
+
         // Save BEFORE navigation happens
         document.addEventListener('click', function(e) {
             const sidebar = findSidebar();
             if (sidebar &&
-                (sidebar.contains(e.target) || 
-                 (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
+                (sidebar.contains(e.target) ||
+                    (sidebar.shadowRoot && sidebar.shadowRoot.contains(e.target)))) {
                 const link = e.target.closest('a[wire\\:navigate], a[href]');
                 if (link) {
                     // Save immediately before navigation
                     saveSidebarScroll();
                 }
             }
-        }, { capture: true });
-        
+        }, {
+            capture: true
+        });
+
         // Intercept BEFORE Livewire navigation
         document.addEventListener('livewire:before-navigate', function() {
             saveSidebarScroll();
         });
-        
+
         // Restore IMMEDIATELY after navigation - multiple quick attempts
         document.addEventListener('livewire:navigated', function() {
             // Restore immediately (0ms)
             restoreSidebarScroll(true);
-            
+
             // Quick retries to catch any reset
             setTimeout(() => restoreSidebarScroll(true), 0);
             setTimeout(() => restoreSidebarScroll(true), 10);
             setTimeout(() => restoreSidebarScroll(true), 30);
             setTimeout(() => restoreSidebarScroll(true), 50);
         });
-        
+
         // Also restore on DOM mutations (catch any DOM changes)
         const observer = new MutationObserver(function() {
             const savedPos = sessionStorage.getItem('sidebarScrollPosition');
@@ -414,7 +425,7 @@
                 }
             }
         });
-        
+
         // Observe sidebar for changes
         function observeSidebar() {
             const sidebar = findSidebar();
@@ -435,22 +446,23 @@
             }
         }
         observeSidebar();
-        
+
         // Restore on initial load
         let hasRestored = false;
+
         function tryInitialRestore() {
             if (hasRestored) return;
             hasRestored = true;
             setTimeout(() => restoreSidebarScroll(false), 200);
         }
-        
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', tryInitialRestore);
         } else {
             tryInitialRestore();
         }
     </script>
-    
+
     @fluxScripts
 </body>
 

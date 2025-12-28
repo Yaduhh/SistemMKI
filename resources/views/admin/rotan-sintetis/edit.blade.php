@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Add New Aksesoris') }}
+                {{ __('Edit Rotan Sintetis') }}
             </h2>
-            <x-button href="{{ route('admin.hollow.index') }}" variant="secondary">
+            <x-button href="{{ route('admin.rotan-sintetis.index') }}" variant="secondary">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
                 {{ __('Back to List') }}
             </x-button>
@@ -14,8 +14,9 @@
     <div class="py-12">
         <div class="w-full mx-auto">
             <x-card>
-                <form action="{{ route('admin.hollow.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.rotan-sintetis.update', $rotanSintetis) }}" method="POST" class="space-y-6">
                     @csrf
+                    @method('PUT')
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="col-span-2">
@@ -25,8 +26,8 @@
                                 type="text" 
                                 required 
                                 autocomplete="off"
-                                :placeholder="__('Enter hollow code')"
-                                :value="old('code')" 
+                                :placeholder="__('Enter rotan sintetis code')"
+                                :value="old('code', $rotanSintetis->code)" 
                             />
                         </div>
                         
@@ -38,7 +39,7 @@
                                 required
                                 autocomplete="off"
                                 :placeholder="__('Enter product name')"
-                                :value="old('nama_produk')" 
+                                :value="old('nama_produk', $rotanSintetis->nama_produk)" 
                             />
                         </div>
 
@@ -50,7 +51,7 @@
                                 required 
                                 autocomplete="off"
                                 :placeholder="__('Enter unit, e.g: pcs, m, kg')"
-                                :value="old('satuan')"
+                                :value="old('satuan', $rotanSintetis->satuan)"
                             />
                         </div>
 
@@ -63,14 +64,14 @@
                                 required 
                                 autocomplete="off"
                                 :placeholder="__('Enter price')"
-                                :value="old('harga')"
+                                :value="old('harga', $rotanSintetis->harga)"
                             />
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end">
                         <x-button type="submit" variant="secondary">
-                            {{ __('Save Aksesoris') }}
+                            {{ __('Update Rotan Sintetis') }}
                         </x-button>
                     </div>
                 </form>
@@ -78,4 +79,3 @@
         </div>
     </div>
 </x-layouts.app>
-

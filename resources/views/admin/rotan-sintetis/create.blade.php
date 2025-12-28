@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Add New Aksesoris') }}
+                {{ __('Add New Rotan Sintetis') }}
             </h2>
-            <x-button href="{{ route('admin.hollow.index') }}" variant="secondary">
+            <x-button href="{{ route('admin.rotan-sintetis.index') }}" variant="secondary">
                 <x-icon name="arrow-left" class="w-4 h-4 mr-2" />
                 {{ __('Back to List') }}
             </x-button>
@@ -14,7 +14,7 @@
     <div class="py-12">
         <div class="w-full mx-auto">
             <x-card>
-                <form action="{{ route('admin.hollow.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.rotan-sintetis.store') }}" method="POST" class="space-y-6">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -25,7 +25,7 @@
                                 type="text" 
                                 required 
                                 autocomplete="off"
-                                :placeholder="__('Enter hollow code')"
+                                :placeholder="__('Enter rotan sintetis code')"
                                 :value="old('code')" 
                             />
                         </div>
@@ -70,7 +70,7 @@
 
                     <div class="flex items-center justify-end">
                         <x-button type="submit" variant="secondary">
-                            {{ __('Save Aksesoris') }}
+                            {{ __('Save Rotan Sintetis') }}
                         </x-button>
                     </div>
                 </form>
@@ -78,4 +78,3 @@
         </div>
     </div>
 </x-layouts.app>
-

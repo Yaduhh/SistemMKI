@@ -33,9 +33,10 @@
                             <ul class="list-disc list-inside space-y-1">
                                 <li>Data material utama (item, type, dimensi, panjang, qty, harga, total) <strong>tidak
                                         dapat diubah</strong> dan akan tervalidasi otomatis dengan data penawaran</li>
+                                <li>Material utama termasuk produk utama dan <strong>additional condition (aksesoris)</strong> dari penawaran</li>
                                 <li>Hanya field <strong>satuan</strong> dan <strong>warna</strong> yang dapat
                                     diisi/diubah</li>
-                                <li>Sistem akan memvalidasi kesesuaian total harga material utama dengan penawaran</li>
+                                <li>Sistem akan memvalidasi kesesuaian total harga material utama dengan penawaran (termasuk additional condition)</li>
                             </ul>
                         </div>
                     </div>

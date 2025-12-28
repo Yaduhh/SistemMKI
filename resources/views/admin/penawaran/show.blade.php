@@ -224,7 +224,7 @@
                             @foreach ($penawaran->json_produk as $mainIndex => $mainSection)
                                 <!-- Main Section -->
                                 <div
-                                    class="mb-8 border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-6 bg-gray-50 dark:bg-zinc-800/50">
+                                    class="mb-4">
                                     <h3
                                         class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
@@ -413,6 +413,103 @@
                         @endif
                     </div>
 
+                    <!-- Additional Condition (Aksesoris) -->
+                    @php
+                        $hasAdditionalCondition = false;
+                        if ($penawaran->additional_condition) {
+                            if (is_string($penawaran->additional_condition)) {
+                                $decoded = json_decode($penawaran->additional_condition, true);
+                                $hasAdditionalCondition = is_array($decoded) && count($decoded) > 0;
+                            } elseif (is_array($penawaran->additional_condition)) {
+                                $hasAdditionalCondition = count($penawaran->additional_condition) > 0;
+                            }
+                        }
+                    @endphp
+                    @if ($hasAdditionalCondition)
+                        @php
+                            $additionalConditions = is_string($penawaran->additional_condition) 
+                                ? json_decode($penawaran->additional_condition, true) 
+                                : $penawaran->additional_condition;
+                        @endphp
+                        <div
+                            class="w-full">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                Additional Condition (Aksesoris)
+                            </h2>
+                            
+                            @foreach ($additionalConditions as $condIndex => $condition)
+                                <div class="mb-6 border-2 border-orange-200 dark:border-orange-800 rounded-lg p-4 bg-orange-50 dark:bg-orange-900/10">
+                                    <h3 class="text-base font-semibold text-orange-700 dark:text-orange-300 mb-4 flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                            </path>
+                                        </svg>
+                                        {{ $condition['label'] ?? 'Additional Condition ' . ($condIndex + 1) }}
+                                    </h3>
+
+                                    @if (isset($condition['produk']) && is_array($condition['produk']) && count($condition['produk']) > 0)
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead class="bg-orange-100 dark:bg-orange-900/30">
+                                                    <tr>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">No</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Aksesoris</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Nama Produk</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Satuan</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">VOL(m²)</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Satuan VOL</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Qty</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Harga</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white dark:bg-zinc-900/30 divide-y divide-gray-200 dark:divide-gray-700">
+                                                    @foreach ($condition['produk'] as $prodIndex => $produk)
+                                                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $prodIndex + 1 }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['code'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['nama_produk'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['satuan'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['qty_area'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['satuan_vol'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ $produk['qty'] ?? '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                                {{ isset($produk['harga']) ? 'Rp ' . number_format($produk['harga'], 0, ',', '.') : '-' }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-orange-600 dark:text-orange-400">
+                                                                {{ isset($produk['total_harga']) ? 'Rp ' . number_format($produk['total_harga'], 0, ',', '.') : '-' }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <!-- Syarat & Kondisi -->
                     @if ($penawaran->syarat_kondisi)
                         <div
@@ -442,7 +539,7 @@
                     @if ($penawaran->catatan)
                         <div
                             class="bg-white dark:bg-zinc-900/30 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -566,12 +663,54 @@
                                     Rp {{ number_format($penawaran->total_diskon_2 ?? 0, 0, ',', '.') }}
                                 </span>
                             </div>
+                            @php
+                                // Hitung total additional condition
+                                $additionalConditionTotal = 0;
+                                $additionalConditionsData = null;
+                                
+                                if ($penawaran->additional_condition) {
+                                    if (is_string($penawaran->additional_condition)) {
+                                        $additionalConditionsData = json_decode($penawaran->additional_condition, true);
+                                    } elseif (is_array($penawaran->additional_condition)) {
+                                        $additionalConditionsData = $penawaran->additional_condition;
+                                    }
+                                    
+                                    if (is_array($additionalConditionsData)) {
+                                        foreach ($additionalConditionsData as $condition) {
+                                            if (isset($condition['produk']) && is_array($condition['produk'])) {
+                                                foreach ($condition['produk'] as $produk) {
+                                                    $additionalConditionTotal += floatval($produk['total_harga'] ?? 0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // Hitung after_diskon
+                                $after_diskon = ($penawaran->total ?? 0) - ($penawaran->total_diskon ?? 0) - ($penawaran->total_diskon_1 ?? 0) - ($penawaran->total_diskon_2 ?? 0);
+                                
+                                // Hitung PPN dari (after_diskon + additional condition)
+                                $total_sebelum_ppn = $after_diskon + $additionalConditionTotal;
+                                $ppn_nominal = $total_sebelum_ppn * (($penawaran->ppn ?? 0) / 100);
+                            @endphp
+                            
+                            @if ($additionalConditionTotal > 0)
+                                <div class="flex justify-between items-center py-2 border-t border-orange-200 dark:border-orange-800">
+                                    <div>
+                                        <span class="text-sm font-medium text-orange-600 dark:text-orange-400">Total Additional Condition:</span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Tidak kena diskon</p>
+                                    </div>
+                                    <span class="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                        Rp {{ number_format($additionalConditionTotal, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            @endif
+                            
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">PPN
                                     ({{ $penawaran->ppn ?? 0 }}%):</span>
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                    Rp
-                                    {{ number_format((($penawaran->total ?? 0) * ($penawaran->ppn ?? 0)) / 100, 0, ',', '.') }}
+                                    Rp {{ number_format($ppn_nominal, 0, ',', '.') }}
                                 </span>
                             </div>
                             <hr class="border-gray-200 dark:border-gray-700">
@@ -667,6 +806,19 @@
                     </svg>
                     Cetak PDF
                 </a>
+
+                <!-- Tombol Cetak Full - Hanya tampil jika ada pemasangan -->
+                @if ($penawaran->pemasangans && $penawaran->pemasangans->count() > 0)
+                    <a href="{{ route('admin.penawaran.cetak-full', $penawaran) }}"
+                        class="flex items-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Cetak Full (Penawaran + Pemasangan)
+                    </a>
+                @endif
 
                 <!-- Tombol Revisi - Hanya tampil jika bukan WIN -->
                 @if ($penawaran->status != 1 && $penawaran->canCreateRevisi())

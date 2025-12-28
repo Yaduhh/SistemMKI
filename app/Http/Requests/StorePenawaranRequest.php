@@ -21,9 +21,15 @@ class StorePenawaranRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Untuk update dan storeRevisi, nomor_penawaran tidak required karena sudah ada atau dibuat otomatis
+        $routeName = $this->route()->getName();
+        $isUpdate = $routeName === 'admin.penawaran.update';
+        $isStoreRevisi = $routeName === 'admin.penawaran.store-revisi';
+        
         return [
             'id_user' => 'required|exists:users,id',
             'id_client' => 'required|exists:clients,id',
+            'nomor_penawaran' => ($isUpdate || $isStoreRevisi) ? 'nullable|string|max:255' : 'required|string|max:255',
             'tanggal_penawaran' => 'required|date',
             'judul_penawaran' => 'required|string|max:255',
             'project' => 'nullable|string|max:255',
@@ -54,6 +60,19 @@ class StorePenawaranRequest extends FormRequest
             'json_produk.*.product_sections.*.*.satuan' => 'nullable|string',
             'syarat_kondisi' => 'nullable|array',
             'syarat_kondisi.*' => 'nullable|string',
+            'additional_condition' => 'nullable|array',
+            'additional_condition.*.label' => 'nullable|string|max:255',
+            'additional_condition.*.produk' => 'nullable|array',
+            'additional_condition.*.produk.*.item' => 'nullable|string',
+            'additional_condition.*.produk.*.code' => 'nullable|string',
+            'additional_condition.*.produk.*.slug' => 'nullable|string',
+            'additional_condition.*.produk.*.nama_produk' => 'nullable|string',
+            'additional_condition.*.produk.*.satuan' => 'nullable|string',
+            'additional_condition.*.produk.*.qty_area' => 'nullable|numeric|min:0',
+            'additional_condition.*.produk.*.satuan_vol' => 'nullable|string',
+            'additional_condition.*.produk.*.qty' => 'nullable|numeric|min:0',
+            'additional_condition.*.produk.*.harga' => 'nullable|numeric|min:0',
+            'additional_condition.*.produk.*.total_harga' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
             'status' => 'nullable|integer',
             'status_deleted' => 'nullable|boolean',
@@ -72,6 +91,8 @@ class StorePenawaranRequest extends FormRequest
             'id_user.exists' => 'Sales yang dipilih tidak valid.',
             'id_client.required' => 'Client harus dipilih.',
             'id_client.exists' => 'Client yang dipilih tidak valid.',
+            'nomor_penawaran.required' => 'Nomor penawaran harus diisi.',
+            'nomor_penawaran.max' => 'Nomor penawaran maksimal 255 karakter.',
             'tanggal_penawaran.required' => 'Tanggal penawaran harus diisi.',
             'tanggal_penawaran.date' => 'Format tanggal penawaran tidak valid.',
             'judul_penawaran.required' => 'Judul penawaran harus diisi.',

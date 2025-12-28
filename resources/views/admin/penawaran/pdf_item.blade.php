@@ -10,6 +10,13 @@
             margin: 0;
             padding: 0;
             line-height: 1.2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1;
         }
 
         p {
@@ -81,16 +88,23 @@
         .w-100 {
             width: 100%;
         }
+
+        .footer-section {
+            width: 100%;
+            margin-top: auto;
+            padding-top: 20px;
+        }
     </style>
 
 </head>
 
 <body>
-    <div style="position: relative; z-index: 0; width: 100%;">
-        <div style="position: absolute; top: 0; right: 0; z-index: 1;">
-            <img src="{{ public_path('assets/images/logoMki.png') }}" alt="Logo Perusahaan" width="250">
+    <div class="content-wrapper">
+        <div style="position: relative; z-index: 0; width: 100%;">
+            <div style="position: absolute; top: 0; right: 0; z-index: 1;">
+                <img src="{{ public_path('assets/images/logoMki.png') }}" alt="Logo Perusahaan" width="250">
+            </div>
         </div>
-    </div>
     <div>
         <p>
             No {{ ' ' }}: {{ $penawaran->nomor_penawaran }} <br>
@@ -375,37 +389,170 @@
                         </td>
                     </tr>
                 @endif
-                @if ($penawaran->ppn > 0)
+                @php
+                    // Hitung total additional condition
+                    $additionalConditionTotal = 0;
+                    $additionalConditionsData = null;
+                    $hasAdditionalCondition = false;
+                    
+                    if ($penawaran->additional_condition) {
+                        if (is_string($penawaran->additional_condition)) {
+                            $additionalConditionsData = json_decode($penawaran->additional_condition, true);
+                        } elseif (is_array($penawaran->additional_condition)) {
+                            $additionalConditionsData = $penawaran->additional_condition;
+                        }
+                        
+                        if (is_array($additionalConditionsData) && count($additionalConditionsData) > 0) {
+                            $hasAdditionalCondition = true;
+                            foreach ($additionalConditionsData as $condition) {
+                                if (isset($condition['produk']) && is_array($condition['produk'])) {
+                                    foreach ($condition['produk'] as $produk) {
+                                        $additionalConditionTotal += floatval($produk['total_harga'] ?? 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Hitung after_diskon
+                    $after_diskon = ($penawaran->total ?? 0) - ($penawaran->total_diskon ?? 0) - ($penawaran->total_diskon_1 ?? 0) - ($penawaran->total_diskon_2 ?? 0);
+                    
+                    // Hitung total sebelum PPN (after_diskon + additional condition)
+                    $total_sebelum_ppn = $after_diskon + $additionalConditionTotal;
+                @endphp
+                
+                {{-- Baris TOTAL setelah diskon --}}
+                @if ($hasAdditionalCondition)
+                <tr>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-style text-right"><strong>TOTAL</strong></td>
+                    <td class="table-style">
+                        <table>
+                            <tr>
+                                <td>Rp</td>
+                                <td style="text-align: right;">
+                                    {{ number_format($after_diskon, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                @endif
+                {{-- Additional Condition Section --}}
+                @if ($hasAdditionalCondition)
                     <tr>
-                        <td colspan="3" rowspan="3" class="table-none">
-                            @if ($penawaran->catatan)
-                                <div>
-                                    <p><strong>Catatan :</strong></p>
-                                    <p>{{ $penawaran->catatan }}</p>
-                                </div>
-                            @endif
+                        <td colspan="10" style="padding: 5px; background-color: #FFA500; color: white; font-weight: bold; border: 1px solid #000000;">
+                            ADDITIONAL CONDITION
                         </td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-none"></td>
-                        <td class="table-style" style="font-weight: bold; text-align: right;">TOTAL</td>
-                        <td class="table-style">
+                    </tr>
+                    <tr>
+                        <th width="3%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">NO</th>
+                        <th colspan="2" width="10%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">NAMA PRODUK</th>
+                        <th width="5%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">SATUAN</th>
+                        <th colspan="2" width="5%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">VOL</th>
+                        <th colspan="2" width="4%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">QTY</th>
+                        <th width="12.5%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">HARGA</th>
+                        <th width="15%" style="padding: 5px; border: 1px solid #000000; background-color: #FFE4B5; text-align: center;">TOTAL HARGA</th>
+                    </tr>
+                    @foreach ($additionalConditionsData as $condIndex => $condition)
+                        @if (isset($condition['label']))
+                            <tr>
+                                <td colspan="10" style="padding: 5px; background-color: #FFF8DC; color: #000000; font-weight: bold; border: 1px solid #000000;">
+                                    {{ $condition['label'] }}
+                                </td>
+                            </tr>
+                        @endif
+                        @if (isset($condition['produk']) && is_array($condition['produk']) && count($condition['produk']) > 0)
+                            @foreach ($condition['produk'] as $prodIndex => $produk)
+                                <tr>
+                                    <td width="3%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $no++ }}</td>
+                                    <td colspan="2" width="10%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $produk['nama_produk'] ?? '-' }}</td>
+                                    <td width="5%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $produk['satuan'] ?? '-' }}</td>
+                                    <td width="5%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $produk['qty_area'] ?? '-' }}</td>
+                                    <td width="6%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $produk['satuan_vol'] ?? '-' }}</td>
+                                    <td colspan="2" width="4%" style="padding: 5px; border: 1px solid #000000; text-align: center;">{{ $produk['qty'] ?? '-' }}</td>
+                                    <td width="12.5%" style="padding: 5px; border: 1px solid #000000; text-align: right;">
+                                        <table>
+                                            <tr>
+                                                <td>Rp</td>
+                                                <td style="text-align: right;">
+                                                    {{ isset($produk['harga']) ? number_format($produk['harga'], 0, ',', '.') : '-' }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="15%" style="padding: 5px; border: 1px solid #000000; text-align: right;">
+                                        <table>
+                                            <tr>
+                                                <td>Rp</td>
+                                                <td style="text-align: right;">
+                                                    {{ isset($produk['total_harga']) ? number_format($produk['total_harga'], 0, ',', '.') : '-' }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    @endforeach
+                    <tr>
+                        <td width="3%" class="table-style"></td>
+                        <td colspan="2" width="10%" class="table-style"></td>
+                        <td width="5%" class="table-style"></td>
+                        <td width="5%" class="table-style"></td>
+                        <td width="6%" class="table-style"></td>
+                        <td colspan="2" width="4%" class="table-style"></td>
+                        <td width="5%" class="table-style" style="text-align: right; font-weight: bold;">TOTAL</td>
+                        <td width="12.5%" class="table-style">
                             <table>
                                 <tr>
                                     <td>Rp</td>
-                                    <td style="text-align: right;">
-                                        {{ number_format($penawaran->total - ($penawaran->total_diskon ?? 0) - ($penawaran->total_diskon_1 ?? 0) - ($penawaran->total_diskon_2 ?? 0), 0, ',', '.') }}
+                                    <td style="text-align: right; font-weight: bold;">
+                                        {{ number_format($additionalConditionTotal, 0, ',', '.') }}
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                 @endif
+                
+                {{-- Total 1 + Total 2 (jika ada additional condition) --}}
+                @if ($hasAdditionalCondition)
+                    <tr>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-style text-right"><strong>TOTAL 1 + 2</strong></td>
+                        <td class="table-style">
+                            <table>
+                                <tr>
+                                    <td>Rp</td>
+                                    <td style="text-align: right; font-weight: bold;">
+                                        {{ number_format($total_sebelum_ppn, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                @endif
+                
                 @if ($penawaran->ppn > 0)
                     <tr>
-
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
+                        <td class="table-none"></td>
                         <td class="table-none"></td>
                         <td class="table-none"></td>
                         <td class="table-none"></td>
@@ -424,7 +571,7 @@
                                 <tr>
                                     <td>Rp</td>
                                     <td style="text-align: right;">
-                                        {{ number_format((($penawaran->total - ($penawaran->total_diskon ?? 0) - ($penawaran->total_diskon_1 ?? 0) - ($penawaran->total_diskon_2 ?? 0)) * ($penawaran->ppn ?? 0)) / 100, 0, ',', '.') }}
+                                        {{ number_format(($total_sebelum_ppn * ($penawaran->ppn ?? 0)) / 100, 0, ',', '.') }}
                                     </td>
                                 </tr>
                             </table>
@@ -432,7 +579,9 @@
                     </tr>
                 @endif
                 <tr>
-
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
+                    <td class="table-none"></td>
                     <td class="table-none"></td>
                     <td class="table-none"></td>
                     <td class="table-none"></td>
@@ -442,8 +591,8 @@
                     <td class="table-style-grand-total">
                         <table>
                             <tr style="background-color: #567CBA;">
-                                <td style="font-weight: bold;">Rp</td>
-                                <td style="text-align: right; font-weight: bold;">
+                                <td style="font-weight: bold; color: white;">Rp</td>
+                                <td style="text-align: right; font-weight: bold; color: white;">
                                     {{ number_format($penawaran->grand_total ?? 0, 0, ',', '.') }}</td>
                             </tr>
                         </table>
@@ -451,6 +600,14 @@
                 </tr>
             </tbody>
         </table>
+        
+        {{-- Catatan di luar tabel --}}
+        @if ($penawaran->catatan)
+            <div style="margin-top: 15px;">
+                <p style="margin: 0; font-weight: bold;">Catatan :</p>
+                <p style="margin: 0; white-space: pre-line;">{{ $penawaran->catatan }}</p>
+            </div>
+        @endif
     @else
         <!-- Fallback untuk struktur lama -->
         @foreach ($json_produk as $mainSection)
@@ -531,31 +688,34 @@
     <div>
         <p>Atas Perhatian dan kerjasamanya, kami ucapkan terimakasih.</p>
     </div>
+    </div>
 
-    <table style="width: 100%; margin-top: 20px;">
-        <tr>
-            <td style="width: 30%; vertical-align: top;">
-                <div>
-                    <p>Hormat Kami,</p>
-                    @if ($penawaran->user && $penawaran->user->tandaTangan)
-                        <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}"
-                            alt="Tanda Tangan" style="width: 140px; height: 100px; object-fit: contain;">
-                    @endif
-                    <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
-                </div>
-            </td>
-            <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:140px;">
-                <div>
-                    <p><span style="font-weight: bold; text-decoration: underline; color: #000000;">PT. MEGA KOMPOSIT
-                            INDONESIA</span></p>
-                    <p style="margin-top: -10px;">
-                        <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640<br>Email : mega.komposit.indonesia@gmail.com -
-                        Website: www.megakomposit.com
-                    </p>
-                </div>
-            </td>
-        </tr>
-    </table>
+    <div class="footer-section">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 30%; vertical-align: top;">
+                    <div>
+                        <p>Hormat Kami,</p>
+                        @if ($penawaran->user && $penawaran->user->tandaTangan)
+                            <img src="{{ public_path('assets/images/tanda-tangan/' . basename($penawaran->user->tandaTangan->ttd)) }}"
+                                alt="Tanda Tangan" style="width: 140px; height: 100px; object-fit: contain;">
+                        @endif
+                        <p style="text-decoration: underline;">{{ $penawaran->user->name ?? 'Sales' }}</p>
+                    </div>
+                </td>
+                <td style="width: 70%; vertical-align: bottom; text-align: right; font-style: italic; padding-top:140px;">
+                    <div>
+                        <p><span style="font-weight: bold; text-decoration: underline; color: #000000;">PT. MEGA KOMPOSIT
+                                INDONESIA</span></p>
+                        <p style="margin-top: -10px;">
+                            <br><br>Jl. Joglo Raya No.21, RT.12/RW.1, Joglo, <br>Kec. Kembangan, Kota Jakarta Barat, <br>Daerah Khusus Ibukota Jakarta 11640<br>Email : mega.komposit.indonesia@gmail.com -
+                            Website: www.megakomposit.com
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 </body>
 
 </html>
