@@ -169,7 +169,7 @@ Route::middleware(['auth', 'role:1,3,4'])->prefix('admin')->name('admin.')->grou
     Route::resource('flooring', FlooringController::class);
     Route::resource('wallpanel', WallpanelController::class);
     Route::resource('ceiling', CeilingController::class);
-    Route::resource('rotan-sintetis', App\Http\Controllers\Admin\RotanSintetisController::class);
+    Route::resource('rotan-sintetis', App\Http\Controllers\Admin\RotanSintetisController::class)->parameters(['rotan-sintetis' => 'rotanSintetis']);
     Route::resource('pintu', PintuController::class);
     Route::resource('hollow', App\Http\Controllers\Admin\HollowController::class);
     Route::resource('syarat-pemasangan', SyaratPemasanganController::class);

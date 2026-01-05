@@ -88,7 +88,7 @@
 <body>
     <div style="position: relative; z-index: 0; width: 100%;">
         <div style="position: absolute; top: 0; right: 0; z-index: 1;">
-            <img src="{{ public_path('assets/images/logomki.png') }}" alt="Logo Perusahaan" width="250">
+            <img src="{{ public_path('assets/images/logoMki.png') }}" alt="Logo Perusahaan" width="250">
         </div>
     </div>
     <div>

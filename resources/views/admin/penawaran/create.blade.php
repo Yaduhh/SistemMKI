@@ -679,12 +679,8 @@ function penawaranForm() {
                 }
             })();
 
-            // Filter produk yang sudah dipilih di section ini
-            const selectedSlugs = section.produk
-                .filter(p => p.slug && p.slug !== row.slug) // Exclude current row
-                .map(p => p.slug);
-
-            return allProducts.filter(product => !selectedSlugs.includes(product.slug));
+            // Kembalikan semua produk tanpa filter - produk yang sudah dipilih tetap bisa dipilih lagi
+            return allProducts;
         },
 
         autofillProduk(section, row) {
@@ -980,10 +976,8 @@ function penawaranForm() {
         },
 
         getAvailableHollows(condition, row) {
-            const selectedSlugs = condition.produk
-                .filter(p => p.slug && p.slug !== row.slug)
-                .map(p => p.slug);
-            return this.hollows.filter(hollow => !selectedSlugs.includes(hollow.slug));
+            // Kembalikan semua hollow tanpa filter - produk yang sudah dipilih tetap bisa dipilih lagi
+            return this.hollows;
         },
 
         autofillAdditionalProduk(condition, row) {

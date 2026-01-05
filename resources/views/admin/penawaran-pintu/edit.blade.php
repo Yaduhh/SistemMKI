@@ -31,14 +31,7 @@
             <!-- Section Data Penawaran -->
             <div class="w-full">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran Pintu</h2>
-                <div
-                    class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                        <x-icon name="info" class="w-4 h-4 inline mr-1" />
-                        Nomor penawaran pintu akan dibuat otomatis dengan format: <strong>A/MKI/MM/YY</strong>
-                    </p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Client -->
                     <flux:select name="id_client" :label="__('Client')" required>
                         <option value="" disabled>{{ __('Pilih Client') }}</option>
@@ -46,12 +39,21 @@
                             <option value="{{ $penawaran->client->id }}" selected>{{ $penawaran->client->nama ?? $penawaran->client->nama_perusahaan }}</option>
                         @endif
                     </flux:select>
+                    <!-- Nomor Penawaran -->
+                    <div>
+                        <flux:input name="nomor_penawaran" label="Nomor Penawaran"
+                            placeholder="Masukkan nomor penawaran (contoh: A/MKI/01/25)" type="text" required
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                            value="{{ old('nomor_penawaran', $penawaran->nomor_penawaran) }}" />
+                    </div>
                     <flux:input name="judul_penawaran" label="Judul Penawaran"
                         placeholder="masukkan judul penawaran pintu" type="text" required
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('judul_penawaran', $penawaran->judul_penawaran) }}" />
                     <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('project', $penawaran->project) }}" />
-                    <input type="hidden" name="tanggal_penawaran" value="{{ old('tanggal_penawaran', $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('Y-m-d') : date('Y-m-d')) }}" />
+                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                        value="{{ old('tanggal_penawaran', $penawaran->tanggal_penawaran ? $penawaran->tanggal_penawaran->format('Y-m-d') : date('Y-m-d')) }}" />
                  </div>
 
 
@@ -1253,6 +1255,21 @@
                         console.error('❌ Client belum dipilih!');
                         alert('Pilih Client terlebih dahulu!');
                         clientSelect.focus();
+                        return;
+                    }
+                    
+                    // Validasi nomor penawaran
+                    const nomorInput = form.querySelector('input[name="nomor_penawaran"]');
+                    if (!nomorInput) {
+                        console.error('❌ Input nomor penawaran tidak ditemukan!');
+                        alert('Error: Input nomor penawaran tidak ditemukan!');
+                        return;
+                    }
+                    
+                    if (!nomorInput.value.trim()) {
+                        console.error('❌ Nomor penawaran kosong!');
+                        alert('Nomor penawaran harus diisi!');
+                        nomorInput.focus();
                         return;
                     }
                     

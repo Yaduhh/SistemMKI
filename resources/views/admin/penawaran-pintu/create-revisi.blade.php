@@ -63,23 +63,24 @@
 
             <!-- Section Data Penawaran -->
             <div class="w-full">
+                @php
+                    $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
+                    $currentRevision = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? (int)$matches[1] : 0;
+                    $nextRevision = $currentRevision + 1;
+                    $suggestedNomor = $nomorAsli . ' R' . $nextRevision;
+                @endphp
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran Pintu</h2>
                 <div
                     class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
                         <x-icon name="info" class="w-4 h-4 inline mr-1" />
-                        @php
-                            $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
-                            $currentRevision = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? (int)$matches[1] : 0;
-                            $nextRevision = $currentRevision + 1;
-                        @endphp
-                        Nomor revisi akan dibuat otomatis dengan format: <strong>{{ $nomorAsli }} R{{ $nextRevision }}</strong>
+                        Format nomor revisi yang disarankan: <strong>{{ $suggestedNomor }}</strong>
                         @if($penawaran->is_revisi)
                             <br><span class="text-xs">(Revisi ke-{{ $nextRevision }} dari penawaran {{ $nomorAsli }})</span>
                         @endif
                     </p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Client -->
                     <flux:select name="id_client" :label="__('Client')" required>
                         <option value="" disabled>{{ __('Pilih Client') }}</option>
@@ -87,12 +88,24 @@
                             <option value="{{ $penawaran->client->id }}" selected>{{ $penawaran->client->nama ?? $penawaran->client->nama_perusahaan }}</option>
                         @endif
                     </flux:select>
+                    <!-- Nomor Penawaran -->
+                    <div>
+                        <flux:input name="nomor_penawaran" label="Nomor Penawaran"
+                            placeholder="Masukkan nomor penawaran (contoh: A/MKI/01/25 R1)" type="text" required
+                            class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                            value="{{ old('nomor_penawaran', $suggestedNomor) }}" />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Format yang disarankan: <span class="font-medium">{{ $suggestedNomor }}</span>
+                        </p>
+                    </div>
                     <flux:input name="judul_penawaran" label="Judul Penawaran"
                         placeholder="masukkan judul penawaran pintu" type="text" required
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('judul_penawaran', $penawaran->judul_penawaran) }}" />
                     <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="{{ old('project', $penawaran->project) }}" />
-                    <input type="hidden" name="tanggal_penawaran" value="{{ old('tanggal_penawaran', date('Y-m-d')) }}" />
+                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                        value="{{ old('tanggal_penawaran', date('Y-m-d')) }}" />
                  </div>
 
 
@@ -1149,6 +1162,23 @@
                     }
                     
                     console.log('✅ Client ID:', clientSelect.value);
+                    
+                    // Validasi nomor penawaran
+                    const nomorInput = form.querySelector('input[name="nomor_penawaran"]');
+                    if (!nomorInput) {
+                        console.error('❌ Input nomor penawaran tidak ditemukan!');
+                        alert('Error: Input nomor penawaran tidak ditemukan!');
+                        return;
+                    }
+                    
+                    if (!nomorInput.value.trim()) {
+                        console.error('❌ Nomor penawaran kosong!');
+                        alert('Nomor penawaran harus diisi!');
+                        nomorInput.focus();
+                        return;
+                    }
+                    
+                    console.log('✅ Nomor Penawaran:', nomorInput.value);
                     
                     // Validasi judul penawaran
                     const judulInput = form.querySelector('input[name="judul_penawaran"]');

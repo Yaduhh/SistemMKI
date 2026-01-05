@@ -87,8 +87,28 @@ class FacadeController extends Controller
             'harga' => 'required|numeric|min:0',
         ]);
 
-        $validated['slug'] = Str::slug($validated['code']);
         $validated['status_aksesoris'] = $request->has('status_aksesoris');
+        
+        // Hanya update slug jika code berubah
+        if ($facade->code !== $validated['code']) {
+            $baseSlug = Str::slug($validated['code']);
+            
+            // Generate slug yang unique dengan counter
+            $slug = $baseSlug;
+            $counter = 1;
+            
+            // Cek apakah slug sudah ada di record lain
+            while (Facade::where('slug', $slug)
+                ->where('id', '!=', $facade->id)
+                ->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            
+            $validated['slug'] = $slug;
+        }
+        // Jika code tidak berubah, jangan update slug (biarkan slug yang lama)
+        
         $facade->update($validated);
 
         return redirect()->route('admin.facade.index')

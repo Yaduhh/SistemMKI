@@ -58,7 +58,9 @@
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text"
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
-                    <input type="hidden" name="tanggal_penawaran" value="{{ date('Y-m-d') }}" />
+                    <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required
+                        class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                        value="{{ old('tanggal_penawaran', date('Y-m-d')) }}" />
                 </div>
             </div>
 
