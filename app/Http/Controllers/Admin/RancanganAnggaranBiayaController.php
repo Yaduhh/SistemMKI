@@ -261,29 +261,16 @@ class RancanganAnggaranBiayaController extends Controller
         }
         
         // Clean and validate tukang data (remove empty sections)
-        $tukangData = [];
-        if ($request->has('json_pengeluaran_tukang') && is_array($request->json_pengeluaran_tukang)) {
-            foreach ($request->json_pengeluaran_tukang as $section) {
-                if (!empty($section['debet']) && isset($section['termin']) && is_array($section['termin'])) {
-                    $cleanTermin = [];
-                    foreach ($section['termin'] as $termin) {
-                        if (!empty($termin['tanggal']) && !empty($termin['kredit'])) {
-                            $cleanTermin[] = [
-                                'tanggal' => $termin['tanggal'],
-                                'kredit' => $termin['kredit'],
-                                'sisa' => $termin['sisa'] ?? 0,
-                                'persentase' => $termin['persentase'] ?? '0%'
-                            ];
-                        }
-                    }
-                    if (!empty($cleanTermin)) {
-                        $tukangData[] = [
-                            'debet' => $section['debet'],
-                            'termin' => $cleanTermin
-                        ];
-                    }
-                }
-            }
+        // Handle json_pengeluaran_tukang - bisa berupa array atau JSON string
+        $tukangDataRaw = $request->json_pengeluaran_tukang ?? [];
+        if (is_string($tukangDataRaw)) {
+            $tukangDataRaw = json_decode($tukangDataRaw, true) ?? [];
+        }
+        
+        if (is_array($tukangDataRaw) && !empty($tukangDataRaw)) {
+            $tukangData = $this->convertTukangDataToNumeric($tukangDataRaw);
+        } else {
+            $tukangData = [];
         }
         
         // Clean and validate kerja tambah data (remove empty sections)
@@ -313,73 +300,57 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
         
-        // Clean and validate entertaiment data (remove empty sections)
+        // Clean and validate entertaiment data
+        // Handle json_pengeluaran_entertaiment - bisa berupa array atau JSON string
+        $entertaimentDataRaw = $request->json_pengeluaran_entertaiment ?? [];
+        if (is_string($entertaimentDataRaw)) {
+            $entertaimentDataRaw = json_decode($entertaimentDataRaw, true) ?? [];
+        }
+        
         $entertaimentData = [];
-        if ($request->has('json_pengeluaran_entertaiment') && is_array($request->json_pengeluaran_entertaiment)) {
-            foreach ($request->json_pengeluaran_entertaiment as $mr) {
-                if (!empty($mr['mr']) && isset($mr['materials']) && is_array($mr['materials'])) {
-                    $cleanMaterials = [];
+        if (is_array($entertaimentDataRaw) && !empty($entertaimentDataRaw)) {
+            foreach ($entertaimentDataRaw as $mr) {
+                if (!isset($mr) || !is_array($mr)) continue;
+                
+                $cleanMaterials = [];
+                if (isset($mr['materials']) && is_array($mr['materials']) && !empty($mr['materials'])) {
                     foreach ($mr['materials'] as $material) {
-                        if (!empty($material['supplier']) || !empty($material['item']) || !empty($material['qty']) || !empty($material['harga_satuan'])) {
+                        if (!isset($material) || !is_array($material)) continue;
+                        
+                        // Only add material if it has at least supplier, item, or harga_satuan
+                        $supplier = $material['supplier'] ?? null;
+                        $item = $material['item'] ?? null;
+                        $hargaSatuan = !empty($material['harga_satuan']) ? floatval($material['harga_satuan']) : null;
+                        
+                        if ($supplier || $item || ($hargaSatuan && $hargaSatuan > 0)) {
                             $cleanMaterials[] = [
-                                'supplier' => $material['supplier'] ?? '',
-                                'item' => $material['item'] ?? '',
-                                'qty' => floatval($material['qty'] ?? 0),
-                                'satuan' => $material['satuan'] ?? '',
-                                'harga_satuan' => floatval($material['harga_satuan'] ?? 0),
-                                'sub_total' => floatval($material['sub_total'] ?? 0)
+                                'supplier' => $supplier,
+                                'item' => $item,
+                                'qty' => !empty($material['qty']) ? floatval($material['qty']) : null,
+                                'satuan' => $material['satuan'] ?? null,
+                                'harga_satuan' => $hargaSatuan,
+                                'sub_total' => !empty($material['sub_total']) ? floatval($material['sub_total']) : null,
+                                'status' => $material['status'] ?? 'Disetujui'
                             ];
                         }
                     }
-                    if (!empty($cleanMaterials)) {
-                        $entertaimentData[] = [
-                            'mr' => $mr['mr'],
-                            'tanggal' => $mr['tanggal'] ?? '',
-                            'materials' => $cleanMaterials
-                        ];
-                    }
+                }
+                
+                // Only add MR group if it has MR or materials
+                $mrValue = $mr['mr'] ?? null;
+                if ($mrValue || !empty($cleanMaterials)) {
+                    $entertaimentData[] = [
+                        'mr' => $mrValue,
+                        'tanggal' => $mr['tanggal'] ?? null,
+                        'materials' => $cleanMaterials
+                    ];
                 }
             }
         }
         
-
-        
-        // Clean and validate entertaiment data (keep structure with null values)
-        $entertaimentData = [];
-        if ($request->has('json_pengeluaran_entertaiment') && is_array($request->json_pengeluaran_entertaiment) && count($request->json_pengeluaran_entertaiment) > 0) {
-            foreach ($request->json_pengeluaran_entertaiment as $mr) {
-                $cleanMaterials = [];
-                if (isset($mr['materials']) && is_array($mr['materials'])) {
-                    foreach ($mr['materials'] as $material) {
-                        $cleanMaterials[] = [
-                            'supplier' => $material['supplier'] ?? null,
-                            'item' => $material['item'] ?? null,
-                            'qty' => !empty($material['qty']) ? floatval($material['qty']) : null,
-                            'satuan' => $material['satuan'] ?? null,
-                            'harga_satuan' => !empty($material['harga_satuan']) ? floatval($material['harga_satuan']) : null,
-                            'sub_total' => !empty($material['sub_total']) ? floatval($material['sub_total']) : null
-                        ];
-                    }
-                }
-                $entertaimentData[] = [
-                    'mr' => $mr['mr'] ?? null,
-                    'tanggal' => $mr['tanggal'] ?? null,
-                    'materials' => $cleanMaterials
-                ];
-            }
-        } else {
-            $entertaimentData = [[
-                'mr' => null,
-                'tanggal' => null,
-                'materials' => [[
-                    'supplier' => null,
-                    'item' => null,
-                    'qty' => null,
-                    'satuan' => null,
-                    'harga_satuan' => null,
-                    'sub_total' => null
-                ]]
-            ]];
+        // If no data, set to empty array [] (not null or structure with null values)
+        if (empty($entertaimentData)) {
+            $entertaimentData = [];
         }
         
 
@@ -535,6 +506,8 @@ class RancanganAnggaranBiayaController extends Controller
         \Log::info('RAB Update - Request data:', [
             'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
             'json_pengeluaran_pemasangan_type' => gettype($request->json_pengeluaran_pemasangan),
+            'json_pengeluaran_tukang' => $request->json_pengeluaran_tukang,
+            'json_pengeluaran_tukang_type' => gettype($request->json_pengeluaran_tukang),
             'penawaran_id' => $request->penawaran_id,
             'pemasangan_id' => $request->pemasangan_id
         ]);
@@ -560,6 +533,7 @@ class RancanganAnggaranBiayaController extends Controller
             'json_pengeluaran_material_tambahan' => 'nullable|array',
             'json_pengeluaran_pemasangan' => 'nullable',
             'json_pengajuan_harga_tukang' => 'nullable',
+            'json_pengeluaran_tukang' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -603,29 +577,16 @@ class RancanganAnggaranBiayaController extends Controller
         }
         
         // Clean and validate tukang data (remove empty sections)
-        $tukangData = [];
-        if ($request->has('json_pengeluaran_tukang') && is_array($request->json_pengeluaran_tukang)) {
-            foreach ($request->json_pengeluaran_tukang as $section) {
-                if (!empty($section['debet']) && isset($section['termin']) && is_array($section['termin'])) {
-                    $cleanTermin = [];
-                    foreach ($section['termin'] as $termin) {
-                        if (!empty($termin['tanggal']) && !empty($termin['kredit'])) {
-                            $cleanTermin[] = [
-                                'tanggal' => $termin['tanggal'],
-                                'kredit' => $termin['kredit'],
-                                'sisa' => $termin['sisa'] ?? 0,
-                                'persentase' => $termin['persentase'] ?? '0%'
-                            ];
-                        }
-                    }
-                    if (!empty($cleanTermin)) {
-                        $tukangData[] = [
-                            'debet' => $section['debet'],
-                            'termin' => $cleanTermin
-                        ];
-                    }
-                }
-            }
+        // Handle json_pengeluaran_tukang - bisa berupa array atau JSON string
+        $tukangDataRaw = $request->json_pengeluaran_tukang ?? [];
+        if (is_string($tukangDataRaw)) {
+            $tukangDataRaw = json_decode($tukangDataRaw, true) ?? [];
+        }
+        
+        if (is_array($tukangDataRaw) && !empty($tukangDataRaw)) {
+            $tukangData = $this->convertTukangDataToNumeric($tukangDataRaw);
+        } else {
+            $tukangData = [];
         }
         
         // Clean and validate kerja tambah data (remove empty sections)
@@ -655,73 +616,57 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
         
-        // Clean and validate entertaiment data (remove empty sections)
+        // Clean and validate entertaiment data
+        // Handle json_pengeluaran_entertaiment - bisa berupa array atau JSON string
+        $entertaimentDataRaw = $request->json_pengeluaran_entertaiment ?? [];
+        if (is_string($entertaimentDataRaw)) {
+            $entertaimentDataRaw = json_decode($entertaimentDataRaw, true) ?? [];
+        }
+        
         $entertaimentData = [];
-        if ($request->has('json_pengeluaran_entertaiment') && is_array($request->json_pengeluaran_entertaiment)) {
-            foreach ($request->json_pengeluaran_entertaiment as $mr) {
-                if (!empty($mr['mr']) && isset($mr['materials']) && is_array($mr['materials'])) {
-                    $cleanMaterials = [];
+        if (is_array($entertaimentDataRaw) && !empty($entertaimentDataRaw)) {
+            foreach ($entertaimentDataRaw as $mr) {
+                if (!isset($mr) || !is_array($mr)) continue;
+                
+                $cleanMaterials = [];
+                if (isset($mr['materials']) && is_array($mr['materials']) && !empty($mr['materials'])) {
                     foreach ($mr['materials'] as $material) {
-                        if (!empty($material['supplier']) || !empty($material['item']) || !empty($material['qty']) || !empty($material['harga_satuan'])) {
+                        if (!isset($material) || !is_array($material)) continue;
+                        
+                        // Only add material if it has at least supplier, item, or harga_satuan
+                        $supplier = $material['supplier'] ?? null;
+                        $item = $material['item'] ?? null;
+                        $hargaSatuan = !empty($material['harga_satuan']) ? floatval($material['harga_satuan']) : null;
+                        
+                        if ($supplier || $item || ($hargaSatuan && $hargaSatuan > 0)) {
                             $cleanMaterials[] = [
-                                'supplier' => $material['supplier'] ?? '',
-                                'item' => $material['item'] ?? '',
-                                'qty' => floatval($material['qty'] ?? 0),
-                                'satuan' => $material['satuan'] ?? '',
-                                'harga_satuan' => floatval($material['harga_satuan'] ?? 0),
-                                'sub_total' => floatval($material['sub_total'] ?? 0)
+                                'supplier' => $supplier,
+                                'item' => $item,
+                                'qty' => !empty($material['qty']) ? floatval($material['qty']) : null,
+                                'satuan' => $material['satuan'] ?? null,
+                                'harga_satuan' => $hargaSatuan,
+                                'sub_total' => !empty($material['sub_total']) ? floatval($material['sub_total']) : null,
+                                'status' => $material['status'] ?? 'Disetujui'
                             ];
                         }
                     }
-                    if (!empty($cleanMaterials)) {
-                        $entertaimentData[] = [
-                            'mr' => $mr['mr'],
-                            'tanggal' => $mr['tanggal'] ?? '',
-                            'materials' => $cleanMaterials
-                        ];
-                    }
+                }
+                
+                // Only add MR group if it has MR or materials
+                $mrValue = $mr['mr'] ?? null;
+                if ($mrValue || !empty($cleanMaterials)) {
+                    $entertaimentData[] = [
+                        'mr' => $mrValue,
+                        'tanggal' => $mr['tanggal'] ?? null,
+                        'materials' => $cleanMaterials
+                    ];
                 }
             }
         }
         
-
-        
-        // Clean and validate entertaiment data (keep structure with null values)
-        $entertaimentData = [];
-        if ($request->has('json_pengeluaran_entertaiment') && is_array($request->json_pengeluaran_entertaiment) && count($request->json_pengeluaran_entertaiment) > 0) {
-            foreach ($request->json_pengeluaran_entertaiment as $mr) {
-                $cleanMaterials = [];
-                if (isset($mr['materials']) && is_array($mr['materials'])) {
-                    foreach ($mr['materials'] as $material) {
-                        $cleanMaterials[] = [
-                            'supplier' => $material['supplier'] ?? null,
-                            'item' => $material['item'] ?? null,
-                            'qty' => !empty($material['qty']) ? floatval($material['qty']) : null,
-                            'satuan' => $material['satuan'] ?? null,
-                            'harga_satuan' => !empty($material['harga_satuan']) ? floatval($material['harga_satuan']) : null,
-                            'sub_total' => !empty($material['sub_total']) ? floatval($material['sub_total']) : null
-                        ];
-                    }
-                }
-                $entertaimentData[] = [
-                    'mr' => $mr['mr'] ?? null,
-                    'tanggal' => $mr['tanggal'] ?? null,
-                    'materials' => $cleanMaterials
-                ];
-            }
-        } else {
-            $entertaimentData = [[
-                'mr' => null,
-                'tanggal' => null,
-                'materials' => [[
-                    'supplier' => null,
-                    'item' => null,
-                    'qty' => null,
-                    'satuan' => null,
-                    'harga_satuan' => null,
-                    'sub_total' => null
-                ]]
-            ]];
+        // If no data, set to empty array [] (not null or structure with null values)
+        if (empty($entertaimentData)) {
+            $entertaimentData = [];
         }
         
 
@@ -758,9 +703,9 @@ class RancanganAnggaranBiayaController extends Controller
         ]);
         
         // Set default values for fields that are not used in edit mode
-        $validated['json_pengeluaran_entertaiment'] = [];
-        $validated['json_pengeluaran_tukang'] = [];
-        $validated['json_kerja_tambah'] = [];
+        $validated['json_pengeluaran_entertaiment'] = $entertaimentData;
+        $validated['json_pengeluaran_tukang'] = $tukangData ?? [];
+        $validated['json_kerja_tambah'] = $kerjaTambahData ?? [];
         $validated['status_deleted'] = false;
         $validated['status'] = $request->status ?? 'draft';
         $validated['created_by'] = auth()->id();
@@ -772,6 +717,7 @@ class RancanganAnggaranBiayaController extends Controller
             // Debug: Log data before update
             \Log::info('RAB Update - Data before update:', [
                 'json_pengeluaran_pemasangan' => $validated['json_pengeluaran_pemasangan'],
+                'json_pengeluaran_tukang' => $validated['json_pengeluaran_tukang'],
                 'penawaran_id' => $validated['penawaran_id'],
                 'pemasangan_id' => $validated['pemasangan_id']
             ]);

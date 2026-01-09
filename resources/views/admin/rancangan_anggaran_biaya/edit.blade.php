@@ -263,6 +263,28 @@
                                                         @php
                                                             $satuan = strtolower(trim($item['satuan'] ?? ''));
                                                             $excludedSatuans = ['btg', 'pcs'];
+                                                            // Cari harga satuan dari json_pengeluaran_pemasangan jika ada
+                                                            // Gunakan kombinasi item + qty + satuan untuk identifikasi unik
+                                                            $hargaSatuanPemasangan = 0;
+                                                            $itemQty = (float)($item['qty'] ?? 0);
+                                                            $itemSatuan = $item['satuan'] ?? '';
+                                                            $itemName = $item['item'] ?? '';
+                                                            
+                                                            if (isset($rab->json_pengeluaran_pemasangan) && is_array($rab->json_pengeluaran_pemasangan)) {
+                                                                $foundItem = collect($rab->json_pengeluaran_pemasangan)->first(function($pemasanganItem) use ($itemName, $itemQty, $itemSatuan) {
+                                                                    $pemasanganItemName = $pemasanganItem['item'] ?? '';
+                                                                    $pemasanganItemQty = (float)($pemasanganItem['qty'] ?? 0);
+                                                                    $pemasanganItemSatuan = $pemasanganItem['satuan'] ?? '';
+                                                                    
+                                                                    // Match berdasarkan item + qty + satuan untuk identifikasi unik
+                                                                    return $pemasanganItemName === $itemName 
+                                                                        && abs($pemasanganItemQty - $itemQty) < 0.01 
+                                                                        && $pemasanganItemSatuan === $itemSatuan;
+                                                                });
+                                                                if ($foundItem) {
+                                                                    $hargaSatuanPemasangan = (float) preg_replace('/[^\d.]/', '', $foundItem['harga_satuan'] ?? 0);
+                                                                }
+                                                            }
                                                         @endphp
                                                         @if (!in_array($satuan, $excludedSatuans))
                                                             <tr class="border-b border-gray-100 dark:border-gray-600">
@@ -273,23 +295,24 @@
                                                                     {{ $item['satuan'] ?? '-' }}</td>
                                                                 <td
                                                                     class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">
-                                                                    {{ $item['qty'] ?? '-' }}</td>
+                                                                    {{ number_format((float)($item['qty'] ?? 0), 2, ',', '.') }}</td>
                                                                 <td class="px-3 py-2 text-right">
                                                                     <input type="text"
                                                                         class="harga-satuan-input w-full text-right border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-                                                                        value="{{ $item['harga_satuan'] ?? 0 }}"
-                                                                        data-qty="{{ $item['qty'] ?? 0 }}"
+                                                                        value="{{ $hargaSatuanPemasangan > 0 ? number_format($hargaSatuanPemasangan, 0, ',', '.') : '' }}"
+                                                                        data-qty="{{ number_format((float)($item['qty'] ?? 0), 2, '.', '') }}"
                                                                         data-group="{{ $loop->parent->index }}"
                                                                         data-item="{{ $index }}"
                                                                         placeholder="0"
                                                                         data-debug-item="{{ $item['item'] ?? 'unknown' }}"
-                                                                        data-debug-harga="{{ $item['harga_satuan'] ?? 'no-harga' }}"
-                                                                        data-debug-qty="{{ $item['qty'] ?? 'no-qty' }}" />
+                                                                        data-debug-satuan="{{ $item['satuan'] ?? '' }}"
+                                                                        data-debug-harga="{{ $hargaSatuanPemasangan }}"
+                                                                        data-debug-qty="{{ number_format((float)($item['qty'] ?? 0), 2, '.', '') }}" />
                                                                 </td>
                                                                 <td
                                                                     class="px-3 py-2 text-right font-medium text-amber-600 dark:text-amber-400 total-harga-cell">
                                                                     <span
-                                                                        class="calculated-total">{{ $item['total_harga'] ?? '-' }}</span>
+                                                                        class="calculated-total">{{ $hargaSatuanPemasangan > 0 ? 'Rp ' . number_format($hargaSatuanPemasangan * (float)($item['qty'] ?? 0), 0, ',', '.') : '-' }}</span>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -352,6 +375,9 @@
                                                         <th
                                                             class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">
                                                             Total Harga</th>
+                                                        <th
+                                                            class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300">
+                                                            Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -360,13 +386,27 @@
                                                             $satuan = strtolower(trim($item['satuan'] ?? ''));
                                                             $excludedSatuans = ['btg', 'pcs'];
                                                             // Cari harga satuan dari json_pengajuan_harga_tukang jika ada
+                                                            // Gunakan kombinasi item + qty + satuan untuk identifikasi unik
                                                             $hargaSatuanTukang = 0;
+                                                            $statusTukang = 'Disetujui'; // Default status
+                                                            $itemQty = (float)($item['qty'] ?? 0);
+                                                            $itemSatuan = $item['satuan'] ?? '';
+                                                            $itemName = $item['item'] ?? '';
+                                                            
                                                             if (isset($rab->json_pengajuan_harga_tukang) && is_array($rab->json_pengajuan_harga_tukang)) {
-                                                                $foundItem = collect($rab->json_pengajuan_harga_tukang)->first(function($tukangItem) use ($item) {
-                                                                    return ($tukangItem['item'] ?? '') === ($item['item'] ?? '');
+                                                                $foundItem = collect($rab->json_pengajuan_harga_tukang)->first(function($tukangItem) use ($itemName, $itemQty, $itemSatuan) {
+                                                                    $tukangItemName = $tukangItem['item'] ?? '';
+                                                                    $tukangItemQty = (float)($tukangItem['qty'] ?? 0);
+                                                                    $tukangItemSatuan = $tukangItem['satuan'] ?? '';
+                                                                    
+                                                                    // Match berdasarkan item + qty + satuan untuk identifikasi unik
+                                                                    return $tukangItemName === $itemName 
+                                                                        && abs($tukangItemQty - $itemQty) < 0.01 
+                                                                        && $tukangItemSatuan === $itemSatuan;
                                                                 });
                                                                 if ($foundItem) {
-                                                                    $hargaSatuanTukang = $foundItem['harga_satuan'] ?? 0;
+                                                                    $hargaSatuanTukang = (float) preg_replace('/[^\d.]/', '', $foundItem['harga_satuan'] ?? 0);
+                                                                    $statusTukang = $foundItem['status'] ?? 'Disetujui';
                                                                 }
                                                             }
                                                         @endphp
@@ -379,23 +419,34 @@
                                                                     {{ $item['satuan'] ?? '-' }}</td>
                                                                 <td
                                                                     class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">
-                                                                    {{ $item['qty'] ?? '-' }}</td>
+                                                                    {{ number_format((float)($item['qty'] ?? 0), 2, ',', '.') }}</td>
                                                                 <td class="px-3 py-2 text-right">
                                                                     <input type="text"
                                                                         class="harga-tukang-input w-full text-right border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-                                                                        value="{{ $hargaSatuanTukang }}"
-                                                                        data-qty="{{ $item['qty'] ?? 0 }}"
+                                                                        value="{{ $hargaSatuanTukang > 0 ? number_format($hargaSatuanTukang, 0, ',', '.') : '' }}"
+                                                                        data-qty="{{ number_format((float)($item['qty'] ?? 0), 2, '.', '') }}"
                                                                         data-group="{{ $loop->parent->index }}"
                                                                         data-item="{{ $index }}"
                                                                         placeholder="0"
                                                                         data-debug-item="{{ $item['item'] ?? 'unknown' }}"
+                                                                        data-debug-satuan="{{ $item['satuan'] ?? '' }}"
                                                                         data-debug-harga="{{ $hargaSatuanTukang }}"
-                                                                        data-debug-qty="{{ $item['qty'] ?? 'no-qty' }}" />
+                                                                        data-debug-qty="{{ number_format((float)($item['qty'] ?? 0), 2, '.', '') }}" />
                                                                 </td>
                                                                 <td
                                                                     class="px-3 py-2 text-right font-medium text-purple-600 dark:text-purple-400 total-harga-tukang-cell">
                                                                     <span
-                                                                        class="calculated-total-tukang">{{ $hargaSatuanTukang > 0 ? 'Rp ' . number_format($hargaSatuanTukang * ($item['qty'] ?? 0), 0, ',', '.') : '-' }}</span>
+                                                                        class="calculated-total-tukang">{{ $hargaSatuanTukang > 0 ? 'Rp ' . number_format($hargaSatuanTukang * (float)($item['qty'] ?? 0), 0, ',', '.') : '-' }}</span>
+                                                                </td>
+                                                                <td class="px-3 py-2 text-center">
+                                                                    <select class="status-tukang-input w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                                                                        data-debug-item="{{ $item['item'] ?? 'unknown' }}"
+                                                                        data-debug-satuan="{{ $item['satuan'] ?? '' }}"
+                                                                        data-debug-qty="{{ number_format((float)($item['qty'] ?? 0), 2, '.', '') }}">
+                                                                        <option value="Pengajuan" {{ $statusTukang === 'Pengajuan' ? 'selected' : '' }}>Pengajuan</option>
+                                                                        <option value="Disetujui" {{ $statusTukang === 'Disetujui' ? 'selected' : '' }}>Disetujui</option>
+                                                                        <option value="Ditolak" {{ $statusTukang === 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                                                    </select>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -473,6 +524,9 @@
                         </h2>
                     </div>
                     <x-rab.entertaiment-table />
+                    <!-- Hidden input untuk menyimpan data entertainment -->
+                    <input type="hidden" name="json_pengeluaran_entertaiment" id="json_pengeluaran_entertaiment"
+                        value="{{ isset($rab) ? json_encode($rab->json_pengeluaran_entertaiment ?? []) : '[]' }}">
                 </div>
 
                 <div class="mt-8">
@@ -483,6 +537,9 @@
                         </h2>
                     </div>
                     <x-rab.tukang-table />
+                    <!-- Hidden input untuk menyimpan data tukang -->
+                    <input type="hidden" name="json_pengeluaran_tukang" id="json_pengeluaran_tukang"
+                        value="{{ isset($rab) ? json_encode($rab->json_pengeluaran_tukang ?? []) : '[]' }}">
                 </div>
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-4">
@@ -519,7 +576,21 @@
             // Add event listeners to harga satuan inputs
             document.querySelectorAll('.harga-satuan-input').forEach((input, index) => {
                 console.log(`Adding listener to input ${index}`);
+                
+                // Format existing value if any
+                if (input.value) {
+                    const value = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
+                    if (value > 0) {
+                        input.value = formatRupiah(value);
+                    }
+                }
+                
                 input.addEventListener('input', function(e) {
+                    // Format input value
+                    const value = e.target.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        e.target.value = formatRupiah(parseInt(value));
+                    }
                     console.log(`Input ${index} changed to:`, e.target.value);
                     calculatePemasanganTotal();
                 });
@@ -545,8 +616,29 @@
             // Add event listeners to harga tukang inputs
             document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
                 console.log(`Adding listener to harga tukang input ${index}`);
+                
+                // Format existing value if any
+                if (input.value) {
+                    const value = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
+                    if (value > 0) {
+                        input.value = formatRupiah(value);
+                    }
+                }
+                
                 input.addEventListener('input', function(e) {
+                    // Format input value
+                    const value = e.target.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        e.target.value = formatRupiah(parseInt(value));
+                    }
                     console.log(`Harga tukang input ${index} changed to:`, e.target.value);
+                    calculateHargaTukangTotal();
+                });
+            });
+            
+            // Add event listeners to status select
+            document.querySelectorAll('.status-tukang-input').forEach((select) => {
+                select.addEventListener('change', function() {
                     calculateHargaTukangTotal();
                 });
             });
@@ -575,12 +667,22 @@
                     return;
                 }
                 
-                // Find matching old data by item name
+                // Find matching existing data by item name + qty + satuan (identifikasi unik)
                 const itemName = input.dataset.debugItem;
-                const oldData = window.oldPemasangan.find(item => item.item === itemName);
+                const itemQty = parseFloat(input.dataset.qty || 0);
+                const itemSatuan = input.dataset.debugSatuan || '';
+                
+                const oldData = window.oldPemasangan.find(item => {
+                    const existingQty = parseFloat(item.qty || 0);
+                    const existingSatuan = item.satuan || '';
+                    return item.item === itemName 
+                        && Math.abs(existingQty - itemQty) < 0.01 
+                        && existingSatuan === itemSatuan;
+                });
                 
                 if (oldData) {
-                    input.value = oldData.harga_satuan || '';
+                    const hargaSatuan = parseFloat(oldData.harga_satuan || 0);
+                    input.value = hargaSatuan > 0 ? formatRupiah(hargaSatuan) : '';
                     console.log(`Restored input ${index} (${itemName}):`, oldData);
                 }
             });
@@ -680,14 +782,20 @@
                 const itemName = input.dataset.debugItem || 'Unknown Item';
                 const satuan = row ? row.querySelector('td:nth-child(2)').textContent.trim() : 'm2';
                 
+                // Format qty dengan 2 desimal
+                const qtyFormatted = parseFloat(qty).toFixed(2);
+                
+                // Format total_harga sebagai bilangan bulat (tanpa desimal)
+                const totalHargaFormatted = Math.round(totalHarga).toString();
+                
                 // Only add to pemasanganData if item has valid data
                 if (itemName !== 'Unknown Item' && qty > 0) {
                     pemasanganData.push({
                         item: itemName,
                         satuan: satuan,
-                        qty: qty.toString(),
+                        qty: qtyFormatted,
                         harga_satuan: hargaSatuan.toString(),
-                        total_harga: formatRupiah(totalHarga)
+                        total_harga: totalHargaFormatted
                     });
                 }
 
@@ -809,29 +917,83 @@
                 updateSectionMaterialHiddenInput();
             }
             
+            // Update tukang data before submit
+            if (typeof window.updateTukangHiddenInput === 'function') {
+                window.updateTukangHiddenInput();
+            }
+            
+            // Update entertainment data before submit
+            if (typeof updateEntertainmentHiddenInput === 'function') {
+                updateEntertainmentHiddenInput();
+            }
+            
             console.log('=== PREPARE FORM DATA COMPLETED ===');
         }
 
-        // Function to clean up entertainment data
-        function cleanupEntertainmentData() {
-            const entertainmentInputs = document.querySelectorAll('input[name*="json_pengeluaran_entertaiment"]');
-            if (entertainmentInputs.length === 0) return;
-
-            // Check if any entertainment data has been entered
-            let hasData = false;
-            entertainmentInputs.forEach(input => {
-                if (input.value && input.value.trim() !== '') {
-                    hasData = true;
+        // Function to collect and update entertainment data
+        function updateEntertainmentHiddenInput() {
+            const entertainmentData = [];
+            const mrGroups = document.querySelectorAll('#entertaiment-mr-list .mr-group');
+            
+            mrGroups.forEach((mrGroup, mrIdx) => {
+                const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                const tanggalInput = mrGroup.querySelector('[data-mr-field="tanggal"]');
+                const materialRows = mrGroup.querySelectorAll('.entertaiment-material-row');
+                
+                const mr = mrInput ? mrInput.value.trim() : '';
+                const tanggal = tanggalInput ? tanggalInput.value : '';
+                
+                const materials = [];
+                materialRows.forEach((row) => {
+                    const supplier = row.querySelector('[data-material-field="supplier"]')?.value.trim() || '';
+                    const item = row.querySelector('[data-material-field="item"]')?.value.trim() || '';
+                    const qty = parseFloat(row.querySelector('[data-material-field="qty"]')?.value || 0);
+                    const satuan = row.querySelector('[data-material-field="satuan"]')?.value.trim() || '';
+                    const hargaSatuanInput = row.querySelector('[data-material-field="harga_satuan"]');
+                    const hargaSatuan = hargaSatuanInput ? parseInt(hargaSatuanInput.value.replace(/\D/g, '')) || 0 : 0;
+                    const subTotalInput = row.querySelector('[data-material-field="sub_total"]');
+                    const subTotal = subTotalInput ? parseInt(subTotalInput.value.replace(/\D/g, '')) || 0 : 0;
+                    const status = row.querySelector('[data-material-field="status"]')?.value || 'Disetujui';
+                    
+                    // Only add material if it has at least supplier, item, or harga_satuan
+                    if (supplier || item || hargaSatuan > 0) {
+                        materials.push({
+                            supplier: supplier || null,
+                            item: item || null,
+                            qty: qty > 0 ? qty : null,
+                            satuan: satuan || null,
+                            harga_satuan: hargaSatuan > 0 ? hargaSatuan : null,
+                            sub_total: subTotal > 0 ? subTotal : null,
+                            status: status
+                        });
+                    }
+                });
+                
+                // Only add MR group if it has MR or materials
+                if (mr || materials.length > 0) {
+                    entertainmentData.push({
+                        mr: mr || null,
+                        tanggal: tanggal || null,
+                        materials: materials
+                    });
                 }
             });
-
-            // If no data entered, set the hidden input to null
-            if (!hasData) {
-                const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
-                if (hiddenInput) {
-                    hiddenInput.value = 'null';
-                }
+            
+            // Update hidden input - always send array, even if empty
+            const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
+            if (hiddenInput) {
+                hiddenInput.value = JSON.stringify(entertainmentData);
+                console.log('Updated json_pengeluaran_entertaiment:', entertainmentData);
+            } else {
+                console.warn('Hidden input json_pengeluaran_entertaiment not found');
             }
+        }
+
+        // Function to clean up entertainment data (deprecated - use updateEntertainmentHiddenInput instead)
+        function cleanupEntertainmentData() {
+            // This function is now replaced by updateEntertainmentHiddenInput
+            // But keep it for backward compatibility
+            updateEntertainmentHiddenInput();
         }
 
         // Function to clean up tukang data
@@ -1267,12 +1429,22 @@
                     return;
                 }
                 
-                // Find matching existing data by item name
+                // Find matching existing data by item name + qty + satuan (identifikasi unik)
                 const itemName = input.dataset.debugItem;
-                const existingData = pemasanganData.find(item => item.item === itemName);
+                const itemQty = parseFloat(input.dataset.qty || 0);
+                const itemSatuan = input.dataset.debugSatuan || '';
+                
+                const existingData = pemasanganData.find(item => {
+                    const existingQty = parseFloat(item.qty || 0);
+                    const existingSatuan = item.satuan || '';
+                    return item.item === itemName 
+                        && Math.abs(existingQty - itemQty) < 0.01 
+                        && existingSatuan === itemSatuan;
+                });
                 
                 if (existingData) {
-                    input.value = existingData.harga_satuan || '';
+                    const hargaSatuan = parseFloat(existingData.harga_satuan || 0);
+                    input.value = hargaSatuan > 0 ? formatRupiah(hargaSatuan) : '';
                     console.log(`Loaded existing data for input ${index} (${itemName}):`, existingData);
                 }
             });
@@ -1378,14 +1550,25 @@
                 const itemName = input.dataset.debugItem || 'Unknown Item';
                 const satuan = row ? row.querySelector('td:nth-child(2)').textContent.trim() : 'm2';
                 
+                // Get status from select dropdown
+                const statusSelect = row ? row.querySelector('.status-tukang-input') : null;
+                const status = statusSelect ? statusSelect.value : 'Disetujui';
+                
+                // Format qty dengan 2 desimal
+                const qtyFormatted = parseFloat(qty).toFixed(2);
+                
+                // Format total_harga sebagai bilangan bulat (tanpa desimal)
+                const totalHargaFormatted = Math.round(totalHarga).toString();
+                
                 // Only add to hargaTukangData if item has valid data
                 if (itemName !== 'Unknown Item' && qty > 0) {
                     hargaTukangData.push({
                         item: itemName,
                         satuan: satuan,
-                        qty: qty.toString(),
+                        qty: qtyFormatted,
                         harga_satuan: hargaSatuan.toString(),
-                        total_harga: formatRupiah(totalHarga)
+                        total_harga: totalHargaFormatted,
+                        status: status
                     });
                 }
 
@@ -1418,12 +1601,32 @@
                     return;
                 }
                 
-                // Find matching old data by item name
+                // Find matching existing data by item name + qty + satuan (identifikasi unik)
                 const itemName = input.dataset.debugItem;
-                const oldData = window.oldPengajuanHargaTukang.find(item => item.item === itemName);
+                const itemQty = parseFloat(input.dataset.qty || 0);
+                const itemSatuan = input.dataset.debugSatuan || '';
+                
+                const oldData = window.oldPengajuanHargaTukang.find(item => {
+                    const existingQty = parseFloat(item.qty || 0);
+                    const existingSatuan = item.satuan || '';
+                    return item.item === itemName 
+                        && Math.abs(existingQty - itemQty) < 0.01 
+                        && existingSatuan === itemSatuan;
+                });
                 
                 if (oldData) {
-                    input.value = oldData.harga_satuan || '';
+                    const hargaSatuan = parseFloat(oldData.harga_satuan || 0);
+                    input.value = hargaSatuan > 0 ? formatRupiah(hargaSatuan) : '';
+                    
+                    // Set status
+                    const row = input.closest('tr');
+                    if (row) {
+                        const statusSelect = row.querySelector('.status-tukang-input');
+                        if (statusSelect && oldData.status) {
+                            statusSelect.value = oldData.status;
+                        }
+                    }
+                    
                     console.log(`Restored harga tukang input ${index} (${itemName}):`, oldData);
                 }
             });
@@ -1439,12 +1642,32 @@
                     return;
                 }
                 
-                // Find matching existing data by item name
+                // Find matching existing data by item name + qty + satuan (identifikasi unik)
                 const itemName = input.dataset.debugItem;
-                const existingData = hargaTukangData.find(item => item.item === itemName);
+                const itemQty = parseFloat(input.dataset.qty || 0);
+                const itemSatuan = input.dataset.debugSatuan || '';
+                
+                const existingData = hargaTukangData.find(item => {
+                    const existingQty = parseFloat(item.qty || 0);
+                    const existingSatuan = item.satuan || '';
+                    return item.item === itemName 
+                        && Math.abs(existingQty - itemQty) < 0.01 
+                        && existingSatuan === itemSatuan;
+                });
                 
                 if (existingData) {
-                    input.value = existingData.harga_satuan || '';
+                    const hargaSatuan = parseFloat(existingData.harga_satuan || 0);
+                    input.value = hargaSatuan > 0 ? formatRupiah(hargaSatuan) : '';
+                    
+                    // Set status
+                    const row = input.closest('tr');
+                    if (row) {
+                        const statusSelect = row.querySelector('.status-tukang-input');
+                        if (statusSelect && existingData.status) {
+                            statusSelect.value = existingData.status;
+                        }
+                    }
+                    
                     console.log(`Loaded existing harga tukang data for input ${index} (${itemName}):`, existingData);
                 }
             });

@@ -29,6 +29,8 @@
                 // Set data existing sebelum component di-render
                 window.oldEntertaiment = @json(old('json_pengeluaran_entertaiment'));
                 window.existingEntertaiment = @json($rancanganAnggaranBiaya->json_pengeluaran_entertaiment ?? []);
+                // Flag: di halaman edit-entertainment, data existing BISA diedit (tapi status tetap readonly)
+                window.entertainmentAllowEditExisting = true;
             </script>
 
             <form action="{{ route('admin.rancangan-anggaran-biaya.update-entertainment', $rancanganAnggaranBiaya) }}"
@@ -47,7 +49,7 @@
                 </div>
 
                 <div class="mt-8 flex justify-end">
-                    <button type="submit" onclick="prepareFormData()"
+                    <button type="submit"
                         class="px-6 py-2 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition">
                         Simpan Pengeluaran Non Material
                     </button>
@@ -56,24 +58,13 @@
         </div>
     </div>
 
-    <script>
-        // Prepare form data before submit - component will handle its own data
-        function prepareFormData() {
-            // Component entertaiment-table handles its own form submission
-            // No additional preparation needed
-        }
-
-        // Load existing data after component is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for component to initialize
-            setTimeout(() => {
-                if (window.existingEntertaiment && window.existingEntertaiment.length > 0) {
-                    if (window.entertainmentFunctions && window.entertainmentFunctions.loadExistingData) {
-                        window.entertainmentFunctions.loadExistingData(window.existingEntertaiment);
-                    }
-                }
-            }, 500);
-        });
-    </script>
+    {{-- 
+        Data existing akan otomatis dimuat oleh component dari window.existingEntertaiment
+        Dengan window.entertainmentAllowEditExisting = true (di-set di atas):
+        - Semua field (MR, tanggal, supplier, item, qty, satuan, harga_satuan) BISA diedit
+        - Field status TIDAK bisa diubah (readonly di template)
+        - Tombol hapus MR, tambah material, hapus material tetap berfungsi
+        Component akan handle konversi format Rupiah ke angka pada form submit
+    --}}
 </x-layouts.app>
 

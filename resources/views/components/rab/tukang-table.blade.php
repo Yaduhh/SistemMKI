@@ -521,6 +521,63 @@
                 // Initial grand total calculation
                 setTimeout(updateGrandTotal, 500);
 
+                // Function to collect tukang data and update hidden input
+                window.updateTukangHiddenInput = function() {
+                    const tukangData = [];
+                    
+                    sectionList.querySelectorAll('.tukang-section').forEach((section, secIdx) => {
+                        const debetInput = section.querySelector('.debet-input');
+                        const debetValue = debetInput ? getNumericValue(debetInput) : 0;
+                        
+                        if (debetValue > 0) {
+                            const terminRows = section.querySelectorAll('.tukang-termin-row');
+                            const terminData = [];
+                            
+                            terminRows.forEach((row, terIdx) => {
+                                const tanggalInput = row.querySelector('input[name*="[tanggal]"]');
+                                const kreditInput = row.querySelector('.kredit-input');
+                                const sisaInput = row.querySelector('.sisa-input');
+                                const persentaseInput = row.querySelector('.persentase-input');
+                                const statusInput = row.querySelector('input[name*="[status]"]');
+                                
+                                const tanggal = tanggalInput ? tanggalInput.value : '';
+                                const kredit = kreditInput ? getNumericValue(kreditInput) : 0;
+                                const sisa = sisaInput ? getNumericValue(sisaInput) : 0;
+                                const persentase = persentaseInput ? persentaseInput.value : '0%';
+                                const status = statusInput ? statusInput.value : 'Pengajuan';
+                                
+                                // Only add termin if tanggal and kredit are filled
+                                if (tanggal && kredit > 0) {
+                                    terminData.push({
+                                        tanggal: tanggal,
+                                        kredit: kredit,
+                                        sisa: sisa,
+                                        persentase: persentase,
+                                        status: status
+                                    });
+                                }
+                            });
+                            
+                            // Only add section if it has at least one termin
+                            if (terminData.length > 0) {
+                                tukangData.push({
+                                    debet: debetValue,
+                                    termin: terminData
+                                });
+                            }
+                        }
+                    });
+                    
+                    // Update hidden input if exists
+                    const hiddenInput = document.querySelector('input[name="json_pengeluaran_tukang"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = JSON.stringify(tukangData);
+                        console.log('Updated json_pengeluaran_tukang:', tukangData);
+                    } else {
+                        console.warn('Hidden input json_pengeluaran_tukang not found');
+                    }
+                };
+
                 // Convert format Rupiah ke angka sebelum form submit
                 document.addEventListener('submit', function(e) {
                     if (e.target.closest('form')) {
@@ -541,6 +598,11 @@
                             const numericValue = getNumericValue(input);
                             input.value = numericValue;
                         });
+                        
+                        // Update hidden input before submit
+                        if (typeof window.updateTukangHiddenInput === 'function') {
+                            window.updateTukangHiddenInput();
+                        }
                     }
                 });
             })();

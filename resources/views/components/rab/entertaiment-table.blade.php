@@ -182,17 +182,19 @@
                             const numericValue = parseInt(data[key]) || 0;
                             input.value = numericValue > 0 ? formatRupiah(numericValue) : '';
                         } else if (key === 'status') {
-                            // Status selalu Disetujui untuk material baru
-                            input.value = 'Disetujui';
+                            // Gunakan status dari data existing (Disetujui/Pengajuan/Ditolak)
+                            // Field status tetap readonly di template - user tidak bisa ubah
+                            input.value = data[key] || 'Disetujui';
                         } else {
-                            input.value = data[key];
+                            input.value = data[key] ?? '';
                         }
                     }
                 }
                 
-                // Pastikan status selalu Disetujui
+                // Pastikan status ter-set (dari data atau default Disetujui)
+                // Status field TIDAK bisa diubah user (readonly di template)
                 const statusInput = row.querySelector('[data-material-field="status"]');
-                if (statusInput) {
+                if (statusInput && !statusInput.value) {
                     statusInput.value = 'Disetujui';
                 }
             }
@@ -202,21 +204,7 @@
                 for (const key in data) {
                     if (key === 'materials') continue;
                     const input = mrGroup.querySelector(`[data-mr-field="${key}"]`);
-                    if (input) input.value = data[key];
-                }
-            }
-
-            function fillMaterialRow(row, data) {
-                if (!data) return;
-                for (const key in data) {
-                    const input = row.querySelector(`[data-material-field="${key}"]`);
-                    if (input) {
-                        if (key === 'harga_satuan' || key === 'sub_total') {
-                            input.value = formatRupiah(data[key]);
-                        } else {
-                            input.value = data[key];
-                        }
-                    }
+                    if (input) input.value = data[key] ?? '';
                 }
             }
 
@@ -248,7 +236,9 @@
                 }
                 
                 // Set readonly untuk data existing
-                if (isReadonly) {
+                // Jika window.entertainmentAllowEditExisting = true (halaman edit-entertainment),
+                // data BISA diedit, hanya status yang tetap readonly
+                if (isReadonly && !window.entertainmentAllowEditExisting) {
                     console.log('Setting MR group readonly');
                     setMrGroupReadonly(mrGroup);
                 }
@@ -275,7 +265,9 @@
                 }
                 
                 // Set readonly untuk data existing
-                if (isReadonly) {
+                // Jika window.entertainmentAllowEditExisting = true (halaman edit-entertainment),
+                // data BISA diedit, hanya status yang tetap readonly (field status sudah readonly di template)
+                if (isReadonly && !window.entertainmentAllowEditExisting) {
                     console.log('Setting material row readonly');
                     setMaterialRowReadonly(row);
                 }
@@ -431,6 +423,65 @@
                 setTimeout(initializeEntertainmentTable, 100);
             }
 
+            // Function to collect entertainment data and update hidden input
+            window.updateEntertainmentHiddenInput = function() {
+                const entertainmentData = [];
+                const mrGroups = mrList.querySelectorAll('.mr-group');
+                
+                mrGroups.forEach((mrGroup) => {
+                    const mrInput = mrGroup.querySelector('[data-mr-field="mr"]');
+                    const tanggalInput = mrGroup.querySelector('[data-mr-field="tanggal"]');
+                    const materialRows = mrGroup.querySelectorAll('.entertaiment-material-row');
+                    
+                    const mr = mrInput ? mrInput.value.trim() : '';
+                    const tanggal = tanggalInput ? tanggalInput.value : '';
+                    
+                    const materials = [];
+                    materialRows.forEach((row) => {
+                        const supplier = row.querySelector('[data-material-field="supplier"]')?.value.trim() || '';
+                        const item = row.querySelector('[data-material-field="item"]')?.value.trim() || '';
+                        const qty = parseFloat(row.querySelector('[data-material-field="qty"]')?.value || 0);
+                        const satuan = row.querySelector('[data-material-field="satuan"]')?.value.trim() || '';
+                        const hargaSatuanInput = row.querySelector('[data-material-field="harga_satuan"]');
+                        const hargaSatuan = hargaSatuanInput ? getNumericValue(hargaSatuanInput) : 0;
+                        const subTotalInput = row.querySelector('[data-material-field="sub_total"]');
+                        const subTotal = subTotalInput ? getNumericValue(subTotalInput) : 0;
+                        const status = row.querySelector('[data-material-field="status"]')?.value || 'Disetujui';
+                        
+                        // Only add material if it has at least supplier, item, or harga_satuan
+                        if (supplier || item || hargaSatuan > 0) {
+                            materials.push({
+                                supplier: supplier || null,
+                                item: item || null,
+                                qty: qty > 0 ? qty : null,
+                                satuan: satuan || null,
+                                harga_satuan: hargaSatuan > 0 ? hargaSatuan : null,
+                                sub_total: subTotal > 0 ? subTotal : null,
+                                status: status
+                            });
+                        }
+                    });
+                    
+                    // Only add MR group if it has MR or materials
+                    if (mr || materials.length > 0) {
+                        entertainmentData.push({
+                            mr: mr || null,
+                            tanggal: tanggal || null,
+                            materials: materials
+                        });
+                    }
+                });
+                
+                // Update hidden input - always send array, even if empty
+                const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
+                if (hiddenInput) {
+                    hiddenInput.value = JSON.stringify(entertainmentData);
+                    console.log('Updated json_pengeluaran_entertaiment:', entertainmentData);
+                } else {
+                    console.warn('Hidden input json_pengeluaran_entertaiment not found');
+                }
+            };
+
             // Convert format Rupiah ke angka sebelum form submit
             document.addEventListener('submit', function(e) {
                 if (e.target.closest('form')) {
@@ -445,6 +496,11 @@
                         const numericValue = getNumericValue(input);
                         input.value = numericValue;
                     });
+                    
+                    // Update hidden input before submit
+                    if (typeof window.updateEntertainmentHiddenInput === 'function') {
+                        window.updateEntertainmentHiddenInput();
+                    }
                 }
             });
         })();
