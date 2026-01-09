@@ -651,19 +651,24 @@
                 });
             }
 
-            // Inisialisasi dari old input jika ada
+            // Flag untuk track apakah data sudah di-load
+            let dataLoaded = false;
+            
+            // Inisialisasi dari old input jika ada (prioritas untuk form validation error)
+            // Tunggu sampai semua script selesai load untuk memastikan tidak ada konflik
+            setTimeout(function() {
             if (window.oldMaterialPendukung && Array.isArray(window.oldMaterialPendukung) && window.oldMaterialPendukung.length) {
-                // Clear any existing MR groups first
+                    if (!dataLoaded) {
                 mrList.innerHTML = '';
-                
-                // Add each MR group from old data
                 window.oldMaterialPendukung.forEach(mr => {
-                    // Clear MR field dari data lama agar menggunakan penomoran baru
                     const mrData = { ...mr };
                     mrData.mr = ''; // Force renumbering
                     addMrGroup(mrData);
                 });
+                        dataLoaded = true;
+                    }
             }
+            }, 100);
 
             addMrBtn.addEventListener('click', function () {
                 addMrGroup();
@@ -671,10 +676,10 @@
 
             mrList.addEventListener('click', function (e) {
                 // Hapus MR group
-                if (e.target.classList.contains('remove-mr')) {
-                    const mrGroups = mrList.querySelectorAll('.mr-group');
-                    if (mrGroups.length > 1) {
-                        e.target.closest('.mr-group').remove();
+                if (e.target.classList.contains('remove-mr') || e.target.closest('.remove-mr')) {
+                    const removeBtn = e.target.classList.contains('remove-mr') ? e.target : e.target.closest('.remove-mr');
+                    if (confirm('Yakin mau hapus MR ini?')) {
+                        removeBtn.closest('.mr-group').remove();
                         renderAllNames(); // Ini akan memanggil renumberMR() otomatis
                     }
                 }
@@ -746,6 +751,12 @@
             
             // Function to load existing data for edit mode
             function loadExistingData(existingData) {
+                // Jangan load jika sudah ada oldMaterialPendukung (form validation error)
+                if (window.oldMaterialPendukung && Array.isArray(window.oldMaterialPendukung) && window.oldMaterialPendukung.length > 0) {
+                    console.log('Skipping loadExistingData - oldMaterialPendukung exists');
+                    return;
+                }
+                
                 if (!existingData || !Array.isArray(existingData) || existingData.length === 0) {
                     return;
                 }
@@ -757,6 +768,8 @@
                 existingData.forEach(mr => {
                     addMrGroup(mr);
                 });
+                
+                dataLoaded = true;
             }
 
             // Expose functions globally for external access

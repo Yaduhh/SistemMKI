@@ -248,6 +248,31 @@ Route::post('penawaran-pintu/{penawaran}/revisi', [App\Http\Controllers\Admin\Pe
     Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/tambah-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'tambahKerjaTambah'])->name('rancangan-anggaran-biaya.tambah-kerja-tambah');
     Route::post('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/store-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'storeKerjaTambah'])->name('rancangan-anggaran-biaya.store-kerja-tambah');
     
+    // Routes untuk edit section terpisah
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-pemasangan', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editPemasangan'])->name('rancangan-anggaran-biaya.edit-pemasangan');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-pemasangan', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updatePemasangan'])->name('rancangan-anggaran-biaya.update-pemasangan');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-harga-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editHargaTukang'])->name('rancangan-anggaran-biaya.edit-harga-tukang');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-harga-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateHargaTukang'])->name('rancangan-anggaran-biaya.update-harga-tukang');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-section-material-pendukung', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editSectionMaterialPendukung'])->name('rancangan-anggaran-biaya.edit-section-material-pendukung');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-section-material-pendukung', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateSectionMaterialPendukung'])->name('rancangan-anggaran-biaya.update-section-material-pendukung');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-material-pendukung', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editMaterialPendukung'])->name('rancangan-anggaran-biaya.edit-material-pendukung');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-material-pendukung', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateMaterialPendukung'])->name('rancangan-anggaran-biaya.update-material-pendukung');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-material-tambahan', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editMaterialTambahan'])->name('rancangan-anggaran-biaya.edit-material-tambahan');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-material-tambahan', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateMaterialTambahan'])->name('rancangan-anggaran-biaya.update-material-tambahan');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editEntertainment'])->name('rancangan-anggaran-biaya.edit-entertainment');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-entertainment', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateEntertainment'])->name('rancangan-anggaran-biaya.update-entertainment');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editTukang'])->name('rancangan-anggaran-biaya.edit-tukang');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-tukang', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateTukang'])->name('rancangan-anggaran-biaya.update-tukang');
+    
+    Route::get('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/edit-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'editKerjaTambah'])->name('rancangan-anggaran-biaya.edit-kerja-tambah');
+    Route::patch('rancangan-anggaran-biaya/{rancanganAnggaranBiaya}/update-kerja-tambah', [App\Http\Controllers\Admin\RancanganAnggaranBiayaController::class, 'updateKerjaTambah'])->name('rancangan-anggaran-biaya.update-kerja-tambah');
+    
     // Entertainment Routes
     Route::get('entertainment', [App\Http\Controllers\Admin\EntertainmentController::class, 'index'])->name('entertainment.index');
     Route::patch('entertainment/{id}/update-status', [App\Http\Controllers\Admin\EntertainmentController::class, 'updateStatus'])->name('entertainment.update-status');

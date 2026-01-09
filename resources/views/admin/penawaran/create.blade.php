@@ -49,9 +49,22 @@
                         class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                     />
                     <!-- Client -->
-                    <flux:select name="id_client" :label="__('Client')" required>
-                        <option value="" selected>{{ __('Pilih Client') }}</option>
-                    </flux:select>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Client') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="hidden" name="id_client" :value="selectedClient?.id || ''" required>
+                        <button 
+                            type="button" 
+                            @click="openClientModal()"
+                            class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-left flex items-center justify-between"
+                            :class="selectedClient ? 'bg-white dark:bg-zinc-800' : 'bg-gray-50 dark:bg-zinc-900'"
+                        >
+                            <span x-text="selectedClient ? (selectedClient.nama || selectedClient.nama_perusahaan || 'Client Terpilih') : 'Pilih Client'" 
+                                  :class="selectedClient ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'"></span>
+                            <x-icon name="chevron-down" class="w-5 h-5 text-gray-400" />
+                        </button>
+                    </div>
                     <flux:input name="tanggal_penawaran" label="Tanggal Penawaran" type="date" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="judul_penawaran" label="Judul Penawaran" placeholder="masukkan judul penawaran" type="text" required class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
                     <flux:input name="project" label="Project" placeholder="Nama Project (opsional)" type="text" class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
@@ -153,6 +166,18 @@
                                                         <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Panjang" />
                                                     </div>
 
+                                                    <!-- Satuan -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Satuan</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][satuan]'" x-model="row.satuan" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Satuan" />
+                                                    </div>
+
+                                                    <!-- Warna -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warna</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][warna]'" x-model="row.warna" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Warna" />
+                                                    </div>
+
                                                     <!-- Harga -->
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Harga</label>
@@ -177,6 +202,8 @@
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][harga]'" x-model="row.harga" />
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][total_harga]'" x-model="row.total_harga" />
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][satuan]'" x-model="row.satuan" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][warna]'" x-model="row.warna" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" />
                                             </div>
                                         </template>
                                     </div>
@@ -543,6 +570,93 @@
                 >{{ old('catatan') }}</textarea>
             </div>
 
+            <!-- Client Modal -->
+            <div 
+                x-show="showClientModal" 
+                x-cloak
+                @keydown.escape.window="closeClientModal()"
+                @click.away="closeClientModal()"
+                class="fixed inset-0 z-50 overflow-y-auto"
+                style="display: none;"
+            >
+                <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-10 text-center sm:block sm:p-0">
+                    <!-- Background overlay -->
+                    <div class="fixed inset-0 transition-opacity bg-gray-500/50 dark:bg-gray-900/30 backdrop-blur-xs" @click="closeClientModal()"></div>
+
+                    <!-- Modal panel -->
+                    <div 
+                        class="inline-block align-bottom bg-white dark:bg-zinc-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+                        @click.stop
+                    >
+                        <div class="bg-white dark:bg-zinc-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pilih Client</h3>
+                                <button 
+                                    type="button" 
+                                    @click="closeClientModal()"
+                                    class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                                >
+                                    <x-icon name="x-mark" class="w-6 h-6" />
+                                </button>
+                            </div>
+                            
+                            <!-- Search Input -->
+                            <div class="mb-4">
+                                <input 
+                                    type="text" 
+                                    x-model="clientSearchQuery"
+                                    @input="filterClients()"
+                                    placeholder="Cari client..."
+                                    class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                                />
+                            </div>
+
+                            <!-- Client List -->
+                            <div class="max-h-96 overflow-y-auto">
+                                <template x-if="filteredClients.length === 0">
+                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <p>Tidak ada client ditemukan</p>
+                                    </div>
+                                </template>
+                                <template x-if="filteredClients.length > 0">
+                                    <div class="space-y-2">
+                                        <template x-for="client in filteredClients" :key="client.id">
+                                            <button
+                                                type="button"
+                                                @click="selectClient(client)"
+                                                class="w-full text-left px-4 py-3 rounded-lg border-2 transition-colors duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                                :class="selectedClient?.id === client.id 
+                                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400' 
+                                                    : 'border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800'"
+                                            >
+                                                <div class="flex items-center justify-between">
+                                                    <div>
+                                                        <p class="font-medium text-gray-900 dark:text-white" x-text="client.nama || client.nama_perusahaan"></p>
+                                                        <p class="text-sm text-gray-500 dark:text-gray-400" x-show="client.nama_perusahaan && client.nama" x-text="client.nama_perusahaan"></p>
+                                                    </div>
+                                                    <template x-if="selectedClient?.id === client.id">
+                                                        <x-icon name="check-circle" class="w-6 h-6 text-blue-500 dark:text-blue-400" />
+                                                    </template>
+                                                </div>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-zinc-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button
+                                type="button"
+                                @click="closeClientModal()"
+                                class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Submit Button -->
             <div class="flex justify-end space-x-4">
                 <x-button type="button" as="a" href="{{ route('admin.penawaran.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white">
@@ -572,6 +686,13 @@ function penawaranForm() {
             { kategori: 'rotan_sintetis', label: 'ROTAN SINTETIS', master: @json($rotanSintetis ?? []) },
         ],
         hollows: @json($hollows), // Data hollow untuk additional condition
+
+        // Client Modal State
+        showClientModal: false,
+        selectedClient: null,
+        clients: [],
+        filteredClients: [],
+        clientSearchQuery: '',
 
         subtotal: 0,
         additional_condition_total: 0, // Total dari additional condition (tidak kena diskon)
@@ -616,6 +737,7 @@ function penawaranForm() {
                     qty_area: '',
                     qty: '0', // Default quantity 0
                     satuan: '',
+                    warna: '',
                     harga: 0,
                     harga_display: 'Rp 0',
                     total_harga: 0,
@@ -643,6 +765,7 @@ function penawaranForm() {
                 qty_area: '',
                 qty: '0', // Default quantity 0
                 satuan: '',
+                warna: '',
                 harga: 0,
                 harga_display: 'Rp 0',
                 total_harga: 0,
@@ -710,6 +833,8 @@ function penawaranForm() {
                     row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
                     row.panjang = produk.panjang ?? '';
                     row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
+                    row.satuan = produk.satuan ?? '';
+                    row.warna = produk.warna ?? '';
                     
                     // Gunakan luas_m2 dari database produk
                     let luas_m2 = produk.luas_m2 || 1;
@@ -725,6 +850,8 @@ function penawaranForm() {
                     row.panjang = '';
                     row.tebal_panjang = '';
                     row.qty_area = '';
+                    row.satuan = produk.satuan ?? '';
+                    row.warna = produk.warna ?? '';
                 }
                 
                 // Hitung total harga otomatis
@@ -739,9 +866,13 @@ function penawaranForm() {
 
         loadClients(userId) {
             if (!userId) {
-                // Reset client dropdown jika tidak ada user yang dipilih
-                const clientSelect = document.querySelector('select[name="id_client"]');
-                clientSelect.innerHTML = '<option value="" selected>{{ __("Pilih Client") }}</option>';
+                // Reset client data jika tidak ada user yang dipilih
+                this.clients = [];
+                this.filteredClients = [];
+                // Hanya reset selectedClient jika memang belum ada yang dipilih
+                if (!this.selectedClient) {
+                    this.selectedClient = null;
+                }
                 return;
             }
 
@@ -749,20 +880,75 @@ function penawaranForm() {
             fetch(`/admin/penawaran/clients/${userId}`)
                 .then(response => response.json())
                 .then(clients => {
-                    const clientSelect = document.querySelector('select[name="id_client"]');
-                    clientSelect.innerHTML = '<option value="" selected>{{ __("Pilih Client") }}</option>';
-                    
-                    clients.forEach(client => {
-                        const option = document.createElement('option');
-                        option.value = client.id;
-                        option.textContent = client.nama + (client.nama_perusahaan ? ` - ${client.nama_perusahaan}` : '');
-                        clientSelect.appendChild(option);
+                    // Simpan clients ke state dan urutkan berdasarkan abjad
+                    this.clients = clients.sort((a, b) => {
+                        const nameA = (a.nama || a.nama_perusahaan || '').toLowerCase();
+                        const nameB = (b.nama || b.nama_perusahaan || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
                     });
+                    
+                    // Validasi selectedClient masih ada di daftar client baru
+                    if (this.selectedClient) {
+                        const stillExists = this.clients.find(c => c.id === this.selectedClient.id);
+                        if (!stillExists) {
+                            // Jika client yang dipilih tidak ada di daftar baru, reset
+                            this.selectedClient = null;
+                        } else {
+                            // Update selectedClient dengan data terbaru
+                            this.selectedClient = stillExists;
+                        }
+                    }
+                    
+                    // Filter clients berdasarkan search query
+                    this.filterClients();
                 })
                 .catch(error => {
                     console.error('Error loading clients:', error);
-                    const clientSelect = document.querySelector('select[name="id_client"]');
-                    clientSelect.innerHTML = '<option value="" selected>{{ __("Error loading clients") }}</option>';
+                    this.clients = [];
+                    this.filteredClients = [];
+                });
+        },
+
+        openClientModal() {
+            if (this.clients.length === 0) {
+                alert('Pilih Sales terlebih dahulu untuk memuat daftar client.');
+                return;
+            }
+            this.showClientModal = true;
+            this.clientSearchQuery = '';
+            this.filterClients();
+        },
+
+        closeClientModal() {
+            this.showClientModal = false;
+            this.clientSearchQuery = '';
+        },
+
+        selectClient(client) {
+            this.selectedClient = client;
+            this.closeClientModal();
+        },
+
+        filterClients() {
+            const query = (this.clientSearchQuery || '').toLowerCase().trim();
+            
+            if (!query) {
+                // Jika tidak ada query, tampilkan semua client yang sudah diurutkan
+                this.filteredClients = [...this.clients];
+            } else {
+                // Filter berdasarkan nama atau nama_perusahaan
+                this.filteredClients = this.clients.filter(client => {
+                    const nama = (client.nama || '').toLowerCase();
+                    const namaPerusahaan = (client.nama_perusahaan || '').toLowerCase();
+                    return nama.includes(query) || namaPerusahaan.includes(query);
+                });
+            }
+            
+            // Pastikan tetap terurut berdasarkan abjad
+            this.filteredClients.sort((a, b) => {
+                const nameA = (a.nama || a.nama_perusahaan || '').toLowerCase();
+                const nameB = (b.nama || b.nama_perusahaan || '').toLowerCase();
+                return nameA.localeCompare(nameB);
                 });
         },
 
@@ -1053,6 +1239,7 @@ function penawaranForm() {
                         row.harga = produk.harga || 0;
                         row.harga_display = this.formatCurrency(produk.harga || 0);
                         row.satuan = produk.satuan || '';
+                        row.warna = produk.warna || '';
 
                         // Update dimensi jika bukan hollow
                         if (section.kategori !== 'hollow') {

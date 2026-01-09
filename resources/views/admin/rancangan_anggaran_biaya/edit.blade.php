@@ -48,6 +48,7 @@
                 window.oldTukang = @json(old('json_pengeluaran_tukang'));
                 window.oldKerjaTambah = @json(old('json_kerja_tambah'));
                 window.oldPemasangan = @json(old('json_pengeluaran_pemasangan'));
+                window.oldPengajuanHargaTukang = @json(old('json_pengajuan_harga_tukang'));
 
                 // Data existing untuk edit mode
                 window.existingMaterialPendukung = @json(isset($rab) ? $rab->json_pengeluaran_material_pendukung ?? [] : []);
@@ -56,6 +57,8 @@
                 window.existingTukang = @json(isset($rab) ? $rab->json_pengeluaran_tukang ?? [] : []);
                 window.existingKerjaTambah = @json(isset($rab) ? $rab->json_kerja_tambah ?? [] : []);
                 window.existingPemasangan = @json(isset($rab) ? $rab->json_pengeluaran_pemasangan ?? [] : []);
+                window.existingPengajuanHargaTukang = @json(isset($rab) ? $rab->json_pengajuan_harga_tukang ?? [] : []);
+                window.existingSectionMaterialPendukung = @json(isset($rab) ? $rab->json_section_material_pendukung ?? [] : []);
 
                 // Data produk penawaran untuk validasi
                 window.produkPenawaran = @json($produkPenawaran);
@@ -131,6 +134,88 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Section Material Pendukung -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <h2 class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600 py-2 uppercase">
+                            Section Material Pendukung
+                        </h2>
+                    </div>
+                    
+                    <div class="w-full mt-4">
+                        <div class="mb-4">
+                            <button type="button" id="add-section-material-pendukung" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition">
+                                + Tambah Item
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border border-gray-200 dark:border-gray-600">
+                                <thead>
+                                    <tr class="bg-sky-50 dark:bg-sky-900/20">
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Item Barang</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Ukuran</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Panjang</th>
+                                        <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Qty</th>
+                                        <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Satuan</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Harga Satuan</th>
+                                        <th class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Total</th>
+                                        <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="section-material-pendukung-tbody" class="bg-white dark:bg-zinc-800">
+                                    @if(isset($rab->json_section_material_pendukung) && is_array($rab->json_section_material_pendukung) && count($rab->json_section_material_pendukung) > 0)
+                                        @foreach($rab->json_section_material_pendukung as $index => $item)
+                                            @php
+                                                // Format harga_satuan dan total jika sudah ada
+                                                $hargaSatuan = $item['harga_satuan'] ?? '';
+                                                if ($hargaSatuan && is_numeric(str_replace(['Rp', ' ', '.', ','], '', $hargaSatuan))) {
+                                                    $hargaSatuanNum = (float) str_replace(['Rp', ' ', '.', ','], '', $hargaSatuan);
+                                                    $hargaSatuan = 'Rp ' . number_format($hargaSatuanNum, 0, ',', '.');
+                                                }
+                                                $total = $item['total'] ?? '';
+                                                if ($total && is_numeric(str_replace(['Rp', ' ', '.', ','], '', $total))) {
+                                                    $totalNum = (float) str_replace(['Rp', ' ', '.', ','], '', $total);
+                                                    $total = 'Rp ' . number_format($totalNum, 0, ',', '.');
+                                                }
+                                            @endphp
+                                            <tr class="section-material-row border-b border-gray-100 dark:border-gray-600">
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][item_barang]" value="{{ $item['item_barang'] ?? '' }}" placeholder="Item Barang" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][ukuran]" value="{{ $item['ukuran'] ?? '' }}" placeholder="Ukuran" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][panjang]" value="{{ $item['panjang'] ?? '' }}" placeholder="Panjang" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="number" min="0" step="0.01" name="section_material_pendukung[{{ $index }}][qty]" value="{{ $item['qty'] ?? '' }}" placeholder="Qty" class="section-material-qty w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][satuan]" value="{{ $item['satuan'] ?? '' }}" placeholder="Satuan" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][harga_satuan]" value="{{ $hargaSatuan }}" placeholder="Harga Satuan" class="section-material-harga-satuan w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="text" name="section_material_pendukung[{{ $index }}][total]" value="{{ $total }}" placeholder="Total" class="section-material-total w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" readonly />
+                                                </td>
+                                                <td class="px-3 py-2 text-center">
+                                                    <button type="button" class="remove-section-material text-red-600 hover:text-red-800 font-bold">Hapus</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Hidden input untuk menyimpan data -->
+                        <input type="hidden" name="json_section_material_pendukung" id="json_section_material_pendukung" value="{{ isset($rab) ? json_encode($rab->json_section_material_pendukung ?? []) : '[]' }}">
                     </div>
                 </div>
 
@@ -230,6 +315,112 @@
                     </div>
                 @endif
 
+                <!-- Harga Tukang -->
+                @if (isset($pemasangan) && $pemasangan && isset($pemasangan->json_pemasangan) && $pemasangan->json_pemasangan)
+                <div class="mt-8">
+                        <div class="flex items-center justify-between gap-4">
+                            <h2
+                                class="text-lg font-semibold w-full text-center bg-purple-600 dark:bg-purple-600 py-2 uppercase text-white">
+                                Harga Tukang
+                            </h2>
+                        </div>
+
+                        <div class="w-full">
+                            <div class="w-full">
+                                @foreach ($pemasangan->json_pemasangan as $group)
+                                    <div class="border border-gray-200 dark:border-gray-600 p-4">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-3 text-lg">
+                                            {{ $group['sub_judul'] ?? 'Sub Judul' }}
+                                        </h4>
+
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-sm">
+                                                <thead>
+                                                    <tr class="bg-gray-50 dark:bg-gray-700">
+                                                        <th
+                                                            class="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">
+                                                            Item</th>
+                                                        <th
+                                                            class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300">
+                                                            Satuan</th>
+                                                        <th
+                                                            class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300">
+                                                            Qty</th>
+                                                        <th
+                                                            class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">
+                                                            Harga Satuan</th>
+                                                        <th
+                                                            class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">
+                                                            Total Harga</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($group['items'] as $index => $item)
+                                                        @php
+                                                            $satuan = strtolower(trim($item['satuan'] ?? ''));
+                                                            $excludedSatuans = ['btg', 'pcs'];
+                                                            // Cari harga satuan dari json_pengajuan_harga_tukang jika ada
+                                                            $hargaSatuanTukang = 0;
+                                                            if (isset($rab->json_pengajuan_harga_tukang) && is_array($rab->json_pengajuan_harga_tukang)) {
+                                                                $foundItem = collect($rab->json_pengajuan_harga_tukang)->first(function($tukangItem) use ($item) {
+                                                                    return ($tukangItem['item'] ?? '') === ($item['item'] ?? '');
+                                                                });
+                                                                if ($foundItem) {
+                                                                    $hargaSatuanTukang = $foundItem['harga_satuan'] ?? 0;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        @if (!in_array($satuan, $excludedSatuans))
+                                                            <tr class="border-b border-gray-100 dark:border-gray-600">
+                                                                <td class="px-3 py-2 text-gray-900 dark:text-white">
+                                                                    {{ $item['item'] ?? '-' }}</td>
+                                                                <td
+                                                                    class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">
+                                                                    {{ $item['satuan'] ?? '-' }}</td>
+                                                                <td
+                                                                    class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">
+                                                                    {{ $item['qty'] ?? '-' }}</td>
+                                                                <td class="px-3 py-2 text-right">
+                                                                    <input type="text"
+                                                                        class="harga-tukang-input w-full text-right border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                                                                        value="{{ $hargaSatuanTukang }}"
+                                                                        data-qty="{{ $item['qty'] ?? 0 }}"
+                                                                        data-group="{{ $loop->parent->index }}"
+                                                                        data-item="{{ $index }}"
+                                                                        placeholder="0"
+                                                                        data-debug-item="{{ $item['item'] ?? 'unknown' }}"
+                                                                        data-debug-harga="{{ $hargaSatuanTukang }}"
+                                                                        data-debug-qty="{{ $item['qty'] ?? 'no-qty' }}" />
+                                                                </td>
+                                                                <td
+                                                                    class="px-3 py-2 text-right font-medium text-purple-600 dark:text-purple-400 total-harga-tukang-cell">
+                                                                    <span
+                                                                        class="calculated-total-tukang">{{ $hargaSatuanTukang > 0 ? 'Rp ' . number_format($hargaSatuanTukang * ($item['qty'] ?? 0), 0, ',', '.') : '-' }}</span>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="bg-purple-600 dark:bg-purple-600 p-4">
+                                <p class="text-white dark:text-white text-right">
+                                    Total Biaya Harga Tukang Rp <span class="font-semibold text-white"
+                                        id="total-biaya-harga-tukang">Rp 0</span>
+                                </p>
+                            </div>
+
+                            <!-- Hidden input untuk menyimpan data harga tukang -->
+                            <input type="hidden" name="json_pengajuan_harga_tukang" id="json_pengajuan_harga_tukang"
+                                value="{{ isset($rab) ? json_encode($rab->json_pengajuan_harga_tukang ?? []) : '' }}">
+                        </div>
+                    </div>
+                @endif
+
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-4">
                         <h2 class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600 py-2 uppercase">
@@ -264,6 +455,7 @@
                     
                     <x-rab.material-pendukung-table />
                 </div>
+
                 <div class="mt-8">
                     <div class="flex items-center justify-between gap-4">
                         <h2
@@ -346,6 +538,32 @@
                     calculateInitialPemasanganTotal();
                 }
             }, 100);
+
+            // Initialize harga tukang calculation
+            console.log('DOM loaded, initializing harga tukang...');
+
+            // Add event listeners to harga tukang inputs
+            document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
+                console.log(`Adding listener to harga tukang input ${index}`);
+                input.addEventListener('input', function(e) {
+                    console.log(`Harga tukang input ${index} changed to:`, e.target.value);
+                    calculateHargaTukangTotal();
+                });
+            });
+
+            // Calculate initial total harga tukang based on existing values
+            setTimeout(() => {
+                // Restore old harga tukang data if form failed
+                if (window.oldPengajuanHargaTukang && window.oldPengajuanHargaTukang.length > 0) {
+                    restoreOldHargaTukangData();
+                    // Recalculate after restore
+                    setTimeout(() => {
+                        calculateInitialHargaTukangTotal();
+                    }, 50);
+                } else {
+                    calculateInitialHargaTukangTotal();
+                }
+            }, 150);
         });
 
         function restoreOldPemasanganData() {
@@ -582,6 +800,14 @@
             
             // Update pemasangan data before submit
             calculatePemasanganTotal();
+            
+            // Update harga tukang data before submit
+            calculateHargaTukangTotal();
+            
+            // Update section material pendukung data before submit
+            if (typeof updateSectionMaterialHiddenInput === 'function') {
+                updateSectionMaterialHiddenInput();
+            }
             
             console.log('=== PREPARE FORM DATA COMPLETED ===');
         }
@@ -983,9 +1209,12 @@
         // Load existing data for edit mode
         function loadExistingData() {
             // Load existing material pendukung data
+            // Hanya load jika tidak ada oldMaterialPendukung (form validation error)
+            if (!window.oldMaterialPendukung || !Array.isArray(window.oldMaterialPendukung) || window.oldMaterialPendukung.length === 0) {
             if (window.existingMaterialPendukung && window.existingMaterialPendukung.length > 0) {
                 if (window.materialPendukungFunctions && window.materialPendukungFunctions.loadExistingData) {
                     window.materialPendukungFunctions.loadExistingData(window.existingMaterialPendukung);
+                    }
                 }
             }
 
@@ -1021,6 +1250,11 @@
             if (window.existingPemasangan && window.existingPemasangan.length > 0) {
                 loadExistingPemasanganData(window.existingPemasangan);
             }
+
+            // Load existing harga tukang data
+            if (window.existingPengajuanHargaTukang && window.existingPengajuanHargaTukang.length > 0) {
+                loadExistingHargaTukangData(window.existingPengajuanHargaTukang);
+            }
         }
 
         // Load existing pemasangan data
@@ -1048,5 +1282,326 @@
                 calculatePemasanganTotal();
             }, 100);
         }
+
+        // Calculate initial harga tukang total
+        function calculateInitialHargaTukangTotal() {
+            console.log('Calculating initial harga tukang total...');
+            let total = 0;
+
+            document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
+                // Skip invalid inputs
+                if (!input.dataset.qty || !input.dataset.debugItem) {
+                    console.log(`Skipping invalid harga tukang input ${index} in initial calculation`);
+                    return;
+                }
+                
+                // Parse harga satuan - handle both number and formatted string
+                let hargaSatuan = 0;
+                if (input.value) {
+                    // Remove any formatting and parse as number
+                    hargaSatuan = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
+                }
+
+                const qty = parseFloat(input.dataset.qty) || 0;
+                const totalHarga = hargaSatuan * qty;
+
+                console.log(
+                    `Harga tukang input ${index}: value="${input.value}", harga=${hargaSatuan}, qty=${qty}, total=${totalHarga}`
+                );
+
+                // Update total harga cell - with error handling
+                const row = input.closest('tr');
+                if (row) {
+                    const totalCell = row.querySelector('.calculated-total-tukang');
+                    if (totalCell) {
+                        totalCell.textContent = formatRupiah(totalHarga);
+                        console.log(`Updated total cell for harga tukang input ${index}:`, formatRupiah(totalHarga));
+                    }
+                }
+
+                total += totalHarga;
+            });
+
+            console.log('Total harga tukang calculated:', total);
+
+            // Update total biaya display
+            const totalBiayaElement = document.getElementById('total-biaya-harga-tukang');
+            if (totalBiayaElement) {
+                totalBiayaElement.textContent = formatRupiah(total);
+                console.log('Updated total biaya harga tukang:', formatRupiah(total));
+            }
+        }
+
+        function calculateHargaTukangTotal() {
+            let total = 0;
+            let hargaTukangData = [];
+
+            document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
+                // Skip invalid inputs
+                if (!input.dataset.qty || !input.dataset.debugItem) {
+                    console.log(`Skipping invalid harga tukang input ${index}:`, {
+                        qty: input.dataset.qty,
+                        item: input.dataset.debugItem
+                    });
+                    return;
+                }
+                
+                // Parse harga satuan - handle both number and formatted string
+                let hargaSatuan = 0;
+                if (input.value) {
+                    // Remove any formatting and parse as number
+                    hargaSatuan = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
+                }
+
+                const qty = parseFloat(input.dataset.qty) || 0;
+                const totalHarga = hargaSatuan * qty;
+                
+                // Debug each input
+                console.log(`Harga tukang input ${index}:`, {
+                    item: input.dataset.debugItem,
+                    qty: input.dataset.qty,
+                    debugQty: input.dataset.debugQty,
+                    hargaSatuan: hargaSatuan,
+                    totalHarga: totalHarga
+                });
+
+                // Update total harga cell
+                const row = input.closest('tr');
+                if (row) {
+                    const totalCell = row.querySelector('.calculated-total-tukang');
+                    if (totalCell) {
+                        totalCell.textContent = formatRupiah(totalHarga);
+                    }
+                }
+
+                // Collect data for hidden input
+                const itemName = input.dataset.debugItem || 'Unknown Item';
+                const satuan = row ? row.querySelector('td:nth-child(2)').textContent.trim() : 'm2';
+                
+                // Only add to hargaTukangData if item has valid data
+                if (itemName !== 'Unknown Item' && qty > 0) {
+                    hargaTukangData.push({
+                        item: itemName,
+                        satuan: satuan,
+                        qty: qty.toString(),
+                        harga_satuan: hargaSatuan.toString(),
+                        total_harga: formatRupiah(totalHarga)
+                    });
+                }
+
+                total += totalHarga;
+            });
+
+            // Update total biaya display
+            const totalBiayaElement = document.getElementById('total-biaya-harga-tukang');
+            if (totalBiayaElement) {
+                totalBiayaElement.textContent = formatRupiah(total);
+            }
+
+            // Update hidden input with filtered data
+            const hiddenInput = document.getElementById('json_pengajuan_harga_tukang');
+            if (hiddenInput) {
+                hiddenInput.value = JSON.stringify(hargaTukangData);
+                console.log('Updated json_pengajuan_harga_tukang:', hargaTukangData);
+                console.log('Hidden input value:', hiddenInput.value);
+            } else {
+                console.error('Hidden input json_pengajuan_harga_tukang not found!');
+            }
+        }
+
+        function restoreOldHargaTukangData() {
+            console.log('Restoring old harga tukang data:', window.oldPengajuanHargaTukang);
+            
+            document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
+                // Skip invalid inputs
+                if (!input.dataset.qty || !input.dataset.debugItem) {
+                    return;
+                }
+                
+                // Find matching old data by item name
+                const itemName = input.dataset.debugItem;
+                const oldData = window.oldPengajuanHargaTukang.find(item => item.item === itemName);
+                
+                if (oldData) {
+                    input.value = oldData.harga_satuan || '';
+                    console.log(`Restored harga tukang input ${index} (${itemName}):`, oldData);
+                }
+            });
+        }
+
+        // Load existing harga tukang data
+        function loadExistingHargaTukangData(hargaTukangData) {
+            if (!Array.isArray(hargaTukangData)) return;
+
+            document.querySelectorAll('.harga-tukang-input').forEach((input, index) => {
+                // Skip invalid inputs
+                if (!input.dataset.qty || !input.dataset.debugItem) {
+                    return;
+                }
+                
+                // Find matching existing data by item name
+                const itemName = input.dataset.debugItem;
+                const existingData = hargaTukangData.find(item => item.item === itemName);
+                
+                if (existingData) {
+                    input.value = existingData.harga_satuan || '';
+                    console.log(`Loaded existing harga tukang data for input ${index} (${itemName}):`, existingData);
+                }
+            });
+
+            // Recalculate total after loading data
+            setTimeout(() => {
+                calculateHargaTukangTotal();
+            }, 100);
+        }
+
+        // Section Material Pendukung Functions
+        (function() {
+            let sectionMaterialIndex = {{ isset($rab->json_section_material_pendukung) && is_array($rab->json_section_material_pendukung) ? count($rab->json_section_material_pendukung) : 0 }};
+            const tbody = document.getElementById('section-material-pendukung-tbody');
+            const addBtn = document.getElementById('add-section-material-pendukung');
+
+            if (!tbody || !addBtn) return;
+
+            // Update hidden input with all data (make it global)
+            window.updateSectionMaterialHiddenInput = function() {
+                const rows = tbody.querySelectorAll('.section-material-row');
+                const data = [];
+
+                rows.forEach(row => {
+                    const itemBarang = row.querySelector('input[name*="[item_barang]"]')?.value || '';
+                    const ukuran = row.querySelector('input[name*="[ukuran]"]')?.value || '';
+                    const panjang = row.querySelector('input[name*="[panjang]"]')?.value || '';
+                    const qty = row.querySelector('input[name*="[qty]"]')?.value || '';
+                    const satuan = row.querySelector('input[name*="[satuan]"]')?.value || '';
+                    const hargaSatuan = row.querySelector('input[name*="[harga_satuan]"]')?.value || '';
+                    const total = row.querySelector('input[name*="[total]"]')?.value || '';
+
+                    // Only add if at least item_barang is filled
+                    if (itemBarang.trim() !== '') {
+                        data.push({
+                            item_barang: itemBarang,
+                            ukuran: ukuran,
+                            panjang: panjang,
+                            qty: qty,
+                            satuan: satuan,
+                            harga_satuan: hargaSatuan,
+                            total: total
+                        });
+                    }
+                });
+
+                const hiddenInput = document.getElementById('json_section_material_pendukung');
+                if (hiddenInput) {
+                    hiddenInput.value = JSON.stringify(data);
+                }
+            };
+
+            // Add new row
+            function addSectionMaterialRow() {
+                const row = document.createElement('tr');
+                row.className = 'section-material-row border-b border-gray-100 dark:border-gray-600';
+                row.innerHTML = `
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][item_barang]" placeholder="Item Barang" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][ukuran]" placeholder="Ukuran" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][panjang]" placeholder="Panjang" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="number" min="0" step="0.01" name="section_material_pendukung[${sectionMaterialIndex}][qty]" placeholder="Qty" class="section-material-qty w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][satuan]" placeholder="Satuan" class="w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][harga_satuan]" placeholder="Harga Satuan" class="section-material-harga-satuan w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" />
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][total]" placeholder="Total" class="section-material-total w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" readonly />
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                        <button type="button" class="remove-section-material text-red-600 hover:text-red-800 font-bold">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                sectionMaterialIndex++;
+                
+                // Attach event listeners to new row
+                attachSectionMaterialListeners(row);
+            }
+
+            // Calculate total for a row
+            function calculateSectionMaterialTotal(row) {
+                const qtyInput = row.querySelector('.section-material-qty');
+                const hargaInput = row.querySelector('.section-material-harga-satuan');
+                const totalInput = row.querySelector('.section-material-total');
+
+                if (!qtyInput || !hargaInput || !totalInput) return;
+
+                const qty = parseFloat(qtyInput.value) || 0;
+                let harga = 0;
+                
+                if (hargaInput.value) {
+                    // Remove currency formatting if present
+                    const hargaStr = hargaInput.value.toString().replace(/[Rp\s\.]/g, '').replace(/,/g, '');
+                    harga = parseFloat(hargaStr) || 0;
+                }
+
+                const total = qty * harga;
+                totalInput.value = total > 0 ? formatRupiah(total) : '';
+                
+                // Update hidden input
+                window.updateSectionMaterialHiddenInput();
+            }
+
+            // Attach event listeners to row
+            function attachSectionMaterialListeners(row) {
+                const qtyInput = row.querySelector('.section-material-qty');
+                const hargaInput = row.querySelector('.section-material-harga-satuan');
+
+                if (qtyInput) {
+                    qtyInput.addEventListener('input', () => calculateSectionMaterialTotal(row));
+                }
+                if (hargaInput) {
+                    hargaInput.addEventListener('input', () => {
+                        // Format as currency while typing
+                        const value = hargaInput.value.replace(/[^\d]/g, '');
+                        if (value) {
+                            hargaInput.value = formatRupiah(parseFloat(value));
+                        }
+                        calculateSectionMaterialTotal(row);
+                    });
+                }
+            }
+
+            // Event listeners
+            addBtn.addEventListener('click', addSectionMaterialRow);
+
+            tbody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-section-material')) {
+                    if (confirm('Yakin mau hapus item ini?')) {
+                        e.target.closest('.section-material-row').remove();
+                        window.updateSectionMaterialHiddenInput();
+                    }
+                }
+            });
+
+            // Attach listeners to existing rows
+            document.addEventListener('DOMContentLoaded', function() {
+                const existingRows = tbody.querySelectorAll('.section-material-row');
+                existingRows.forEach(row => {
+                    attachSectionMaterialListeners(row);
+                });
+                
+                // Initial calculation for existing rows
+                existingRows.forEach(row => {
+                    calculateSectionMaterialTotal(row);
+                });
+            });
+        })();
     </script>
 </x-layouts.app>

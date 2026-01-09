@@ -213,6 +213,18 @@
                                                         <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Panjang" />
                                                     </div>
 
+                                                    <!-- Satuan -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Satuan</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][satuan]'" x-model="row.satuan" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Satuan" />
+                                                    </div>
+
+                                                    <!-- Warna -->
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warna</label>
+                                                        <input :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][warna]'" x-model="row.warna" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" placeholder="Warna" />
+                                                    </div>
+
                                                     <!-- Harga -->
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Harga</label>
@@ -239,6 +251,8 @@
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][harga]'" x-model="row.harga" />
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][total_harga]'" x-model="row.total_harga" />
                                                 <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][satuan]'" x-model="row.satuan" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][warna]'" x-model="row.warna" />
+                                                <input type="hidden" :name="'json_produk[' + mainIdx + '][product_sections][' + section.kategori + '][' + i + '][panjang]'" x-model="row.panjang" />
                                             </div>
                                         </template>
                                     </div>
@@ -895,6 +909,7 @@ function penawaranForm() {
                     qty_area: '',
                     qty: '0', // Default quantity 0
                     satuan: '',
+                    warna: '',
                     harga: 0,
                     harga_display: 'Rp 0',
                     total_harga: 0,
@@ -922,6 +937,7 @@ function penawaranForm() {
                 qty_area: '',
                 qty: '0', // Default quantity 0
                 satuan: '',
+                warna: '',
                 harga: 0,
                 harga_display: 'Rp 0',
                 total_harga: 0,
@@ -991,6 +1007,8 @@ function penawaranForm() {
                     row.dimensi = (produk.lebar && produk.tebal && produk.panjang) ? produk.lebar + 'x' + produk.tebal : '';
                     row.panjang = produk.panjang ?? '';
                     row.tebal_panjang = produk.tebal ?? produk.panjang ?? '';
+                    row.satuan = produk.satuan ?? '';
+                    row.warna = produk.warna ?? '';
                     
                     // Gunakan luas_m2 dari database produk
                     let luas_m2 = produk.luas_m2 || 1;
@@ -1006,6 +1024,8 @@ function penawaranForm() {
                     row.panjang = '';
                     row.tebal_panjang = '';
                     row.qty_area = '';
+                    row.satuan = produk.satuan ?? '';
+                    row.warna = produk.warna ?? '';
                 }
                 
                 // Hitung total harga otomatis
@@ -1275,6 +1295,7 @@ function penawaranForm() {
                                             qty_area: produk.qty_area || '',
                                             qty: produk.qty || '0',
                                             satuan: produk.satuan || '',
+                                            warna: produk.warna || '',
                                             harga: parseFloat(produk.harga) || 0,
                                             harga_display: this.formatCurrency(parseFloat(produk.harga) || 0),
                                             total_harga: parseFloat(produk.total_harga) || 0,
@@ -1563,6 +1584,7 @@ function penawaranForm() {
                         row.harga = produk.harga || 0;
                         row.harga_display = this.formatCurrency(produk.harga || 0);
                         row.satuan = produk.satuan || '';
+                        row.warna = produk.warna || '';
 
                         // Update dimensi jika bukan hollow
                         if (section.kategori !== 'hollow') {

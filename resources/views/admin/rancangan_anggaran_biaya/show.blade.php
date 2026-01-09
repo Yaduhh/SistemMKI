@@ -1,5 +1,8 @@
 <x-layouts.app :title="__('Detail Rancangan Anggaran Biaya')">
     <div class="container mx-auto">
+        <x-flash-message type="success" :message="session('success')" />
+        <x-flash-message type="error" :message="session('error')" />
+        
         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
             <h1 class="text-2xl font-bold">Detail Rancangan Anggaran Biaya (RAB)</h1>
             <div class="flex space-x-2 mt-4 lg:mt-0">
@@ -138,7 +141,16 @@
         @if ($rancanganAnggaranBiaya->json_pengeluaran_material_utama)
             <div
                 class="w-full mb-6">
-                <h2 class="text-lg font-semibold mb-4">Pengeluaran Material Utama</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Pengeluaran Material Utama</h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
+                </div>
 
                 <!-- Informasi Penawaran Terkait -->
                 @if ($rancanganAnggaranBiaya->penawaran)
@@ -396,6 +408,94 @@
             </div>
         @endif
 
+        <!-- Section Material Pendukung -->
+        @if ($rancanganAnggaranBiaya->json_section_material_pendukung)
+            <div class="w-full mb-6 border border-sky-200 dark:border-sky-700 dark:bg-zinc-900/30">
+                <div class="flex items-center justify-between gap-4">
+                    <h2
+                        class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600/30 py-2 uppercase text-white">
+                        Section Material Pendukung
+                    </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-section-material-pendukung', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-sky-600 text-white text-sm rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
+                </div>
+                <div class="w-full">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                            <thead class="bg-sky-50 dark:bg-sky-900/20">
+                                <tr>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Item Barang</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Ukuran</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Panjang</th>
+                                    <th
+                                        class="px-4 py-3 text-center text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Qty</th>
+                                    <th
+                                        class="px-4 py-3 text-center text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-right text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Harga Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-right text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                        Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                            {{ $item['item_barang'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['ukuran'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['panjang'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300 text-center">
+                                            {{ $item['qty'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300 text-center">
+                                            {{ $item['satuan'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300 text-right">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300 text-right">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Total Section Material Pendukung -->
+                    @php
+                        $totalSectionMaterialPendukung = 0;
+                        foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item) {
+                            $totalSectionMaterialPendukung += (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
+                        }
+                    @endphp
+                    <div class="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
+                        <div class="text-right">
+                            <span class="text-sm font-medium text-sky-700 dark:text-sky-300">Total Section Material Pendukung:</span>
+                            <span class="ml-2 text-lg font-bold text-sky-600 dark:text-sky-400">
+                                Rp {{ number_format($totalSectionMaterialPendukung, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Pengeluaran Pemasangan -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan)
             <div class="w-full mb-6 border border-amber-200 dark:border-amber-700 dark:bg-zinc-900/30">
@@ -404,6 +504,13 @@
                         class="text-lg font-semibold w-full text-center bg-amber-600 dark:bg-amber-600/30 py-2 uppercase text-white">
                         Pengeluaran Pemasangan
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-pemasangan', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 <div class="w-full">
                     <div class="overflow-x-auto">
@@ -467,6 +574,84 @@
             </div>
         @endif
 
+        <!-- Harga Tukang -->
+        @if ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang)
+            <div class="w-full mb-6 border border-purple-200 dark:border-purple-700 dark:bg-zinc-900/30">
+                <div class="flex items-center justify-between gap-4">
+                    <h2
+                        class="text-lg font-semibold w-full text-center bg-purple-600 dark:bg-purple-600/30 py-2 uppercase text-white">
+                        Harga Tukang
+                    </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-harga-tukang', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
+                </div>
+                <div class="w-full">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                            <thead class="bg-purple-50 dark:bg-purple-900/20">
+                                <tr>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Item</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Qty</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Harga Satuan</th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Total Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                            {{ $item['item'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['satuan'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            {{ $item['qty'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0), 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Total Harga Tukang -->
+                    @php
+                        $totalHargaTukang = 0;
+                        foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
+                            $totalHargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        }
+                    @endphp
+                    <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <div class="text-right">
+                            <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Total Harga Tukang:</span>
+                            <span class="ml-2 text-lg font-bold text-purple-600 dark:text-purple-400">
+                                Rp {{ number_format($totalHargaTukang, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Material Pendukung -->
         @if ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung)
             <div class="w-full mb-6  border border-sky-200 dark:border-sky-700 dark:bg-zinc-900/30">
@@ -475,6 +660,13 @@
                         class="text-lg font-semibold w-full text-center bg-sky-600 dark:bg-sky-600/30 py-2 uppercase text-white">
                         Pengeluaran Material Pendukung
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-material-pendukung', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-sky-600 text-white text-sm rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 @foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrIndex => $mrGroup)
                     <div class="p-4">
@@ -539,6 +731,35 @@
                         @endif
                     </div>
                 @endforeach
+                
+                <!-- Total Pengeluaran Material Pendukung -->
+                @php
+                    $totalPengeluaranMaterialPendukung = 0;
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrGroup) {
+                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                            foreach ($mrGroup['materials'] as $material) {
+                                $itemValue = $material['item'] ?? '';
+                                $subTotal = (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
+
+                                // Jika item adalah Diskon, kurangkan dari total
+                                if (trim($itemValue) === 'Diskon') {
+                                    $totalPengeluaranMaterialPendukung -= $subTotal;
+                                } else {
+                                    // Untuk item lain (termasuk PPN dan Ongkir), tambahkan ke total
+                                    $totalPengeluaranMaterialPendukung += $subTotal;
+                                }
+                            }
+                        }
+                    }
+                @endphp
+                <div class="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
+                    <div class="text-right">
+                        <span class="text-sm font-medium text-sky-700 dark:text-sky-300">Total Pengeluaran Material Pendukung:</span>
+                        <span class="ml-2 text-lg font-bold text-sky-600 dark:text-sky-400">
+                            Rp {{ number_format($totalPengeluaranMaterialPendukung, 0, ',', '.') }}
+                        </span>
+                    </div>
+                </div>
             </div>
         @endif
 
@@ -550,6 +771,13 @@
                         class="text-lg font-semibold w-full text-center bg-indigo-600 dark:bg-indigo-600/30 py-2 uppercase text-white">
                         Pengeluaran Material Tambahan
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-material-tambahan', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 @php
                     // Filter hanya material yang statusnya "Disetujui"
@@ -636,6 +864,33 @@
                             @endif
                         </div>
                     @endforeach
+                    
+                    <!-- Total Pengeluaran Material Tambahan -->
+                    @php
+                        $totalPengeluaranMaterialTambahan = 0;
+                        foreach ($filteredMaterialTambahan as $mrGroup) {
+                            if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                                foreach ($mrGroup['materials'] as $material) {
+                                    // Hanya hitung yang statusnya Disetujui
+                                    if (($material['status'] ?? '') === 'Disetujui') {
+                                        $totalPengeluaranMaterialTambahan += (float) preg_replace(
+                                            '/[^\d]/',
+                                            '',
+                                            $material['sub_total'] ?? 0,
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    @endphp
+                    <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                        <div class="text-right">
+                            <span class="text-sm font-medium text-indigo-700 dark:text-indigo-300">Total Pengeluaran Material Tambahan:</span>
+                            <span class="ml-2 text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                                Rp {{ number_format($totalPengeluaranMaterialTambahan, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
                 @else
                     <div class="text-center py-8 text-gray-500 dark:text-gray-400">
                         <p>Tidak ada material tambahan yang disetujui</p>
@@ -652,6 +907,13 @@
                         class="text-lg font-semibold w-full text-center bg-teal-600 dark:bg-teal-600/30 py-2 uppercase text-white">
                         Pengeluaran Non Material
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-entertainment', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-teal-600 text-white text-sm rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 @php
                     // Filter hanya material yang statusnya "Disetujui"
@@ -758,6 +1020,13 @@
                         class="text-lg font-semibold w-full text-center bg-purple-600 dark:bg-purple-600/30 py-2 uppercase text-white">
                         Pengeluaran Tukang
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-tukang', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 @foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang as $sectionIndex => $section)
                     <div class="p-4">
@@ -848,6 +1117,13 @@
                         class="text-lg font-semibold w-full text-center bg-orange-600 dark:bg-orange-600/30 py-2 uppercase text-white">
                         Kerja Tambah
                     </h2>
+                    <a href="{{ route('admin.rancangan-anggaran-biaya.edit-kerja-tambah', $rancanganAnggaranBiaya) }}" target="_blank"
+                        class="px-3 py-1.5 bg-orange-600 text-white text-sm rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 flex items-center gap-2 mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                    </a>
                 </div>
                 @foreach ($rancanganAnggaranBiaya->json_kerja_tambah as $sectionIndex => $section)
                     <div class="p-4">
@@ -930,49 +1206,27 @@
             </div>
         @endif
 
-        <!-- Grand Total -->
+        <!-- Sisa Anggaran -->
         <div class="w-full mb-6">
             <div class="flex items-center justify-between gap-4 mb-6">
                 <h2
                     class="text-lg font-semibold w-full text-center bg-red-600 dark:bg-red-600/30 py-2 uppercase text-white">
-                    Grand Total</h2>
+                    Sisa Anggaran</h2>
             </div>
 
             @php
-                $grandTotal = 0;
-                $breakdown = [];
-
-                // Material Utama - ambil dari grand_total penawaran yang terhubung (sudah termasuk additional_condition)
-                $materialUtamaTotal = 0;
-                if ($rancanganAnggaranBiaya->penawaran) {
-                    // Gunakan grand_total dari penawaran karena sudah termasuk:
-                    // - Produk utama (setelah diskon)
-                    // - Additional condition (tidak kena diskon)
-                    // - PPN
-                    $materialUtamaTotal = (float) ($rancanganAnggaranBiaya->penawaran->grand_total ?? 0);
-                } else {
-                    // Fallback ke perhitungan manual jika tidak ada penawaran terhubung
-                    if ($rancanganAnggaranBiaya->json_pengeluaran_material_utama) {
-                        foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_utama as $item) {
-                            $materialUtamaTotal += (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
-                        }
+                // SECTION 1: TOTAL MATERIAL PENDUKUNG - PENGELUARAN MATERIAL PENDUKUNG - PENGELUARAN MATERIAL TAMBAHAN
+                
+                // Total Material Pendukung (Section Material Pendukung)
+                $totalMaterialPendukung = 0;
+                if ($rancanganAnggaranBiaya->json_section_material_pendukung) {
+                    foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item) {
+                        $totalMaterialPendukung += (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
                     }
                 }
-                $grandTotal += $materialUtamaTotal;
-                $breakdown['Material Utama'] = $materialUtamaTotal;
 
-                // Pemasangan
-                $pemasanganTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item) {
-                        $pemasanganTotal += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
-                    }
-                }
-                $grandTotal += $pemasanganTotal;
-                $breakdown['Pemasangan'] = $pemasanganTotal;
-
-                // Material Pendukung - perhitungkan diskon yang ada di dalam material pendukung
-                $materialPendukungTotal = 0;
+                // Pengeluaran Material Pendukung - perhitungkan diskon yang ada di dalam material pendukung
+                $pengeluaranMaterialPendukung = 0;
                 if ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung) {
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
@@ -982,48 +1236,25 @@
 
                                 // Jika item adalah Diskon, kurangkan dari total
                                 if (trim($itemValue) === 'Diskon') {
-                                    $materialPendukungTotal -= $subTotal;
+                                    $pengeluaranMaterialPendukung -= $subTotal;
                                 } else {
                                     // Untuk item lain (termasuk PPN dan Ongkir), tambahkan ke total
-                                    $materialPendukungTotal += $subTotal;
+                                    $pengeluaranMaterialPendukung += $subTotal;
                                 }
                             }
                         }
                     }
                 }
-                $grandTotal += $materialPendukungTotal;
-                $breakdown['Material Pendukung'] = $materialPendukungTotal;
 
-                // Entertaiment - hanya yang status Disetujui
-                $entertaimentTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment as $mrGroup) {
-                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
-                            foreach ($mrGroup['materials'] as $material) {
-                                // Hanya hitung yang statusnya Disetujui
-                                if (($material['status'] ?? '') === 'Disetujui') {
-                                    $entertaimentTotal += (float) preg_replace(
-                                        '/[^\d]/',
-                                        '',
-                                        $material['sub_total'] ?? 0,
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-                $grandTotal += $entertaimentTotal;
-                $breakdown['Non Material'] = $entertaimentTotal;
-
-                // Material Tambahan - hanya yang status Disetujui
-                $materialTambahanTotal = 0;
+                // Pengeluaran Material Tambahan - hanya yang status Disetujui
+                $pengeluaranMaterialTambahan = 0;
                 if ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan) {
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_tambahan as $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $material) {
                                 // Hanya hitung yang statusnya Disetujui
                                 if (($material['status'] ?? '') === 'Disetujui') {
-                                    $materialTambahanTotal += (float) preg_replace(
+                                    $pengeluaranMaterialTambahan += (float) preg_replace(
                                         '/[^\d]/',
                                         '',
                                         $material['sub_total'] ?? 0,
@@ -1033,73 +1264,132 @@
                         }
                     }
                 }
-                $grandTotal += $materialTambahanTotal;
-                $breakdown['Material Tambahan'] = $materialTambahanTotal;
 
-                // Tukang - hanya yang status Disetujui
-                $tukangTotal = 0;
-                if ($rancanganAnggaranBiaya->json_pengeluaran_tukang) {
-                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang as $section) {
-                        if (isset($section['termin']) && is_array($section['termin'])) {
-                            foreach ($section['termin'] as $termin) {
-                                // Hanya hitung kredit dari termin yang statusnya Disetujui
-                                if (($termin['status'] ?? '') === 'Disetujui') {
-                                    $tukangTotal += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                // Sisa Anggaran Section 1
+                $sisaAnggaranSection1 = $totalMaterialPendukung - $pengeluaranMaterialPendukung - $pengeluaranMaterialTambahan;
+
+                // SECTION 2: TOTAL PENGELUARAN PEMASANGAN - HARGA TUKANG - PENGELUARAN ENTERTAIMENT
+                
+                // Total Pengeluaran Pemasangan
+                $totalPengeluaranPemasangan = 0;
+                if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan) {
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item) {
+                        $totalPengeluaranPemasangan += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                    }
+                }
+
+                // Harga Tukang - hanya yang status Disetujui
+                $hargaTukang = 0;
+                if ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang) {
+                    foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
+                        // Hanya hitung yang statusnya Disetujui
+                        if (($item['status'] ?? '') === 'Disetujui') {
+                            $hargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        }
+                    }
+                }
+
+                // Pengeluaran Entertainment - hanya yang status Disetujui
+                $pengeluaranEntertainment = 0;
+                if ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment) {
+                    foreach ($rancanganAnggaranBiaya->json_pengeluaran_entertaiment as $mrGroup) {
+                        if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                            foreach ($mrGroup['materials'] as $material) {
+                                // Hanya hitung yang statusnya Disetujui
+                                if (($material['status'] ?? '') === 'Disetujui') {
+                                    $pengeluaranEntertainment += (float) preg_replace(
+                                        '/[^\d]/',
+                                        '',
+                                        $material['sub_total'] ?? 0,
+                                    );
                                 }
                             }
                         }
                     }
                 }
-                $grandTotal += $tukangTotal;
-                $breakdown['Tukang'] = $tukangTotal;
 
-                // Kerja Tambah - hanya yang status Disetujui
-                $kerjaTambahTotal = 0;
-                if ($rancanganAnggaranBiaya->json_kerja_tambah) {
-                    foreach ($rancanganAnggaranBiaya->json_kerja_tambah as $section) {
-                        if (isset($section['termin']) && is_array($section['termin'])) {
-                            foreach ($section['termin'] as $termin) {
-                                // Hanya hitung kredit dari termin yang statusnya Disetujui
-                                if (($termin['status'] ?? '') === 'Disetujui') {
-                                    $kerjaTambahTotal += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
-                                }
-                            }
-                        }
-                    }
-                }
-                $grandTotal += $kerjaTambahTotal;
-                $breakdown['Kerja Tambah'] = $kerjaTambahTotal;
+                // Sisa Anggaran Section 2
+                $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment;
+
+                // Total Sisa Anggaran
+                $totalSisaAnggaran = $sisaAnggaranSection1 + $sisaAnggaranSection2;
             @endphp
 
-            <div class="text-center mb-6">
-                <div class="text-3xl font-bold text-red-600 dark:text-red-400">
-                    Rp {{ number_format($grandTotal, 0, ',', '.') }}
-                </div>
-                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-                    Total keseluruhan pengeluaran proyek
-                </p>
-            </div>
-
-            <!-- Breakdown Detail -->
-            <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg p-4">
-                <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">Rincian Perhitungan:</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    @foreach ($breakdown as $category => $amount)
-                        <div class="flex justify-between items-center">
-                            <span class="text-zinc-600 dark:text-zinc-400">{{ $category }}:</span>
-                            <span
-                                class="font-medium {{ $amount < 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
-                                {{ $amount < 0 ? '-' : '' }}Rp {{ number_format(abs($amount), 0, ',', '.') }}
+            <!-- Section 1 -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4">
+                <h3 class="text-md font-semibold text-blue-700 dark:text-blue-300 mb-4">Rincian Material</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Total Material Pendukung:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">
+                            Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Material Pendukung:</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">
+                            - Rp {{ number_format($pengeluaranMaterialPendukung, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Material Tambahan:</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">
+                            - Rp {{ number_format($pengeluaranMaterialTambahan, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="border-t border-blue-200 dark:border-blue-700 pt-2 mt-2">
+                        <div class="flex justify-between items-center font-semibold">
+                            <span class="text-blue-700 dark:text-blue-300">Sisa Anggaran Material:</span>
+                            <span class="text-blue-700 dark:text-blue-300 {{ $sisaAnggaranSection1 < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
+                                Rp {{ number_format($sisaAnggaranSection1, 0, ',', '.') }}
                             </span>
                         </div>
-                    @endforeach
-                    <div class="col-span-full border-t border-zinc-200 dark:border-zinc-600 pt-2 mt-2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
+                <h3 class="text-md font-semibold text-green-700 dark:text-green-300 mb-4">Rincian Pemasangan</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Total Pengeluaran Pemasangan:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">
+                            Rp {{ number_format($totalPengeluaranPemasangan, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Harga Tukang:</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">
+                            - Rp {{ number_format($hargaTukang, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Non Material:</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">
+                            - Rp {{ number_format($pengeluaranEntertainment, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="border-t border-green-200 dark:border-green-700 pt-2 mt-2">
                         <div class="flex justify-between items-center font-semibold">
-                            <span class="text-red-600 dark:text-red-400">GRAND TOTAL:</span>
-                            <span class="text-red-600 dark:text-red-400">Rp
-                                {{ number_format($grandTotal, 0, ',', '.') }}</span>
+                            <span class="text-green-700 dark:text-green-300">Sisa Anggaran Pemasangan:</span>
+                            <span class="text-green-700 dark:text-green-300 {{ $sisaAnggaranSection2 < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
+                                Rp {{ number_format($sisaAnggaranSection2, 0, ',', '.') }}
+                            </span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Total Sisa Anggaran -->
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-red-600 dark:text-red-400">
+                        Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}
+                    </div>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
+                        Total Sisa Anggaran
+                    </p>
                 </div>
             </div>
         </div>
@@ -1158,3 +1448,4 @@
         </div>
     </div>
 </x-layouts.app>
+

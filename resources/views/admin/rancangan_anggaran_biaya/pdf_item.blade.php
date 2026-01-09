@@ -368,8 +368,139 @@
         </table>
     @endif
 
-    {{-- II. Pengeluaran Material Pendukung --}}
-    <div class="section-title">II. PENGELUARAN MATERIAL PENDUKUNG</div>
+    @php
+        // Inisialisasi variabel untuk Sisa Anggaran
+        $totalSectionMaterialPendukung = 0;
+        $totalPemasangan = 0;
+        $totalHargaTukang = 0;
+    @endphp
+
+    {{-- II. Section Material Pendukung --}}
+    @if ($rancanganAnggaranBiaya->json_section_material_pendukung)
+        <div class="section-title">II. SECTION MATERIAL PENDUKUNG</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 4%">No</th>
+                    <th style="width: 20%">Item Barang</th>
+                    <th style="width: 10%">Ukuran</th>
+                    <th style="width: 10%">Panjang</th>
+                    <th style="width: 8%">Qty</th>
+                    <th style="width: 8%">Satuan</th>
+                    <th style="width: 15%">Harga Satuan</th>
+                    <th style="width: 15%">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $totalSectionMaterialPendukung = 0;
+                @endphp
+                @foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $i => $item)
+                    @php
+                        $total = (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
+                        $totalSectionMaterialPendukung += $total;
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $item['item_barang'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['ukuran'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['panjang'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($total, 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
+                <tr class="highlight">
+                    <td colspan="7" class="text-right">TOTAL SECTION MATERIAL PENDUKUNG</td>
+                    <td class="text-right">Rp {{ number_format($totalSectionMaterialPendukung, 0, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
+    {{-- III. Pengeluaran Pemasangan --}}
+    @if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan)
+        <div class="section-title">III. PENGELUARAN PEMASANGAN</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 4%">No</th>
+                    <th style="width: 30%">Item</th>
+                    <th style="width: 10%">Satuan</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 18%">Harga Satuan</th>
+                    <th style="width: 18%">Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $totalPemasangan = 0;
+                @endphp
+                @foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $i => $item)
+                    @php
+                        $totalHarga = (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        $totalPemasangan += $totalHarga;
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $item['item'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
+                <tr class="highlight">
+                    <td colspan="5" class="text-right">TOTAL PENGELUARAN PEMASANGAN</td>
+                    <td class="text-right">Rp {{ number_format($totalPemasangan, 0, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
+    {{-- IV. Harga Tukang --}}
+    @if ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang)
+        <div class="section-title">IV. HARGA TUKANG</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 4%">No</th>
+                    <th style="width: 30%">Item</th>
+                    <th style="width: 10%">Satuan</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 18%">Harga Satuan</th>
+                    <th style="width: 18%">Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $totalHargaTukang = 0;
+                @endphp
+                @foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $i => $item)
+                    @php
+                        $totalHarga = (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        $totalHargaTukang += $totalHarga;
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $item['item'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
+                        <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
+                <tr class="highlight">
+                    <td colspan="5" class="text-right">TOTAL HARGA TUKANG</td>
+                    <td class="text-right">Rp {{ number_format($totalHargaTukang, 0, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
+    {{-- V. Pengeluaran Material Pendukung --}}
+    <div class="section-title">V. PENGELUARAN MATERIAL PENDUKUNG</div>
     <table>
         <thead>
             <tr>
@@ -496,8 +627,8 @@
         </tbody>
     </table>
 
-    {{-- III. Pengeluaran Material Tambahan --}}
-    <div class="section-title">III. PENGELUARAN MATERIAL TAMBAHAN</div>
+    {{-- VI. Pengeluaran Material Tambahan --}}
+    <div class="section-title">VI. PENGELUARAN MATERIAL TAMBAHAN</div>
     <table>
         <thead>
             <tr>
@@ -627,8 +758,8 @@
         </tbody>
     </table>
 
-    {{-- IV. Pengeluaran Non Material --}}
-    <div class="section-title">IV. PENGELUARAN NON MATERIAL</div>
+    {{-- VII. Pengeluaran Non Material --}}
+    <div class="section-title">VII. PENGELUARAN NON MATERIAL</div>
     <table>
         <thead>
             <tr>
@@ -784,8 +915,8 @@
 
 
 
-    {{-- V. Pengeluaran Tukang --}}
-    <div class="section-title">V. PENGELUARAN TUKANG</div>
+    {{-- VIII. Pengeluaran Tukang --}}
+    <div class="section-title">VIII. PENGELUARAN TUKANG</div>
     @php
         $hasApprovedTukang = false;
         foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section) {
@@ -920,8 +1051,8 @@
         </table>
     @endif
 
-    {{-- VI. Kerja Tambah --}}
-    <div class="section-title">VI. KERJA TAMBAH</div>
+    {{-- IX. Kerja Tambah --}}
+    <div class="section-title">IX. KERJA TAMBAH</div>
     @php
         $hasApprovedKerjaTambah = false;
         foreach ($rancanganAnggaranBiaya->json_kerja_tambah ?? [] as $section) {
@@ -1053,14 +1184,8 @@
         </table>
     @endif
 
-    {{-- Grand Total --}}
+    {{-- Sisa Anggaran --}}
     @php
-        $grandTotal = 0;
-        $grandTotal += $totalUtama;
-        $grandTotal += $totalPendukung;
-        $grandTotal += $totalTambahan;
-        $grandTotal += $totalEntertaiment;
-
         // Hitung total tukang dari kredit - hanya yang status Disetujui
         $totalTukangDebet = 0;
         foreach ($rancanganAnggaranBiaya->json_pengeluaran_tukang ?? [] as $section) {
@@ -1076,7 +1201,6 @@
                 }
             }
         }
-        $grandTotal += $totalTukangDebet;
 
         // Hitung total kerja tambah dari kredit - hanya yang status Disetujui
         $totalKerjaTambahDebet = 0;
@@ -1093,9 +1217,31 @@
                 }
             }
         }
-        $grandTotal += $totalKerjaTambahDebet;
-    @endphp
-    @php
+
+        // SECTION 1: TOTAL MATERIAL PENDUKUNG - PENGELUARAN MATERIAL PENDUKUNG - PENGELUARAN MATERIAL TAMBAHAN
+        $totalMaterialPendukung = $totalSectionMaterialPendukung ?? 0;
+        $pengeluaranMaterialPendukung = $totalPendukung ?? 0;
+        $pengeluaranMaterialTambahan = $totalTambahan ?? 0;
+        $sisaAnggaranSection1 = $totalMaterialPendukung - $pengeluaranMaterialPendukung - $pengeluaranMaterialTambahan;
+
+        // SECTION 2: TOTAL PENGELUARAN PEMASANGAN - HARGA TUKANG - PENGELUARAN ENTERTAIMENT
+        $totalPengeluaranPemasangan = $totalPemasangan ?? 0;
+        // Harga Tukang - hanya yang status Disetujui
+        $hargaTukang = 0;
+        if ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang) {
+            foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
+                // Hanya hitung yang statusnya Disetujui
+                if (($item['status'] ?? '') === 'Disetujui') {
+                    $hargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                }
+            }
+        }
+        $pengeluaranEntertainment = $totalEntertaiment ?? 0;
+        $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment;
+
+        // Total Sisa Anggaran
+        $totalSisaAnggaran = $sisaAnggaranSection1 + $sisaAnggaranSection2;
+
         // Nilai Kontrak (Material + Pemasangan)
         $materialUtama = $totalUtama ?? 0;
         $materialPemasangan = $totalPendukung ?? 0;
@@ -1115,11 +1261,11 @@
 
         // Nilai Kontrak (Pemasangan Saja) - FIX sesuai permintaan user
         $nilaiKontrakPemasanganFix = $rancanganAnggaranBiaya->pemasangan->grand_total ?? 0;
-        $totalPengeluaranPemasangan =
+        $totalPengeluaranPemasanganFix =
             $materialPemasangan + $materialTambahan + $biayaEntertaint + $biayaTukang + $kerjaTambah;
-        $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasangan;
+        $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasanganFix;
     @endphp
-    <div class="section-title grand-total">GRAND TOTAL : Rp {{ number_format($grandTotal, 0, ',', '.') }}</div>
+    <div class="section-title grand-total">SISA ANGGARAN : Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}</div>
 
     {{-- REKAPITULASI KONTRAK (MATERIAL + PEMASANGAN & PEMASANGAN SAJA) --}}
     <div style="page-break-before: always;"></div>
@@ -1183,109 +1329,83 @@
     <div style="margin-top: 30px; margin-bottom: 10px;">
         <div
             style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">
-            NILAI KONTRAK (MATERIAL + PEMASANGAN)</div>
+            SISA ANGGARAN</div>
         <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
             <tr>
-                <td class="no-border" style="width:60%;">NILAI KONTRAK</td>
+                <td class="no-border" style="width:60%; font-weight: bold; background-color: #e3e9f7; padding: 6px;">RINCIAN MATERIAL</td>
+                <td style="width:2%" class="no-border"></td>
+                <td class="no-border"></td>
+            </tr>
+            <tr>
+                <td class="no-border" style="padding: 6px;"></td>
+            </tr>
+            <tr>
+                <td class="no-border" style="width:60%;">Total Material Pendukung</td>
                 <td style="width:2%" class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($totalNilaiKontrak, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border" style="padding: 12px;"></td>
-            </tr>
-            <tr>
-                <td class="no-border">MATERIAL UTAMA</td>
+                <td class="no-border">Pengeluaran Material Pendukung</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($materialUtama, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialPendukung, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">MATERIAL PEMASANGAN</td>
+                <td class="no-border">Pengeluaran Material Tambahan</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialTambahan, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">MATERIAL TAMBAHAN</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($materialTambahan, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA NON MATERIAL</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA TUKANG</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">KERJA TAMBAH</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border" style="padding: 12px;"></td>
-                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 6px;"></td>
             </tr>
             <tr style="font-weight:bold;">
-                <td colspan="2" class="no-border">SISA</td>
-                <td class="text-right no-border">Rp {{ number_format($sisa, 0, ',', '.') }}</td>
+                <td colspan="2" class="no-border">Sisa Anggaran Material</td>
+                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection1, 0, ',', '.') }}</td>
             </tr>
-        </table>
-    </div>
-    <div style="margin-top: 30px; margin-bottom: 10px;">
-        <div
-            style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 6px 6px; font-weight: bold; font-size: 12px; letter-spacing: 1px; background-color: #567CBA; color:white;">
-            NILAI KONTRAK (PEMASANGAN)</div>
-        <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
                 <td class="no-border" style="padding: 12px;"></td>
             </tr>
             <tr>
-                <td class="no-border" style="width:60%">NILAI KONTRAK</td>
+                <td class="no-border" style="width:60%; font-weight: bold; background-color: #e3e9f7; padding: 6px;">RINCIAN PEMASANGAN</td>
+                <td style="width:2%" class="no-border"></td>
+                <td class="no-border"></td>
+            </tr>
+            <tr>
+                <td class="no-border" style="padding: 6px;"></td>
+            </tr>
+            <tr>
+                <td class="no-border" style="width:60%;">Total Pengeluaran Pemasangan</td>
                 <td style="width:2%" class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($nilaiKontrakPemasanganFix, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($totalPengeluaranPemasangan, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border" style="padding: 12px;"></td>
-            </tr>
-            <tr>
-                <td class="no-border">MATERIAL PEMASANGAN</td>
+                <td class="no-border">Harga Tukang</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($materialPemasangan, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($hargaTukang, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">MATERIAL TAMBAHAN</td>
+                <td class="no-border">Pengeluaran Non Material</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($materialTambahan, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranEntertainment, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="no-border">BIAYA NON MATERIAL</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaEntertaint, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">BIAYA TUKANG</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($biayaTukang, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border">KERJA TAMBAH</td>
-                <td class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($kerjaTambah, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td class="no-border" style="padding: 12px;"></td>
-                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 6px;"></td>
             </tr>
             <tr style="font-weight:bold;">
-                <td colspan="2" class="no-border">SISA</td>
-                <td class="text-right no-border">Rp {{ number_format($sisaPemasanganFix, 0, ',', '.') }}</td>
+                <td colspan="2" class="no-border">Sisa Anggaran Pemasangan</td>
+                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection2, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border" style="padding: 12px;"></td>
+                <td class="no-border" style="padding: 12px;"></td>
+            </tr>
+            <tr style="font-weight:bold; background-color: #f2f2f2;">
+                <td colspan="2" class="no-border">TOTAL SISA ANGGARAN</td>
+                <td class="text-right no-border">Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>

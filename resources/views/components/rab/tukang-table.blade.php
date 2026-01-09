@@ -259,7 +259,8 @@
                             }
                         });
 
-                        if (sections.length === 1 || hasApprovedTermins) {
+                        // Hanya sembunyikan jika ada termin yang disetujui, tetap bisa hapus walaupun hanya 1 section
+                        if (hasApprovedTermins) {
                             removeBtn.style.display = 'none';
                         } else {
                             removeBtn.style.display = '';
@@ -377,13 +378,11 @@
                 sectionList.addEventListener('click', function(e) {
                     // Remove section
                     if (e.target.classList.contains('remove-section')) {
-                        if (sectionList.querySelectorAll('.tukang-section').length > 1) {
                             if (confirm('Yakin mau hapus section tukang ini?')) {
                                 e.target.closest('.tukang-section').remove();
                                 renderSectionNames();
                                 toggleRemoveSectionButtons();
                                 updateGrandTotal();
-                            }
                         }
                     }
                     // Add termin

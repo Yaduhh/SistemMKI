@@ -236,7 +236,8 @@
                             }
                         });
 
-                        if (sections.length === 1 || hasApprovedTermins) {
+                        // Hanya sembunyikan jika ada termin yang disetujui, tetap bisa hapus walaupun hanya 1 section
+                        if (hasApprovedTermins) {
                             removeBtn.style.display = 'none';
                         } else {
                             removeBtn.style.display = '';
@@ -327,13 +328,11 @@
                 sectionList.addEventListener('click', function(e) {
                     // Remove section
                     if (e.target.classList.contains('remove-kerja-tambah-section')) {
-                        if (sectionList.querySelectorAll('.kerja-tambah-section').length > 1) {
                             if (confirm('Yakin mau hapus section kerja tambah ini?')) {
                                 e.target.closest('.kerja-tambah-section').remove();
                                 renderSectionNames();
                                 toggleRemoveSectionButtons();
                                 updateGrandTotal();
-                            }
                         }
                     }
                     // Add termin
@@ -375,9 +374,9 @@
                     // Update grand total setelah semua section ditambahkan
                     setTimeout(updateGrandTotal, 1000);
                     setTimeout(toggleRemoveSectionButtons, 1000); // Update section remove buttons
-                } else if (sectionList.querySelectorAll('.kerja-tambah-section').length === 0) {
-                    addSection();
                 }
+                // Tidak menambahkan section secara otomatis jika tidak ada data
+                // User harus klik tombol "Tambah Section Kerja Tambah" untuk menambahkan section
                 toggleRemoveSectionButtons();
 
                 // Setup format Rupiah untuk input yang sudah ada

@@ -214,8 +214,10 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
+            'json_section_material_pendukung' => 'nullable',
             'json_pengeluaran_material_tambahan' => 'nullable|array',
             'json_pengeluaran_pemasangan' => 'nullable',
+            'json_pengajuan_harga_tukang' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -392,6 +394,20 @@ class RancanganAnggaranBiayaController extends Controller
             $pemasanganData = json_decode($pemasanganData, true) ?? [];
         }
         $validated['json_pengeluaran_pemasangan'] = $pemasanganData;
+        
+        // Handle json_pengajuan_harga_tukang - convert string to array if needed
+        $hargaTukangData = $request->json_pengajuan_harga_tukang ?? [];
+        if (is_string($hargaTukangData)) {
+            $hargaTukangData = json_decode($hargaTukangData, true) ?? [];
+        }
+        $validated['json_pengajuan_harga_tukang'] = $hargaTukangData;
+        
+        // Handle json_section_material_pendukung - convert string to array if needed
+        $sectionMaterialPendukungData = $request->json_section_material_pendukung ?? [];
+        if (is_string($sectionMaterialPendukungData)) {
+            $sectionMaterialPendukungData = json_decode($sectionMaterialPendukungData, true) ?? [];
+        }
+        $validated['json_section_material_pendukung'] = $sectionMaterialPendukungData;
         
         // Debug: Log pemasangan data
         \Log::info('RAB Store Debug - Pemasangan Data', [
@@ -540,8 +556,10 @@ class RancanganAnggaranBiayaController extends Controller
             'material_utama.*.total' => 'nullable|numeric',
             'json_pengeluaran_material_utama' => 'nullable', // allow any type
             'json_pengeluaran_material_pendukung' => 'nullable|array',
+            'json_section_material_pendukung' => 'nullable',
             'json_pengeluaran_material_tambahan' => 'nullable|array',
             'json_pengeluaran_pemasangan' => 'nullable',
+            'json_pengajuan_harga_tukang' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -719,6 +737,20 @@ class RancanganAnggaranBiayaController extends Controller
         }
         $validated['json_pengeluaran_pemasangan'] = $pemasanganData;
         
+        // Handle json_pengajuan_harga_tukang - convert string to array if needed
+        $hargaTukangData = $request->json_pengajuan_harga_tukang ?? [];
+        if (is_string($hargaTukangData)) {
+            $hargaTukangData = json_decode($hargaTukangData, true) ?? [];
+        }
+        $validated['json_pengajuan_harga_tukang'] = $hargaTukangData;
+        
+        // Handle json_section_material_pendukung - convert string to array if needed
+        $sectionMaterialPendukungData = $request->json_section_material_pendukung ?? [];
+        if (is_string($sectionMaterialPendukungData)) {
+            $sectionMaterialPendukungData = json_decode($sectionMaterialPendukungData, true) ?? [];
+        }
+        $validated['json_section_material_pendukung'] = $sectionMaterialPendukungData;
+        
         // Debug: Log pemasangan data
         \Log::info('RAB Store Debug - Pemasangan Data', [
             'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
@@ -751,12 +783,11 @@ class RancanganAnggaranBiayaController extends Controller
             $message = 'RAB berhasil diperbarui.';
             if (!empty($pemasanganData)) {
                 $message .= ' Data pemasangan tersimpan: ' . count($pemasanganData) . ' item.';
-            } else {
-                $message .= ' WARNING: Data pemasangan kosong!';
             }
             
             \Log::info('RAB Update - Success:', ['message' => $message]);
-            return redirect()->route('admin.rancangan-anggaran-biaya.index')->with('success', $message);
+            return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+                ->with('success', 'RAB berhasil diperbarui.');
         } catch (\Exception $e) {
             \Log::error('RAB Update Error: ' . $e->getMessage());
             \Log::error('RAB Update Error Stack: ' . $e->getTraceAsString());
@@ -978,6 +1009,416 @@ class RancanganAnggaranBiayaController extends Controller
         $convertedKerjaTambahData = $this->convertKerjaTambahDataToNumeric($kerjaTambahData);
         
         // Update RAB
+        $rancanganAnggaranBiaya->update([
+            'json_kerja_tambah' => $convertedKerjaTambahData
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran kerja tambah berhasil diperbarui.');
+    }
+
+    // ==================== METHODS UNTUK EDIT SECTION TERPISAH ====================
+
+    /**
+     * Edit Pengeluaran Pemasangan
+     */
+    public function editPemasangan(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-pemasangan', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Pengeluaran Pemasangan
+     */
+    public function updatePemasangan(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        try {
+            \Log::info('Update Pemasangan - Request data:', [
+                'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
+                'type' => gettype($request->json_pengeluaran_pemasangan),
+            ]);
+
+            $request->validate([
+                'json_pengeluaran_pemasangan' => 'nullable'
+            ]);
+
+            // Handle both JSON string and array format
+            $pemasanganData = $request->json_pengeluaran_pemasangan;
+            
+            // If it's a JSON string, decode it
+            if (is_string($pemasanganData)) {
+                $pemasanganData = json_decode($pemasanganData, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('JSON decode error: ' . json_last_error_msg());
+                    $pemasanganData = [];
+                }
+            }
+            
+            // If still not an array, set to empty array
+            if (!is_array($pemasanganData)) {
+                $pemasanganData = [];
+            }
+            
+            // Clean numeric values
+            foreach ($pemasanganData as &$item) {
+                if (isset($item['harga_satuan'])) {
+                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                }
+                if (isset($item['total_harga'])) {
+                    $item['total_harga'] = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
+                }
+            }
+
+            \Log::info('Update Pemasangan - Processed data:', [
+                'count' => count($pemasanganData),
+                'data' => $pemasanganData
+            ]);
+
+            $rancanganAnggaranBiaya->update([
+                'json_pengeluaran_pemasangan' => $pemasanganData
+            ]);
+
+            \Log::info('Update Pemasangan - Success');
+
+            return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+                ->with('success', 'Pengeluaran pemasangan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Log::error('Error updating pemasangan: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui pengeluaran pemasangan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Edit Harga Tukang
+     */
+    public function editHargaTukang(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-harga-tukang', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Harga Tukang
+     */
+    public function updateHargaTukang(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        try {
+            \Log::info('Update Harga Tukang - Request data:', [
+                'json_pengajuan_harga_tukang' => $request->json_pengajuan_harga_tukang,
+                'type' => gettype($request->json_pengajuan_harga_tukang),
+            ]);
+
+            $request->validate([
+                'json_pengajuan_harga_tukang' => 'nullable'
+            ]);
+
+            // Handle both JSON string and array format
+            $hargaTukangData = $request->json_pengajuan_harga_tukang;
+            
+            // If it's a JSON string, decode it
+            if (is_string($hargaTukangData)) {
+                $hargaTukangData = json_decode($hargaTukangData, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('JSON decode error: ' . json_last_error_msg());
+                    $hargaTukangData = [];
+                }
+            }
+            
+            // If still not an array, set to empty array
+            if (!is_array($hargaTukangData)) {
+                $hargaTukangData = [];
+            }
+            
+            // Clean numeric values
+            foreach ($hargaTukangData as &$item) {
+                if (isset($item['harga_satuan'])) {
+                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                }
+                if (isset($item['total_harga'])) {
+                    $item['total_harga'] = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
+                }
+            }
+
+            \Log::info('Update Harga Tukang - Processed data:', [
+                'count' => count($hargaTukangData),
+                'data' => $hargaTukangData
+            ]);
+
+            $rancanganAnggaranBiaya->update([
+                'json_pengajuan_harga_tukang' => $hargaTukangData
+            ]);
+
+            \Log::info('Update Harga Tukang - Success');
+
+            return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+                ->with('success', 'Harga tukang berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Log::error('Error updating harga tukang: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui harga tukang: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Edit Section Material Pendukung
+     */
+    public function editSectionMaterialPendukung(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-section-material-pendukung', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Section Material Pendukung
+     */
+    public function updateSectionMaterialPendukung(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        try {
+            \Log::info('Update Section Material Pendukung - Request data:', [
+                'json_section_material_pendukung' => $request->json_section_material_pendukung,
+                'type' => gettype($request->json_section_material_pendukung),
+            ]);
+
+            $request->validate([
+                'json_section_material_pendukung' => 'nullable'
+            ]);
+
+            // Handle both JSON string and array format
+            $sectionMaterialData = $request->json_section_material_pendukung;
+            
+            // If it's a JSON string, decode it
+            if (is_string($sectionMaterialData)) {
+                $sectionMaterialData = json_decode($sectionMaterialData, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('JSON decode error: ' . json_last_error_msg());
+                    $sectionMaterialData = [];
+                }
+            }
+            
+            // If still not an array, set to empty array
+            if (!is_array($sectionMaterialData)) {
+                $sectionMaterialData = [];
+            }
+            
+            // Clean numeric values and calculate total
+            foreach ($sectionMaterialData as &$item) {
+                if (isset($item['harga_satuan'])) {
+                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                }
+                if (isset($item['qty'])) {
+                    $item['qty'] = (float) ($item['qty'] ?? 0);
+                }
+                // Calculate total (bulat, tanpa desimal)
+                $item['total'] = round(($item['qty'] ?? 0) * ($item['harga_satuan'] ?? 0));
+            }
+
+            \Log::info('Update Section Material Pendukung - Processed data:', [
+                'count' => count($sectionMaterialData),
+                'data' => $sectionMaterialData
+            ]);
+
+            $rancanganAnggaranBiaya->update([
+                'json_section_material_pendukung' => $sectionMaterialData
+            ]);
+
+            \Log::info('Update Section Material Pendukung - Success');
+
+            return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+                ->with('success', 'Section Material Pendukung berhasil diperbarui.');
+        } catch (\Exception $e) {
+            \Log::error('Error updating section material pendukung: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui section material pendukung: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Edit Material Pendukung
+     */
+    public function editMaterialPendukung(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-material-pendukung', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Material Pendukung
+     */
+    public function updateMaterialPendukung(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_material_pendukung' => 'nullable|array'
+        ]);
+
+        $materialPendukungData = $request->json_pengeluaran_material_pendukung ?? [];
+        
+        // Clean numeric values
+        foreach ($materialPendukungData as &$mrGroup) {
+            if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                foreach ($mrGroup['materials'] as &$material) {
+                    if (isset($material['harga_satuan'])) {
+                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                    }
+                    if (isset($material['sub_total'])) {
+                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                    }
+                }
+            }
+        }
+
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_material_pendukung' => $materialPendukungData
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran material pendukung berhasil diperbarui.');
+    }
+
+    /**
+     * Edit Material Tambahan
+     */
+    public function editMaterialTambahan(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-material-tambahan', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Material Tambahan
+     */
+    public function updateMaterialTambahan(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_material_tambahan' => 'nullable|array'
+        ]);
+
+        $materialTambahanData = $request->json_pengeluaran_material_tambahan ?? [];
+        
+        // Clean numeric values
+        foreach ($materialTambahanData as &$mrGroup) {
+            if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                foreach ($mrGroup['materials'] as &$material) {
+                    if (isset($material['harga_satuan'])) {
+                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                    }
+                    if (isset($material['sub_total'])) {
+                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                    }
+                }
+            }
+        }
+
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_material_tambahan' => $materialTambahanData
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran material tambahan berhasil diperbarui.');
+    }
+
+    /**
+     * Edit Entertainment
+     */
+    public function editEntertainment(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-entertainment', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Entertainment
+     */
+    public function updateEntertainment(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_entertaiment' => 'nullable|array'
+        ]);
+
+        $entertainmentData = $request->json_pengeluaran_entertaiment ?? [];
+        
+        // Clean numeric values
+        foreach ($entertainmentData as &$mrGroup) {
+            if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
+                foreach ($mrGroup['materials'] as &$material) {
+                    if (isset($material['harga_satuan'])) {
+                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                    }
+                    if (isset($material['sub_total'])) {
+                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                    }
+                }
+            }
+        }
+
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_entertaiment' => $entertainmentData
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran non material berhasil diperbarui.');
+    }
+
+    /**
+     * Edit Tukang
+     */
+    public function editTukang(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-tukang', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Tukang
+     */
+    public function updateTukang(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_pengeluaran_tukang' => 'nullable|array'
+        ]);
+
+        $tukangData = $request->json_pengeluaran_tukang ?? [];
+        $convertedTukangData = $this->convertTukangDataToNumeric($tukangData);
+
+        $rancanganAnggaranBiaya->update([
+            'json_pengeluaran_tukang' => $convertedTukangData
+        ]);
+
+        return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
+            ->with('success', 'Pengeluaran tukang berhasil diperbarui.');
+    }
+
+    /**
+     * Edit Kerja Tambah
+     */
+    public function editKerjaTambah(RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $rancanganAnggaranBiaya->load(['penawaran', 'pemasangan']);
+        return view('admin.rancangan_anggaran_biaya.edit-kerja-tambah', compact('rancanganAnggaranBiaya'));
+    }
+
+    /**
+     * Update Kerja Tambah
+     */
+    public function updateKerjaTambah(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
+    {
+        $request->validate([
+            'json_kerja_tambah' => 'nullable|array'
+        ]);
+
+        $kerjaTambahData = $request->json_kerja_tambah ?? [];
+        $convertedKerjaTambahData = $this->convertKerjaTambahDataToNumeric($kerjaTambahData);
+
         $rancanganAnggaranBiaya->update([
             'json_kerja_tambah' => $convertedKerjaTambahData
         ]);

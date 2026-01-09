@@ -18,11 +18,13 @@ class RancanganAnggaranBiaya extends Model
         'lokasi',
         'json_pengeluaran_material_utama',
         'json_pengeluaran_material_pendukung',
+        'json_section_material_pendukung',
         'json_pengeluaran_entertaiment',
         'json_pengeluaran_tukang',
         'json_kerja_tambah',
         'json_pengeluaran_material_tambahan',
         'json_pengeluaran_pemasangan',
+        'json_pengajuan_harga_tukang',
         'status_deleted',
         'status',
         'created_by',
@@ -35,11 +37,13 @@ class RancanganAnggaranBiaya extends Model
     protected $casts = [
         'json_pengeluaran_material_utama' => 'array',
         'json_pengeluaran_material_pendukung' => 'array',
+        'json_section_material_pendukung' => 'array',
         'json_pengeluaran_entertaiment' => 'array',
         'json_pengeluaran_tukang' => 'array',
         'json_kerja_tambah' => 'array',
         'json_pengeluaran_material_tambahan' => 'array',
         'json_pengeluaran_pemasangan' => 'array',
+        'json_pengajuan_harga_tukang' => 'array',
         'status_deleted' => 'boolean',
         'penawaran_pintu' => 'boolean',
     ];
@@ -53,6 +57,11 @@ class RancanganAnggaranBiaya extends Model
     public function setJsonPengeluaranMaterialPendukungAttribute($value)
     {
         $this->attributes['json_pengeluaran_material_pendukung'] = json_encode($value ?? []);
+    }
+
+    public function setJsonSectionMaterialPendukungAttribute($value)
+    {
+        $this->attributes['json_section_material_pendukung'] = json_encode($value ?? []);
     }
 
     public function setJsonPengeluaranEntertaimentAttribute($value)
@@ -80,6 +89,11 @@ class RancanganAnggaranBiaya extends Model
     public function setJsonPengeluaranPemasanganAttribute($value)
     {
         $this->attributes['json_pengeluaran_pemasangan'] = json_encode($value ?? []);
+    }
+
+    public function setJsonPengajuanHargaTukangAttribute($value)
+    {
+        $this->attributes['json_pengajuan_harga_tukang'] = json_encode($value ?? []);
     }
 
     // Relationships

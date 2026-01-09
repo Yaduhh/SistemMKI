@@ -44,7 +44,7 @@
         </div>
     </template>
     <template id="material-row-template-tambahan">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-6  bg-white dark:bg-zinc-700/30 relative material-row pt-12">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end p-6  bg-white dark:bg-zinc-700/30 relative material-row pt-12">
             <div>
                 <label class="block text-xs font-medium mb-1">Supplier</label>
                 <input type="text" data-material-field="supplier" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][supplier]" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
@@ -77,8 +77,14 @@
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
-            <!-- Hidden status field to preserve approval status -->
-            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
+            <div>
+                <label class="block text-xs font-medium mb-1">Status</label>
+                <select data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                    <option value="Pengajuan">Pengajuan</option>
+                    <option value="Disetujui" selected>Disetujui</option>
+                    <option value="Ditolak">Ditolak</option>
+                </select>
+            </div>
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -97,7 +103,7 @@
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
             <!-- Hidden status field to preserve approval status -->
-            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Disetujui" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -116,7 +122,7 @@
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
             <!-- Hidden status field to preserve approval status -->
-            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Disetujui" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -131,7 +137,7 @@
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input ongkir-subtotal-input" />
             </div>
             <!-- Hidden status field to preserve approval status -->
-            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Pengajuan" />
+            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Disetujui" />
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
@@ -252,7 +258,20 @@
                 // For regular material rows, fill normally
                 for (const key in data) {
                     const input = row.querySelector(`[data-material-field="${key}"]`);
-                    if (input) input.value = data[key];
+                    if (input) {
+                        if (key === 'status' && !data[key]) {
+                            // Default status untuk material tambahan adalah Disetujui
+                            input.value = 'Disetujui';
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
+                }
+                
+                // Pastikan status selalu Disetujui jika tidak ada di data
+                const statusInput = row.querySelector('[data-material-field="status"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Disetujui';
                 }
                 
                 // Update total setelah data dimuat
@@ -328,8 +347,21 @@
                 if (data) {
                     for (const key in data) {
                         const input = row.querySelector(`[data-material-field="${key}"]`);
-                        if (input) input.value = data[key];
+                        if (input) {
+                            if (key === 'status' && !data[key]) {
+                                // Default status untuk material tambahan adalah Disetujui
+                                input.value = 'Disetujui';
+                            } else {
+                                input.value = data[key];
                     }
+                        }
+                    }
+                }
+                
+                // Pastikan status selalu Disetujui jika tidak ada di data
+                const statusInput = row.querySelector('[data-material-field="status"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Disetujui';
                 }
                 
                 renderAllNames();
@@ -355,8 +387,21 @@
                 if (data) {
                     for (const key in data) {
                         const input = row.querySelector(`[data-material-field="${key}"]`);
-                        if (input) input.value = data[key];
+                        if (input) {
+                            if (key === 'status' && !data[key]) {
+                                // Default status untuk material tambahan adalah Disetujui
+                                input.value = 'Disetujui';
+                            } else {
+                                input.value = data[key];
                     }
+                        }
+                    }
+                }
+                
+                // Pastikan status selalu Disetujui jika tidak ada di data
+                const statusInput = row.querySelector('[data-material-field="status"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Disetujui';
                 }
                 
                 renderAllNames();
@@ -382,8 +427,21 @@
                 if (data) {
                     for (const key in data) {
                         const input = row.querySelector(`[data-material-field="${key}"]`);
-                        if (input) input.value = data[key];
+                        if (input) {
+                            if (key === 'status' && !data[key]) {
+                                // Default status untuk material tambahan adalah Disetujui
+                                input.value = 'Disetujui';
+                            } else {
+                                input.value = data[key];
                     }
+                        }
+                    }
+                }
+                
+                // Pastikan status selalu Disetujui jika tidak ada di data
+                const statusInput = row.querySelector('[data-material-field="status"]');
+                if (statusInput && !statusInput.value) {
+                    statusInput.value = 'Disetujui';
                 }
                 
                 renderAllNames();
@@ -709,10 +767,10 @@
 
             mrList.addEventListener('click', function (e) {
                 // Hapus MR group
-                if (e.target.classList.contains('remove-mr')) {
-                    const mrGroups = mrList.querySelectorAll('.mr-group');
-                    if (mrGroups.length > 1) {
-                        e.target.closest('.mr-group').remove();
+                if (e.target.classList.contains('remove-mr') || e.target.closest('.remove-mr')) {
+                    const removeBtn = e.target.classList.contains('remove-mr') ? e.target : e.target.closest('.remove-mr');
+                    if (confirm('Yakin mau hapus MR ini?')) {
+                        removeBtn.closest('.mr-group').remove();
                         renderAllNames(); // Ini akan memanggil renumberMR() otomatis
                     }
                 }

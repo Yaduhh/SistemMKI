@@ -63,12 +63,12 @@
 
             <!-- Section Data Penawaran -->
             <div class="w-full">
-                @php
-                    $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
-                    $currentRevision = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? (int)$matches[1] : 0;
-                    $nextRevision = $currentRevision + 1;
+                        @php
+                            $nomorAsli = preg_replace('/\s+R\d+$/', '', $penawaran->nomor_penawaran);
+                            $currentRevision = preg_match('/R(\d+)$/', $penawaran->nomor_penawaran, $matches) ? (int)$matches[1] : 0;
+                            $nextRevision = $currentRevision + 1;
                     $suggestedNomor = $nomorAsli . ' R' . $nextRevision;
-                @endphp
+                        @endphp
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Penawaran Pintu</h2>
                 <div
                     class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">

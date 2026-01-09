@@ -86,8 +86,31 @@
                         @method('PATCH')
 
                         <!-- Flash Messages -->
-                        <x-flash-message type="success" :message="session('success')" />
-                        <x-flash-message type="error" :message="session('error')" />
+                        @if(session('success'))
+                            <div class="bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded relative mb-4">
+                                <strong class="font-bold">Berhasil!</strong>
+                                <p class="mt-1">{{ session('success') }}</p>
+                            </div>
+                        @endif
+                        
+                        @if(session('error'))
+                            <div class="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-4">
+                                <strong class="font-bold">Error!</strong>
+                                <p class="mt-1">{{ session('error') }}</p>
+                            </div>
+                        @endif
+                        
+                        <!-- Validation Errors -->
+                        @if ($errors->any())
+                            <div class="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative mb-4">
+                                <strong class="font-bold">Terjadi kesalahan validasi:</strong>
+                                <ul class="list-disc list-inside mt-2">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         <!-- Material Tambahan Container -->
                         <div id="material-tambahan-container" class="space-y-6">
@@ -95,10 +118,10 @@
                                     is_array($rab->json_pengeluaran_material_tambahan) &&
                                     count($rab->json_pengeluaran_material_tambahan) > 0)
                                 @foreach ($rab->json_pengeluaran_material_tambahan as $mrIndex => $mr)
-                                    <div class="material-tambahan-mr bg-white dark:bg-zinc-900/50 overflow-hidden"
+                                    <div class="material-tambahan-mr w-full overflow-hidden"
                                         data-mr-index="{{ $mrIndex }}">
                                         <!-- Header MR -->
-                                        <div class="bg-zinc-200 dark:bg-zinc-900/50 px-4 py-3">
+                                        <div class="w-full">
                                             <div
                                                 class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                                 <div class="flex items-center space-x-4">
@@ -205,69 +228,137 @@
                                                         class="material-tambahan-tbody bg-white dark:bg-zinc-900/50 divide-y divide-gray-200 dark:divide-zinc-600">
                                                         @if (isset($mr['materials']) && is_array($mr['materials']))
                                                             @foreach ($mr['materials'] as $matIndex => $material)
+                                                                @php
+                                                                    $currentStatus = old(
+                                                                        'json_pengeluaran_material_tambahan.' .
+                                                                            $mrIndex .
+                                                                            '.materials.' .
+                                                                            $matIndex .
+                                                                            '.status',
+                                                                        $material['status'] ?? 'Pengajuan',
+                                                                    );
+                                                                    $isLocked = in_array($currentStatus, [
+                                                                        'Disetujui',
+                                                                        'Ditolak',
+                                                                    ]);
+                                                                @endphp
                                                                 <tr
                                                                     class="material-tambahan-row hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-200">
                                                                     <td class="px-3 py-2">
                                                                         <input type="text"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][supplier]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.supplier', $material['supplier'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white"
-                                                                            placeholder="Supplier">
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
+                                                                            placeholder="Supplier"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </td>
                                                                     <td class="px-3 py-2">
                                                                         <input type="text"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][item]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.item', $material['item'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white"
-                                                                            placeholder="Item">
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
+                                                                            placeholder="Item"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </td>
                                                                     <td class="px-3 py-2">
                                                                         <input type="number" step="0.01"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][qty]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.qty', $material['qty'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-qty"
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-qty {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
                                                                             placeholder="0"
                                                                             data-mr-index="{{ $mrIndex }}"
-                                                                            data-mat-index="{{ $matIndex }}">
+                                                                            data-mat-index="{{ $matIndex }}"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </td>
                                                                     <td class="px-3 py-2">
                                                                         <input type="text"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][satuan]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.satuan', $material['satuan'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white"
-                                                                            placeholder="Satuan">
-                                                                    </td>
-                                                                    <td class="px-3 py-2">
-                                                                        <input type="number" step="0.01"
-                                                                            name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan]"
-                                                                            value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.harga_satuan', $material['harga_satuan'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-harga-satuan"
-                                                                            placeholder="0"
-                                                                            data-mr-index="{{ $mrIndex }}"
-                                                                            data-mat-index="{{ $matIndex }}">
-                                                                    </td>
-                                                                    <td class="px-3 py-2">
-                                                                        <input type="text"
-                                                                            name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][sub_total]"
-                                                                            value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.sub_total', $material['sub_total'] ?? '') }}"
-                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-sub-total"
-                                                                            placeholder="0" readonly>
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
+                                                                            placeholder="Satuan"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </td>
                                                                     <td class="px-3 py-2">
                                                                         @php
-                                                                            $currentStatus = old(
-                                                                                'json_pengeluaran_material_tambahan.' .
-                                                                                    $mrIndex .
-                                                                                    '.materials.' .
-                                                                                    $matIndex .
-                                                                                    '.status',
-                                                                                $material['status'] ?? 'Pengajuan',
-                                                                            );
-                                                                            $isLocked = in_array($currentStatus, [
-                                                                                'Disetujui',
-                                                                                'Ditolak',
-                                                                            ]);
+                                                                            $hargaSatuan = old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.harga_satuan', $material['harga_satuan'] ?? '');
+                                                                            // Parse nilai jika berupa string dengan format currency Indonesia
+                                                                            if (is_string($hargaSatuan) && $hargaSatuan !== '') {
+                                                                                // Hapus "Rp" dan spasi
+                                                                                $hargaSatuan = preg_replace('/Rp\s*/i', '', $hargaSatuan);
+                                                                                // Hapus semua karakter non-digit kecuali titik
+                                                                                $hargaSatuan = preg_replace('/[^\d.]/', '', $hargaSatuan);
+                                                                                // Jika ada titik, cek apakah itu pemisah ribuan (format Indonesia)
+                                                                                // Format Indonesia: semua bagian setelah titik adalah 3 digit (misal: 1.800, 270.000, 2.000.000)
+                                                                                if (strpos($hargaSatuan, '.') !== false) {
+                                                                                    $parts = explode('.', $hargaSatuan);
+                                                                                    // Jika semua bagian setelah titik pertama adalah 3 digit, itu pemisah ribuan
+                                                                                    $isIndonesianFormat = true;
+                                                                                    for ($i = 1; $i < count($parts); $i++) {
+                                                                                        if (strlen($parts[$i]) !== 3) {
+                                                                                            $isIndonesianFormat = false;
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    if ($isIndonesianFormat && count($parts) > 1) {
+                                                                                        // Hapus semua titik (pemisah ribuan)
+                                                                                        $hargaSatuan = str_replace('.', '', $hargaSatuan);
+                                                                                    }
+                                                                                }
+                                                                                $hargaSatuan = $hargaSatuan ? floatval($hargaSatuan) : '';
+                                                                            } else {
+                                                                                $hargaSatuan = $hargaSatuan ? floatval($hargaSatuan) : '';
+                                                                            }
                                                                         @endphp
+                                                                        <input type="number" step="0.01"
+                                                                            name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan]"
+                                                                            value="{{ $hargaSatuan }}"
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-harga-satuan {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
+                                                                            placeholder="0"
+                                                                            data-mr-index="{{ $mrIndex }}"
+                                                                            data-mat-index="{{ $matIndex }}"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
+                                                                    </td>
+                                                                    <td class="px-3 py-2">
+                                                                        @php
+                                                                            $subTotal = old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.sub_total', $material['sub_total'] ?? '');
+                                                                            // Parse nilai jika berupa string dengan format currency Indonesia
+                                                                            if (is_string($subTotal) && $subTotal !== '') {
+                                                                                // Hapus "Rp" dan spasi
+                                                                                $subTotal = preg_replace('/Rp\s*/i', '', $subTotal);
+                                                                                // Hapus semua karakter non-digit kecuali titik
+                                                                                $subTotal = preg_replace('/[^\d.]/', '', $subTotal);
+                                                                                // Jika ada titik, cek apakah itu pemisah ribuan (format Indonesia)
+                                                                                // Format Indonesia: semua bagian setelah titik pertama adalah 3 digit
+                                                                                if (strpos($subTotal, '.') !== false) {
+                                                                                    $parts = explode('.', $subTotal);
+                                                                                    // Jika semua bagian setelah titik pertama adalah 3 digit, itu pemisah ribuan
+                                                                                    $isIndonesianFormat = true;
+                                                                                    for ($i = 1; $i < count($parts); $i++) {
+                                                                                        if (strlen($parts[$i]) !== 3) {
+                                                                                            $isIndonesianFormat = false;
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    if ($isIndonesianFormat && count($parts) > 1) {
+                                                                                        // Hapus semua titik (pemisah ribuan)
+                                                                                        $subTotal = str_replace('.', '', $subTotal);
+                                                                                    }
+                                                                                }
+                                                                                $subTotalNum = $subTotal ? floatval($subTotal) : 0;
+                                                                                // Format dengan rupiah Indonesia
+                                                                                $subTotal = $subTotalNum > 0 ? 'Rp ' . number_format($subTotalNum, 0, ',', '.') : '';
+                                                                            } else {
+                                                                                $subTotalNum = $subTotal ? floatval($subTotal) : 0;
+                                                                                $subTotal = $subTotalNum > 0 ? 'Rp ' . number_format($subTotalNum, 0, ',', '.') : '';
+                                                                            }
+                                                                        @endphp
+                                                                        <input type="text"
+                                                                            name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][sub_total]"
+                                                                            value="{{ $subTotal }}"
+                                                                            class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white material-sub-total"
+                                                                            placeholder="Rp 0" readonly>
+                                                                    </td>
+                                                                    <td class="px-3 py-2">
                                                                         <select
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][status]"
                                                                             class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-800 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-700 cursor-not-allowed' : '' }}"
@@ -328,29 +419,33 @@
                                         </div>
 
                                         <!-- Materials Cards - Mobile -->
-                                        <div class="p-4 md:hidden">
+                                        <div class="py-4 md:hidden">
                                             <div class="space-y-4 material-tambahan-mobile">
                                                 @if (isset($mr['materials']) && is_array($mr['materials']))
                                                     @foreach ($mr['materials'] as $matIndex => $material)
+                                                        @php
+                                                            $currentStatus = old(
+                                                                'json_pengeluaran_material_tambahan.' .
+                                                                    $mrIndex .
+                                                                    '.materials.' .
+                                                                    $matIndex .
+                                                                    '.status',
+                                                                $material['status'] ?? 'Pengajuan',
+                                                            );
+                                                            $isLocked = in_array($currentStatus, [
+                                                                'Disetujui',
+                                                                'Ditolak',
+                                                            ]);
+                                                            $canDelete = !in_array($currentStatus, [
+                                                                'Disetujui',
+                                                                'Ditolak',
+                                                            ]);
+                                                        @endphp
                                                         <div
-                                                            class="material-tambahan-mobile-card bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-zinc-600">
+                                                            class="material-tambahan-mobile-card border border-gray-200 dark:border-zinc-600 rounded-xl p-2">
                                                             <div class="flex justify-between items-start mb-3">
                                                                 <h4 class="font-medium text-gray-900 dark:text-white">
                                                                     Material {{ $matIndex + 1 }}</h4>
-                                                                @php
-                                                                    $currentStatus = old(
-                                                                        'json_pengeluaran_material_tambahan.' .
-                                                                            $mrIndex .
-                                                                            '.materials.' .
-                                                                            $matIndex .
-                                                                            '.status',
-                                                                        $material['status'] ?? 'Pengajuan',
-                                                                    );
-                                                                    $canDelete = !in_array($currentStatus, [
-                                                                        'Disetujui',
-                                                                        'Ditolak',
-                                                                    ]);
-                                                                @endphp
                                                                 @if ($canDelete)
                                                                     <button type="button"
                                                                         class="remove-material-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium transition-colors duration-200">
@@ -373,8 +468,9 @@
                                                                     <input type="text"
                                                                         name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][supplier]"
                                                                         value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.supplier', $material['supplier'] ?? '') }}"
-                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white"
-                                                                        placeholder="Supplier">
+                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
+                                                                        placeholder="Supplier"
+                                                                        {{ $isLocked ? 'readonly' : '' }}>
                                                                 </div>
                                                                 <div>
                                                                     <label
@@ -382,8 +478,9 @@
                                                                     <input type="text"
                                                                         name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][item]"
                                                                         value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.item', $material['item'] ?? '') }}"
-                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white"
-                                                                        placeholder="Item">
+                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
+                                                                        placeholder="Item"
+                                                                        {{ $isLocked ? 'readonly' : '' }}>
                                                                 </div>
                                                                 <div class="grid grid-cols-2 gap-3">
                                                                     <div>
@@ -392,10 +489,11 @@
                                                                         <input type="number" step="0.01"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][qty]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.qty', $material['qty'] ?? '') }}"
-                                                                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white material-qty"
+                                                                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white material-qty {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
                                                                             placeholder="0"
                                                                             data-mr-index="{{ $mrIndex }}"
-                                                                            data-mat-index="{{ $matIndex }}">
+                                                                            data-mat-index="{{ $matIndex }}"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </div>
                                                                     <div>
                                                                         <label
@@ -403,31 +501,96 @@
                                                                         <input type="text"
                                                                             name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][satuan]"
                                                                             value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.satuan', $material['satuan'] ?? '') }}"
-                                                                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white"
-                                                                            placeholder="Satuan">
+                                                                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
+                                                                            placeholder="Satuan"
+                                                                            {{ $isLocked ? 'readonly' : '' }}>
                                                                     </div>
                                                                 </div>
                                                                 <div>
                                                                     <label
                                                                         class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Harga
                                                                         Satuan</label>
+                                                                    @php
+                                                                        $hargaSatuan = old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.harga_satuan', $material['harga_satuan'] ?? '');
+                                                                        // Parse nilai jika berupa string dengan format currency Indonesia
+                                                                        if (is_string($hargaSatuan) && $hargaSatuan !== '') {
+                                                                            // Hapus "Rp" dan spasi
+                                                                            $hargaSatuan = preg_replace('/Rp\s*/i', '', $hargaSatuan);
+                                                                            // Hapus semua karakter non-digit kecuali titik
+                                                                            $hargaSatuan = preg_replace('/[^\d.]/', '', $hargaSatuan);
+                                                                            // Jika ada titik, cek apakah itu pemisah ribuan (format Indonesia)
+                                                                            // Format Indonesia: semua bagian setelah titik pertama adalah 3 digit
+                                                                            if (strpos($hargaSatuan, '.') !== false) {
+                                                                                $parts = explode('.', $hargaSatuan);
+                                                                                // Jika semua bagian setelah titik pertama adalah 3 digit, itu pemisah ribuan
+                                                                                $isIndonesianFormat = true;
+                                                                                for ($i = 1; $i < count($parts); $i++) {
+                                                                                    if (strlen($parts[$i]) !== 3) {
+                                                                                        $isIndonesianFormat = false;
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                if ($isIndonesianFormat && count($parts) > 1) {
+                                                                                    // Hapus semua titik (pemisah ribuan)
+                                                                                    $hargaSatuan = str_replace('.', '', $hargaSatuan);
+                                                                                }
+                                                                            }
+                                                                            $hargaSatuan = $hargaSatuan ? floatval($hargaSatuan) : '';
+                                                                        } else {
+                                                                            $hargaSatuan = $hargaSatuan ? floatval($hargaSatuan) : '';
+                                                                        }
+                                                                    @endphp
                                                                     <input type="number" step="0.01"
                                                                         name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][harga_satuan]"
-                                                                        value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.harga_satuan', $material['harga_satuan'] ?? '') }}"
-                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white material-harga-satuan"
+                                                                        value="{{ $hargaSatuan }}"
+                                                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white material-harga-satuan {{ $isLocked ? 'bg-gray-100 dark:bg-zinc-600 cursor-not-allowed' : '' }}"
                                                                         placeholder="0"
                                                                         data-mr-index="{{ $mrIndex }}"
-                                                                        data-mat-index="{{ $matIndex }}">
+                                                                        data-mat-index="{{ $matIndex }}"
+                                                                        {{ $isLocked ? 'readonly' : '' }}>
                                                                 </div>
                                                                 <div>
                                                                     <label
                                                                         class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Sub
                                                                         Total</label>
+                                                                    @php
+                                                                        $subTotal = old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.sub_total', $material['sub_total'] ?? '');
+                                                                        // Parse nilai jika berupa string dengan format currency Indonesia
+                                                                        if (is_string($subTotal) && $subTotal !== '') {
+                                                                            // Hapus "Rp" dan spasi
+                                                                            $subTotal = preg_replace('/Rp\s*/i', '', $subTotal);
+                                                                            // Hapus semua karakter non-digit kecuali titik
+                                                                            $subTotal = preg_replace('/[^\d.]/', '', $subTotal);
+                                                                            // Jika ada titik, cek apakah itu pemisah ribuan (format Indonesia)
+                                                                            // Format Indonesia: semua bagian setelah titik pertama adalah 3 digit
+                                                                            if (strpos($subTotal, '.') !== false) {
+                                                                                $parts = explode('.', $subTotal);
+                                                                                // Jika semua bagian setelah titik pertama adalah 3 digit, itu pemisah ribuan
+                                                                                $isIndonesianFormat = true;
+                                                                                for ($i = 1; $i < count($parts); $i++) {
+                                                                                    if (strlen($parts[$i]) !== 3) {
+                                                                                        $isIndonesianFormat = false;
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                                if ($isIndonesianFormat && count($parts) > 1) {
+                                                                                    // Hapus semua titik (pemisah ribuan)
+                                                                                    $subTotal = str_replace('.', '', $subTotal);
+                                                                                }
+                                                                            }
+                                                                            $subTotalNum = $subTotal ? floatval($subTotal) : 0;
+                                                                            // Format dengan rupiah Indonesia
+                                                                            $subTotal = $subTotalNum > 0 ? 'Rp ' . number_format($subTotalNum, 0, ',', '.') : '';
+                                                                        } else {
+                                                                            $subTotalNum = $subTotal ? floatval($subTotal) : 0;
+                                                                            $subTotal = $subTotalNum > 0 ? 'Rp ' . number_format($subTotalNum, 0, ',', '.') : '';
+                                                                        }
+                                                                    @endphp
                                                                     <input type="text"
                                                                         name="json_pengeluaran_material_tambahan[{{ $mrIndex }}][materials][{{ $matIndex }}][sub_total]"
-                                                                        value="{{ old('json_pengeluaran_material_tambahan.' . $mrIndex . '.materials.' . $matIndex . '.sub_total', $material['sub_total'] ?? '') }}"
+                                                                        value="{{ $subTotal }}"
                                                                         class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-zinc-700 dark:text-white material-sub-total"
-                                                                        placeholder="0" readonly>
+                                                                        placeholder="Rp 0" readonly>
                                                                 </div>
                                                                 <div>
                                                                     <label
@@ -491,7 +654,7 @@
 
                         <!-- Submit Button -->
                         <div class="">
-                            <button type="submit"
+                            <button type="submit" id="submit-btn"
                                 class="w-full items-center px-6 py-3 bg-emerald-600 dark:bg-emerald-500 border border-transparent rounded-md font-semibold text-sm text-white dark:text-white uppercase tracking-widest hover:bg-emerald-700 dark:hover:bg-emerald-600 focus:outline-none focus:border-emerald-700 focus:ring focus:ring-emerald-200 active:bg-indigo-900 disabled:opacity-25 transition">
                                 Simpan Perubahan
                             </button>
@@ -517,22 +680,115 @@
                     @endforeach
                 @endif
 
+                // Helper function to parse Indonesian currency format
+                function parseIndonesianCurrency(value) {
+                    if (!value) return 0;
+                    let str = value.toString();
+                    // Hapus "Rp" dan spasi
+                    str = str.replace(/Rp\s*/gi, '');
+                    // Hapus semua karakter non-digit kecuali titik
+                    str = str.replace(/[^\d.]/g, '');
+                    // Jika ada titik, cek apakah itu pemisah ribuan (format Indonesia)
+                    // Format Indonesia: semua bagian setelah titik pertama adalah 3 digit (misal: 1.800, 270.000, 2.000.000)
+                    if (str.indexOf('.') !== -1) {
+                        const parts = str.split('.');
+                        // Jika semua bagian setelah titik pertama adalah 3 digit, itu pemisah ribuan
+                        let isIndonesianFormat = true;
+                        for (let i = 1; i < parts.length; i++) {
+                            if (parts[i].length !== 3) {
+                                isIndonesianFormat = false;
+                                break;
+                            }
+                        }
+                        if (isIndonesianFormat && parts.length > 1) {
+                            // Hapus semua titik (pemisah ribuan)
+                            str = str.replace(/\./g, '');
+                        }
+                    }
+                    return parseFloat(str) || 0;
+                }
+
+                // Helper function to format rupiah Indonesia
+                function formatRupiah(value) {
+                    if (!value || value === 0) return 'Rp 0';
+                    const num = typeof value === 'string' ? parseIndonesianCurrency(value) : value;
+                    return 'Rp ' + num.toLocaleString('id-ID');
+                }
+
                 // Calculate initial sub totals for existing materials
                 function calculateInitialSubTotals() {
                     // Desktop table rows
                     document.querySelectorAll('.material-tambahan-row').forEach(row => {
-                        const qty = parseFloat(row.querySelector('.material-qty').value) || 0;
-                        const hargaSatuan = parseFloat(row.querySelector('.material-harga-satuan').value) || 0;
-                        const subTotal = qty * hargaSatuan;
-                        row.querySelector('.material-sub-total').value = Math.round(subTotal);
+                        const qtyInput = row.querySelector('.material-qty');
+                        const hargaSatuanInput = row.querySelector('.material-harga-satuan');
+                        const subTotalInput = row.querySelector('.material-sub-total');
+                        
+                        if (qtyInput && hargaSatuanInput && subTotalInput) {
+                            // Parse nilai dengan benar menggunakan helper function
+                            const qty = parseIndonesianCurrency(qtyInput.value);
+                            const hargaSatuan = parseIndonesianCurrency(hargaSatuanInput.value);
+                            const existingSubTotal = parseIndonesianCurrency(subTotalInput.value);
+                            
+                            let subTotal = existingSubTotal;
+                            
+                            // Jika qty dan harga_satuan ada, hitung ulang sub_total
+                            if (qty > 0 && hargaSatuan > 0) {
+                                subTotal = qty * hargaSatuan;
+                            } else if (existingSubTotal > 0) {
+                                subTotal = existingSubTotal;
+                            }
+                            
+                            // Update nilai di input dengan format rupiah
+                            subTotalInput.value = formatRupiah(Math.round(subTotal));
+                            
+                            // Pastikan harga_satuan juga terisi jika ada nilai
+                            if (hargaSatuanInput.value === '' && existingSubTotal > 0 && qty > 0) {
+                                hargaSatuanInput.value = Math.round(existingSubTotal / qty);
+                            } else if (hargaSatuanInput.value && hargaSatuan === 0) {
+                                // Jika harga_satuan masih dalam format currency, parse dan update
+                                const parsedHarga = parseIndonesianCurrency(hargaSatuanInput.value);
+                                if (parsedHarga > 0) {
+                                    hargaSatuanInput.value = parsedHarga;
+                                }
+                            }
+                        }
                     });
 
                     // Mobile cards
                     document.querySelectorAll('.material-tambahan-mobile-card').forEach(card => {
-                        const qty = parseFloat(card.querySelector('.material-qty').value) || 0;
-                        const hargaSatuan = parseFloat(card.querySelector('.material-harga-satuan').value) || 0;
-                        const subTotal = qty * hargaSatuan;
-                        card.querySelector('.material-sub-total').value = Math.round(subTotal);
+                        const qtyInput = card.querySelector('.material-qty');
+                        const hargaSatuanInput = card.querySelector('.material-harga-satuan');
+                        const subTotalInput = card.querySelector('.material-sub-total');
+                        
+                        if (qtyInput && hargaSatuanInput && subTotalInput) {
+                            // Parse nilai dengan benar menggunakan helper function
+                            const qty = parseIndonesianCurrency(qtyInput.value);
+                            const hargaSatuan = parseIndonesianCurrency(hargaSatuanInput.value);
+                            const existingSubTotal = parseIndonesianCurrency(subTotalInput.value);
+                            
+                            let subTotal = existingSubTotal;
+                            
+                            // Jika qty dan harga_satuan ada, hitung ulang sub_total
+                            if (qty > 0 && hargaSatuan > 0) {
+                                subTotal = qty * hargaSatuan;
+                            } else if (existingSubTotal > 0) {
+                                subTotal = existingSubTotal;
+                            }
+                            
+                            // Update nilai di input dengan format rupiah
+                            subTotalInput.value = formatRupiah(Math.round(subTotal));
+                            
+                            // Pastikan harga_satuan juga terisi jika ada nilai
+                            if (hargaSatuanInput.value === '' && existingSubTotal > 0 && qty > 0) {
+                                hargaSatuanInput.value = Math.round(existingSubTotal / qty);
+                            } else if (hargaSatuanInput.value && hargaSatuan === 0) {
+                                // Jika harga_satuan masih dalam format currency, parse dan update
+                                const parsedHarga = parseIndonesianCurrency(hargaSatuanInput.value);
+                                if (parsedHarga > 0) {
+                                    hargaSatuanInput.value = parsedHarga;
+                                }
+                            }
+                        }
                     });
                 }
 
@@ -613,24 +869,51 @@
                 document.addEventListener('input', function(e) {
                     if (e.target.classList.contains('material-qty') || e.target.classList.contains(
                             'material-harga-satuan')) {
+                        // Skip jika input readonly (material yang sudah disetujui/ditolak)
+                        if (e.target.hasAttribute('readonly') || e.target.disabled) {
+                            return;
+                        }
+                        
                         // Handle desktop table row
                         const row = e.target.closest('.material-tambahan-row');
                         if (row) {
-                            const qty = parseFloat(row.querySelector('.material-qty').value) || 0;
-                            const hargaSatuan = parseFloat(row.querySelector('.material-harga-satuan').value) ||
-                                0;
-                            const subTotal = qty * hargaSatuan;
-                            row.querySelector('.material-sub-total').value = Math.round(subTotal);
+                            const qtyInput = row.querySelector('.material-qty');
+                            const hargaSatuanInput = row.querySelector('.material-harga-satuan');
+                            const subTotalInput = row.querySelector('.material-sub-total');
+                            
+                            if (qtyInput && hargaSatuanInput && subTotalInput) {
+                                // Skip jika input readonly
+                                if (qtyInput.hasAttribute('readonly') || hargaSatuanInput.hasAttribute('readonly')) {
+                                    return;
+                                }
+                                
+                                // Parse nilai dengan benar menggunakan helper function
+                                const qty = parseIndonesianCurrency(qtyInput.value);
+                                const hargaSatuan = parseIndonesianCurrency(hargaSatuanInput.value);
+                                const subTotal = qty * hargaSatuan;
+                                subTotalInput.value = formatRupiah(Math.round(subTotal));
+                            }
                         }
 
                         // Handle mobile card
                         const card = e.target.closest('.material-tambahan-mobile-card');
                         if (card) {
-                            const qty = parseFloat(card.querySelector('.material-qty').value) || 0;
-                            const hargaSatuan = parseFloat(card.querySelector('.material-harga-satuan')
-                                .value) || 0;
-                            const subTotal = qty * hargaSatuan;
-                            card.querySelector('.material-sub-total').value = Math.round(subTotal);
+                            const qtyInput = card.querySelector('.material-qty');
+                            const hargaSatuanInput = card.querySelector('.material-harga-satuan');
+                            const subTotalInput = card.querySelector('.material-sub-total');
+                            
+                            if (qtyInput && hargaSatuanInput && subTotalInput) {
+                                // Skip jika input readonly
+                                if (qtyInput.hasAttribute('readonly') || hargaSatuanInput.hasAttribute('readonly')) {
+                                    return;
+                                }
+                                
+                                // Parse nilai dengan benar menggunakan helper function
+                                const qty = parseIndonesianCurrency(qtyInput.value);
+                                const hargaSatuan = parseIndonesianCurrency(hargaSatuanInput.value);
+                                const subTotal = qty * hargaSatuan;
+                                subTotalInput.value = formatRupiah(Math.round(subTotal));
+                            }
                         }
                     }
                 });
@@ -745,7 +1028,7 @@
 
                 function createMobileMaterialHtml(mrIdx, matIdx) {
                     return `
-                    <div class="material-tambahan-mobile-card bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-zinc-600">
+                    <div class="material-tambahan-mobile-card border border-gray-200 dark:border-zinc-600 rounded-xl p-2">
                         <div class="flex justify-between items-start mb-3">
                             <h4 class="font-medium text-gray-900 dark:text-white">Material ${matIdx + 1}</h4>
                             <button type="button" class="remove-material-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium transition-colors duration-200">
@@ -794,7 +1077,127 @@
                     </div>
                 `;
                 }
+
+                // Saat submit form, ubah format rupiah kembali ke angka murni
+                (function() {
+                    const form = document.querySelector('form');
+                    
+                    if (!form) {
+                        return;
+                    }
+                    
+                    // Form submit handler - HAPUS PREVENTDEFAULT, LANGSUNG HAPUS CONTAINER HIDDEN
+                    const submitHandler = function(e) {
+                        // TIDAK PREVENT DEFAULT - biarkan form submit normal setelah cleaning
+                        
+                        try {
+                            // LOGIKA YANG BENAR:
+                            // Desktop: container dengan class "md:hidden" = HIDDEN, hapus ini
+                            // Mobile: container dengan class "hidden md:block" = HIDDEN, hapus ini
+                            
+                            const isDesktop = window.innerWidth >= 768;
+                            let removedCount = 0;
+                            
+                            if (isDesktop) {
+                                // DESKTOP: Hapus container dengan class "md:hidden" (mobile view)
+                                const mobileContainers = form.querySelectorAll('div.md\\:hidden, div[class*="md:hidden"]');
+                                mobileContainers.forEach(function(container) {
+                                    // Double check: pastikan benar-benar hidden
+                                    const style = window.getComputedStyle(container);
+                                    if (style.display === 'none' || container.offsetParent === null) {
+                                        const inputCount = container.querySelectorAll('input[name*="json_pengeluaran_material_tambahan"], select[name*="json_pengeluaran_material_tambahan"]').length;
+                                        if (inputCount > 0) {
+                                            container.remove();
+                                            removedCount++;
+                                        }
+                                    }
+                                });
+                            } else {
+                                // MOBILE: Hapus container dengan class "hidden md:block" (desktop view)
+                                // Cari semua div yang punya class "hidden" dan cek apakah punya "md:block"
+                                const allHiddenDivs = form.querySelectorAll('div[class*="hidden"]');
+                                allHiddenDivs.forEach(function(container) {
+                                    // Cek apakah class-nya mengandung "md:block" (desktop view)
+                                    if (container.className.includes('md:block')) {
+                                        // Double check: pastikan benar-benar hidden
+                                        const style = window.getComputedStyle(container);
+                                        if (style.display === 'none' || container.offsetParent === null) {
+                                            const inputCount = container.querySelectorAll('input[name*="json_pengeluaran_material_tambahan"], select[name*="json_pengeluaran_material_tambahan"]').length;
+                                            if (inputCount > 0) {
+                                                container.remove();
+                                                removedCount++;
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // Final check: hapus semua input yang tidak terlihat
+                            const allInputs = form.querySelectorAll('input[name*="json_pengeluaran_material_tambahan"], select[name*="json_pengeluaran_material_tambahan"]');
+                            allInputs.forEach(function(input) {
+                                if (input.offsetParent === null) {
+                                    input.removeAttribute('name');
+                                }
+                            });
+                            
+                            // Clean sub_total (format currency)
+                            form.querySelectorAll('.material-sub-total').forEach(function(input) {
+                                if (input.hasAttribute('name') && input.value) {
+                                    const numValue = parseIndonesianCurrency(input.value);
+                                    input.value = numValue.toString();
+                                }
+                            });
+                            
+                            // Clean harga_satuan (format currency)
+                            form.querySelectorAll('.material-harga-satuan').forEach(function(input) {
+                                if (input.hasAttribute('name') && input.value) {
+                                    const valueStr = input.value.toString();
+                                    if (valueStr.includes('Rp') || (valueStr.includes('.') && valueStr.split('.').length > 2)) {
+                                        const numValue = parseIndonesianCurrency(input.value);
+                                        input.value = numValue.toString();
+                                    }
+                                } else if (input.hasAttribute('name')) {
+                                    input.value = '0';
+                                }
+                            });
+                            
+                            // Clean qty (set default 0 jika kosong)
+                            form.querySelectorAll('.material-qty').forEach(function(input) {
+                                if (input.hasAttribute('name') && (!input.value || input.value === '')) {
+                                    input.value = '0';
+                                }
+                            });
+                            
+                            // Verifikasi data yang akan dikirim
+                            const formData = new FormData(form);
+                            const submittedData = {};
+                            for (let [key, value] of formData.entries()) {
+                                if (key.startsWith('json_pengeluaran_material_tambahan')) {
+                                    submittedData[key] = value;
+                                }
+                            }
+                            
+                            const dataCount = Object.keys(submittedData).length;
+                            if (dataCount === 0) {
+                                alert('Tidak ada data yang akan dikirim. Silakan coba lagi.');
+                                e.preventDefault();
+                                return false;
+                            }
+                            
+                            // Form siap submit, biarkan submit normal
+                            return true;
+                            
+                        } catch (error) {
+                            alert('ERROR: ' + error.message);
+                            e.preventDefault();
+                            return false;
+                        }
+                    };
+                    
+                    form.addEventListener('submit', submitHandler, true);
+                })();
             });
         </script>
     @endpush
 </x-layouts.supervisi>
+
