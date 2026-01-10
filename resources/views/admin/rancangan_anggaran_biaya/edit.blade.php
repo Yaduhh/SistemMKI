@@ -966,9 +966,9 @@
                             sub_total: subTotal > 0 ? subTotal : null,
                             status: status
                         });
-                    }
-                });
-                
+                }
+            });
+
                 // Only add MR group if it has MR or materials
                 if (mr || materials.length > 0) {
                     entertainmentData.push({
@@ -980,14 +980,14 @@
             });
             
             // Update hidden input - always send array, even if empty
-            const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
-            if (hiddenInput) {
+                const hiddenInput = document.querySelector('input[name="json_pengeluaran_entertaiment"]');
+                if (hiddenInput) {
                 hiddenInput.value = JSON.stringify(entertainmentData);
                 console.log('Updated json_pengeluaran_entertaiment:', entertainmentData);
             } else {
                 console.warn('Hidden input json_pengeluaran_entertaiment not found');
+                }
             }
-        }
 
         // Function to clean up entertainment data (deprecated - use updateEntertainmentHiddenInput instead)
         function cleanupEntertainmentData() {

@@ -1324,7 +1324,7 @@
                         <span class="font-medium text-zinc-900 dark:text-white">
                             Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}
                         </span>
-                    </div>
+                </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Material Pendukung:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
@@ -1352,12 +1352,12 @@
             <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
                 <h3 class="text-md font-semibold text-green-700 dark:text-green-300 mb-4">Rincian Pemasangan</h3>
                 <div class="space-y-2 text-sm">
-                    <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Total Pengeluaran Pemasangan:</span>
                         <span class="font-medium text-zinc-900 dark:text-white">
                             Rp {{ number_format($totalPengeluaranPemasangan, 0, ',', '.') }}
-                        </span>
-                    </div>
+                            </span>
+                        </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Harga Tukang:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">

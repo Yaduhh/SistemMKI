@@ -250,6 +250,16 @@
                 const qtyInput = row.querySelector('.section-material-qty');
                 const hargaInput = row.querySelector('.section-material-harga-satuan');
                 const removeBtn = row.querySelector('.remove-section-material');
+                
+                // Ensure all input fields are editable (remove readonly/disabled if any)
+                // Exclude total field which should remain readonly
+                const allInputs = row.querySelectorAll('input:not([readonly]):not(.section-material-total)');
+                allInputs.forEach(input => {
+                    input.removeAttribute('readonly');
+                    input.removeAttribute('disabled');
+                    // Remove any readonly styling
+                    input.classList.remove('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
 
                 if (qtyInput) {
                     qtyInput.addEventListener('input', () => calculateSectionMaterialTotal(row));
@@ -263,6 +273,20 @@
                         calculateSectionMaterialTotal(row);
                     });
                 }
+                
+                // Add event listeners to all editable fields to update hidden input on change
+                const itemBarangInput = row.querySelector('input[name$="[item_barang]"]');
+                const ukuranInput = row.querySelector('input[name$="[ukuran]"]');
+                const panjangInput = row.querySelector('input[name$="[panjang]"]');
+                const satuanInput = row.querySelector('input[name$="[satuan]"]');
+                
+                [itemBarangInput, ukuranInput, panjangInput, satuanInput].forEach(input => {
+                    if (input) {
+                        input.addEventListener('input', () => updateSectionMaterialHiddenInput());
+                        input.addEventListener('blur', () => updateSectionMaterialHiddenInput());
+                    }
+                });
+                
                 if (removeBtn) {
                     removeBtn.addEventListener('click', function() {
                         row.remove();
@@ -273,6 +297,15 @@
 
             // Initial setup: attach listeners to existing rows
             document.querySelectorAll('#section-material-pendukung-tbody .section-material-row').forEach(row => {
+                // Ensure all input fields are editable (remove readonly/disabled if any)
+                const allInputs = row.querySelectorAll('input:not([readonly])');
+                allInputs.forEach(input => {
+                    input.removeAttribute('readonly');
+                    input.removeAttribute('disabled');
+                    // Remove any readonly styling
+                    input.classList.remove('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                });
+                
                 attachSectionMaterialListeners(row);
                 calculateSectionMaterialTotal(row); // Calculate initial totals for existing rows
             });
