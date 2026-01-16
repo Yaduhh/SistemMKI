@@ -4,7 +4,7 @@
     </div>
     <button type="button" class="dark:bg-sky-900 bg-sky-600 text-white py-2 uppercase w-full" id="add-mr-group">Tambah MR</button>
     <div class="flex justify-end bg-sky-600/10 py-2 px-4">
-        <div class="font-semibold mr-2">Grand Total:</div>
+        <div class="font-semibold mr-2">Grand Total (Disetujui):</div>
         <div class="font-bold text-sky-700 dark:text-sky-400" id="grand-total-pendukung">0</div>
     </div>
     <template id="mr-group-template">
@@ -44,7 +44,7 @@
         </div>
     </template>
     <template id="material-row-template">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end p-6  bg-white dark:bg-zinc-700/30 relative material-row pt-12">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end p-6  bg-white dark:bg-zinc-700/30 relative material-row pt-12">
             <div>
                 <label class="block text-xs font-medium mb-1">Supplier</label>
                 <input type="text" data-material-field="supplier" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][supplier]" placeholder="Supplier" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" />
@@ -76,6 +76,14 @@
             <div>
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
+            </div>
+            <div>
+                <label class="block text-xs font-medium mb-1">Status</label>
+                <select data-material-field="status" name="json_pengeluaran_material_pendukung[__MRIDX__][materials][__MATIDX__][status]" class="material-status-select w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white">
+                    <option value="Pengajuan" selected>Pengajuan</option>
+                    <option value="Disetujui">Disetujui</option>
+                    <option value="Ditolak">Ditolak</option>
+                </select>
             </div>
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
@@ -169,7 +177,7 @@
                     });
                     // Update material row names
                     mrGroup.querySelectorAll('.material-row').forEach((row, matIdx, arr) => {
-                        row.querySelectorAll('input').forEach(input => {
+                        row.querySelectorAll('input, select').forEach(input => {
                             let name = input.getAttribute('name');
                             name = name.replace(/json_pengeluaran_material_pendukung\[\d+\]/, `json_pengeluaran_material_pendukung[${mrIdx}]`);
                             name = name.replace(/materials\]\[\d+\]/, `materials][${matIdx}]`);
@@ -247,7 +255,20 @@
                 // For regular material rows, fill normally
                 for (const key in data) {
                     const input = row.querySelector(`[data-material-field="${key}"]`);
-                    if (input) input.value = data[key];
+                    if (input) {
+                        if (key === 'status') {
+                            // Handle select dropdown for status
+                            input.value = data[key] || 'Pengajuan';
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
+                }
+                
+                // Ensure status is set (default to 'Pengajuan' if not present)
+                const statusSelect = row.querySelector('[data-material-field="status"]');
+                if (statusSelect && !statusSelect.value) {
+                    statusSelect.value = 'Pengajuan';
                 }
             }
             function fillMrGroup(mrGroup, data) {
@@ -416,6 +437,15 @@
                     mrGroup.querySelectorAll('.material-row').forEach(materialRow => {
                         const itemInput = materialRow.querySelector('[data-material-field="item"]');
                         const subTotalInput = materialRow.querySelector('.sub-total-input');
+                        const statusSelect = materialRow.querySelector('[data-material-field="status"]');
+                        
+                        // Get status, default to 'Pengajuan' if not found
+                        const status = statusSelect ? statusSelect.value : 'Pengajuan';
+                        
+                        // Only count items with status "Disetujui"
+                        if (status !== 'Disetujui') {
+                            return; // Skip this item
+                        }
                         
                         if (itemInput && subTotalInput) {
                             const itemValue = itemInput.value.trim();
@@ -791,6 +821,13 @@
                 mrList.querySelectorAll('.mr-group').forEach(mrGroup => {
                     setupPpnCalculation(mrGroup);
                     setupDiskonCalculation(mrGroup);
+                });
+                
+                // Setup event listener untuk status change
+                mrList.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('material-status-select')) {
+                        updateGrandTotal();
+                    }
                 });
                 
                 // Format existing values

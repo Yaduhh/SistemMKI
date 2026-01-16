@@ -1219,6 +1219,10 @@ class RancanganAnggaranBiayaController extends Controller
                     if (isset($material['sub_total'])) {
                         $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
                     }
+                    // Preserve status, default to 'Pengajuan' if not set
+                    if (!isset($material['status']) || empty($material['status'])) {
+                        $material['status'] = 'Pengajuan';
+                    }
                 }
             }
         }

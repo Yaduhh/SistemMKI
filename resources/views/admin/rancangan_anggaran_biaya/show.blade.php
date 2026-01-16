@@ -481,6 +481,7 @@
                     @php
                         $totalSectionMaterialPendukung = 0;
                         foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item) {
+                            // Hitung semua item tanpa filter status
                             $totalSectionMaterialPendukung += (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
                         }
                     @endphp
@@ -610,24 +611,42 @@
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
                                         Total Harga</th>
+                                    <th
+                                        class="px-4 py-3 text-center text-xs font-medium text-purple-700 dark:text-purple-300 uppercase">
+                                        Status</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
                                 @foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item)
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
-                                            {{ $item['item'] ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            {{ $item['satuan'] ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            {{ $item['qty'] ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0), 0, ',', '.') }}
-                                        </td>
-                                    </tr>
+                                    @if (($item['status'] ?? '') === 'Disetujui')
+                                        @php
+                                            $status = $item['status'] ?? 'Pengajuan';
+                                            $statusColor = match($status) {
+                                                'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+                                                'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+                                                default => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
+                                                {{ $item['item'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['satuan'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                {{ $item['qty'] ?? '-' }}</td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
+                                                Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0), 0, ',', '.') }}
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-center">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
+                                                    {{ $status }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -637,7 +656,10 @@
                     @php
                         $totalHargaTukang = 0;
                         foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
-                            $totalHargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                            // Hanya hitung yang statusnya Disetujui
+                            if (($item['status'] ?? '') === 'Disetujui') {
+                                $totalHargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                            }
                         }
                     @endphp
                     <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
@@ -703,11 +725,22 @@
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
                                                 Sub Total</th>
+                                            <th
+                                                class="px-4 py-3 text-center text-xs font-medium text-sky-700 dark:text-sky-300 uppercase">
+                                                Status</th>
                                         </tr>
                                     </thead>
                                     <tbody
                                         class="bg-white dark:bg-zinc-900/30 divide-y divide-zinc-200 dark:divide-zinc-700">
                                         @foreach ($mrGroup['materials'] as $material)
+                                            @php
+                                                $status = $material['status'] ?? 'Pengajuan';
+                                                $statusColor = match($status) {
+                                                    'Disetujui' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+                                                    'Ditolak' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+                                                    default => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+                                                };
+                                            @endphp
                                             <tr>
                                                 <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white">
                                                     {{ $material['supplier'] ?? '-' }}</td>
@@ -723,6 +756,11 @@
                                                 <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                                     {{ number_format((float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0), 0, ',', '.') }}
                                                 </td>
+                                                <td class="px-4 py-3 text-sm text-center">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
+                                                        {{ $status }}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -732,12 +770,18 @@
                     </div>
                 @endforeach
                 
-                <!-- Total Pengeluaran Material Pendukung -->
+                <!-- Total Pengeluaran Material Pendukung (Hanya Status Disetujui) -->
                 @php
                     $totalPengeluaranMaterialPendukung = 0;
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $material) {
+                                // Hanya hitung yang status "Disetujui"
+                                $status = $material['status'] ?? 'Pengajuan';
+                                if ($status !== 'Disetujui') {
+                                    continue;
+                                }
+                                
                                 $itemValue = $material['item'] ?? '';
                                 $subTotal = (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
 
@@ -754,7 +798,7 @@
                 @endphp
                 <div class="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
                     <div class="text-right">
-                        <span class="text-sm font-medium text-sky-700 dark:text-sky-300">Total Pengeluaran Material Pendukung:</span>
+                        <span class="text-sm font-medium text-sky-700 dark:text-sky-300">Total Pengeluaran Material Pendukung (Disetujui):</span>
                         <span class="ml-2 text-lg font-bold text-sky-600 dark:text-sky-400">
                             Rp {{ number_format($totalPengeluaranMaterialPendukung, 0, ',', '.') }}
                         </span>
@@ -1217,20 +1261,27 @@
             @php
                 // SECTION 1: TOTAL MATERIAL PENDUKUNG - PENGELUARAN MATERIAL PENDUKUNG - PENGELUARAN MATERIAL TAMBAHAN
                 
-                // Total Material Pendukung (Section Material Pendukung)
+                // Total Material Pendukung (Section Material Pendukung) - hitung semua tanpa filter status
                 $totalMaterialPendukung = 0;
                 if ($rancanganAnggaranBiaya->json_section_material_pendukung) {
                     foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item) {
+                        // Hitung semua item tanpa filter status
                         $totalMaterialPendukung += (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
                     }
                 }
 
                 // Pengeluaran Material Pendukung - perhitungkan diskon yang ada di dalam material pendukung
+                // Hanya yang status "Disetujui"
                 $pengeluaranMaterialPendukung = 0;
                 if ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung) {
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_material_pendukung as $mrGroup) {
                         if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                             foreach ($mrGroup['materials'] as $material) {
+                                // Hanya hitung yang status "Disetujui"
+                                if (($material['status'] ?? 'Pengajuan') !== 'Disetujui') {
+                                    continue;
+                                }
+                                
                                 $itemValue = $material['item'] ?? '';
                                 $subTotal = (float) preg_replace('/[^\d]/', '', $material['sub_total'] ?? 0);
 
