@@ -1237,7 +1237,21 @@
             }
         }
         $pengeluaranEntertainment = $totalEntertaiment ?? 0;
-        $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment;
+        // Pengeluaran Kerja Tambah - hanya termin yang status Disetujui
+        $pengeluaranKerjaTambah = 0;
+        if ($rancanganAnggaranBiaya->json_kerja_tambah) {
+            foreach ($rancanganAnggaranBiaya->json_kerja_tambah as $section) {
+                if (isset($section['termin']) && is_array($section['termin'])) {
+                    foreach ($section['termin'] as $termin) {
+                        // Hanya hitung kredit dari termin yang statusnya Disetujui
+                        if (($termin['status'] ?? '') === 'Disetujui') {
+                            $pengeluaranKerjaTambah += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                        }
+                    }
+                }
+            }
+        }
+        $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment - $pengeluaranKerjaTambah;
 
         // Total Sisa Anggaran
         $totalSisaAnggaran = $sisaAnggaranSection1 + $sisaAnggaranSection2;
@@ -1386,6 +1400,11 @@
                 <td class="no-border">Harga Tukang</td>
                 <td class="no-border">:</td>
                 <td class="text-right no-border">- Rp {{ number_format($hargaTukang, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="no-border">Pengeluaran Kerja Tambah</td>
+                <td class="no-border">:</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranKerjaTambah, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Pengeluaran Non Material</td>

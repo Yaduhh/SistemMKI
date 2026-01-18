@@ -29,6 +29,8 @@
                 // Set data existing sebelum component di-render
                 window.oldKerjaTambah = @json(old('json_kerja_tambah'));
                 window.existingKerjaTambah = @json($rancanganAnggaranBiaya->json_kerja_tambah ?? []);
+                // Flag untuk menandai bahwa ini halaman edit, jadi data bisa diedit
+                window.isEditPage = true;
             </script>
 
             <form action="{{ route('admin.rancangan-anggaran-biaya.update-kerja-tambah', $rancanganAnggaranBiaya) }}"

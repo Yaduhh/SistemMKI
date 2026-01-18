@@ -43,10 +43,12 @@
                             placeholder="%"
                             class="border rounded-lg px-4 py-2.5 persentase-input dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                             readonly>
-                        <input type="text" name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][status]"
-                            value="Pengajuan" placeholder="Status"
-                            class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 font-medium"
-                            readonly>
+                        <select name="json_pengeluaran_tukang[__SECIDX__][termin][__TERIDX__][status]"
+                            class="border rounded-lg px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white status-select font-medium">
+                            <option value="Pengajuan">Pengajuan</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
                         <div class="flex justify-end w-full">
                             <button type="button"
                                 class="text-red-400 w-full bg-red-600 dark:bg-red-900/30 border border-red-600 dark:border-red-400 font-bold remove-termin px-4 py-2.5 rounded-lg">Hapus</button>
@@ -127,32 +129,46 @@
                 }
 
                 function fillTerminRow(row, data) {
-                    if (!data || typeof data !== 'object') return;
-                    for (const key in data) {
-                        const input = row.querySelector(`[name^='json_pengeluaran_tukang'][name$='[${key}]']`);
-                        if (input) {
-                            if (key === 'kredit' || key === 'sisa') {
-                                // Format Rupiah untuk field kredit dan sisa
-                                let value = data[key];
-                                if (value !== null && value !== undefined) {
-                                    const numericValue = parseInt(value.toString().replace(/\D/g, '')) || 0;
-                                    input.value = formatRupiah(numericValue);
+                    if (data && typeof data === 'object') {
+                        for (const key in data) {
+                            const input = row.querySelector(`[name^='json_pengeluaran_tukang'][name$='[${key}]']`);
+                            if (input) {
+                                if (key === 'kredit' || key === 'sisa') {
+                                    // Format Rupiah untuk field kredit dan sisa
+                                    let value = data[key];
+                                    if (value !== null && value !== undefined) {
+                                        const numericValue = parseInt(value.toString().replace(/\D/g, '')) || 0;
+                                        input.value = formatRupiah(numericValue);
+                                    } else {
+                                        input.value = '';
+                                    }
+                                } else if (key === 'status') {
+                                    // Gunakan status dari data jika ada, default ke Pengajuan
+                                    const statusValue = data[key] || 'Pengajuan';
+                                    if (input.tagName === 'SELECT') {
+                                        input.value = statusValue;
+                                        updateStatusStyling(input);
+                                    } else {
+                                        input.value = statusValue;
+                                    }
                                 } else {
-                                    input.value = '';
+                                    input.value = data[key] || '';
                                 }
-                            } else if (key === 'status') {
-                                // Gunakan status dari data jika ada, default ke Pengajuan
-                                input.value = data[key] || 'Pengajuan';
-                            } else {
-                                input.value = data[key] || '';
                             }
                         }
                     }
 
-                    // Pastikan status ada untuk termin baru
+                    // Pastikan status ada untuk termin baru (jika data null atau tidak ada status)
                     const statusInput = row.querySelector('[name*="[status]"]');
-                    if (statusInput && !statusInput.value) {
-                        statusInput.value = 'Pengajuan';
+                    if (statusInput) {
+                        if (statusInput.tagName === 'SELECT') {
+                            if (!statusInput.value) {
+                                statusInput.value = 'Pengajuan';
+                            }
+                            updateStatusStyling(statusInput);
+                        } else if (statusInput.tagName !== 'SELECT' && !statusInput.value) {
+                            statusInput.value = 'Pengajuan';
+                        }
                     }
                 }
 
@@ -202,7 +218,8 @@
                     setupAutoCalc(section);
                     setTimeout(updateGrandTotal, 100); // Update grand total setelah setup selesai
 
-                    // Set readonly untuk data existing
+                    // Set readonly untuk data existing hanya jika bukan halaman edit
+                    // Di halaman edit, section bisa diedit (kecuali termin dengan status Disetujui)
                     if (isReadonly) {
                         setSectionReadonly(section);
                     }
@@ -225,9 +242,22 @@
                         setupRupiahFormat(kreditInput);
                     }
 
-                    // Set readonly untuk data existing
+                    // Set readonly untuk data existing hanya jika isReadonly = true
+                    // Status sekarang bisa diubah, jadi tidak perlu readonly hanya karena status "Disetujui"
                     if (isReadonly) {
                         setTerminRowReadonly(row);
+                    }
+
+                    // Setup event listener untuk status select
+                    const statusSelect = row.querySelector('select[name*="[status]"]');
+                    if (statusSelect) {
+                        updateStatusStyling(statusSelect);
+                        statusSelect.addEventListener('change', function() {
+                            updateStatusStyling(this);
+                            toggleRemoveButtonByStatus(row);
+                            toggleRemoveSectionButtons();
+                            updateGrandTotal();
+                        });
                     }
 
                     renderSectionNames();
@@ -250,11 +280,12 @@
                         const removeBtn = section.querySelector('.remove-section');
 
                         // Cek apakah ada termin dengan status Disetujui di section ini
-                        const statusInputs = section.querySelectorAll('.tukang-termin-row input[name*="[status]"]');
+                        const statusInputs = section.querySelectorAll('.tukang-termin-row [name*="[status]"]');
                         let hasApprovedTermins = false;
 
                         statusInputs.forEach(input => {
-                            if (input.value === 'Disetujui') {
+                            const statusValue = input.value || input.textContent;
+                            if (statusValue === 'Disetujui') {
                                 hasApprovedTermins = true;
                             }
                         });
@@ -305,6 +336,13 @@
                         input.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
                     });
 
+                    // Set disabled untuk select status
+                    const statusSelect = row.querySelector('select[name*="[status]"]');
+                    if (statusSelect) {
+                        statusSelect.disabled = true;
+                        statusSelect.classList.add('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
+                    }
+
                     // Sembunyikan tombol hapus termin
                     const removeTerminBtn = row.querySelector('.remove-termin');
                     if (removeTerminBtn) {
@@ -312,13 +350,36 @@
                     }
                 }
 
+                // Fungsi untuk update styling berdasarkan status
+                function updateStatusStyling(selectElement) {
+                    if (!selectElement || selectElement.tagName !== 'SELECT') return;
+                    
+                    // Hapus semua class styling sebelumnya
+                    selectElement.classList.remove(
+                        'bg-yellow-100', 'dark:bg-yellow-900/30', 'text-yellow-700', 'dark:text-yellow-300',
+                        'bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-300',
+                        'bg-red-100', 'dark:bg-red-900/30', 'text-red-700', 'dark:text-red-300'
+                    );
+
+                    // Tambahkan class styling berdasarkan status
+                    const status = selectElement.value;
+                    if (status === 'Pengajuan') {
+                        selectElement.classList.add('bg-yellow-100', 'dark:bg-yellow-900/30', 'text-yellow-700', 'dark:text-yellow-300');
+                    } else if (status === 'Disetujui') {
+                        selectElement.classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-300');
+                    } else if (status === 'Ditolak') {
+                        selectElement.classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-700', 'dark:text-red-300');
+                    }
+                }
+
                 // Fungsi untuk menyembunyikan button hapus berdasarkan status
                 function toggleRemoveButtonByStatus(row) {
-                    const statusInput = row.querySelector('input[name*="[status]"]');
+                    const statusInput = row.querySelector('[name*="[status]"]');
                     const removeTerminBtn = row.querySelector('.remove-termin');
 
                     if (statusInput && removeTerminBtn) {
-                        if (statusInput.value === 'Disetujui') {
+                        const statusValue = statusInput.value || statusInput.textContent;
+                        if (statusValue === 'Disetujui') {
                             removeTerminBtn.style.display = 'none';
                         } else {
                             // Tampilkan button hapus jika bukan status Disetujui
@@ -414,9 +475,12 @@
                 // Inisialisasi dari data existing RAB jika ada (prioritas tertinggi)
                 if (window.existingTukang && Array.isArray(window.existingTukang) && window.existingTukang.length > 0) {
                     console.log('Loading existing tukang data:', window.existingTukang); // Debug
+                    // Jika ini halaman edit (isEditPage = true), maka data bisa diedit (isReadonly = false)
+                    // Jika bukan halaman edit, data readonly (isReadonly = true)
+                    const isReadonly = !window.isEditPage;
                     window.existingTukang.forEach(section => {
                         if (section && typeof section === 'object') {
-                            addSection(section, true);
+                            addSection(section, isReadonly);
                         }
                     });
                     // Update grand total setelah semua section ditambahkan
@@ -468,11 +532,12 @@
                         // Cek setiap termin dalam section
                         const terminRows = section.querySelectorAll('.tukang-termin-row');
                         terminRows.forEach(row => {
-                            const statusInput = row.querySelector('input[name*="[status]"]');
+                            const statusInput = row.querySelector('[name*="[status]"]');
                             const kreditInput = row.querySelector('.kredit-input');
 
                             // Hanya hitung kredit dari termin yang statusnya Disetujui
-                            if (statusInput && statusInput.value === 'Disetujui' && kreditInput) {
+                            const statusValue = statusInput ? (statusInput.value || statusInput.textContent) : '';
+                            if (statusValue === 'Disetujui' && kreditInput) {
                                 let kreditValue = kreditInput.value || '0';
                                 // Remove Rp, spaces, and convert to number
                                 kreditValue = kreditValue.replace(/[^\d]/g, '');
@@ -499,9 +564,25 @@
                             const row = e.target.closest('.tukang-termin-row');
                             if (row) {
                                 toggleRemoveButtonByStatus(row);
+                                if (e.target.tagName === 'SELECT') {
+                                    updateStatusStyling(e.target);
+                                }
                             }
                             toggleRemoveSectionButtons(); // Update section remove buttons
                         }
+                    }
+                });
+
+                // Update grand total when status select changes
+                document.addEventListener('change', function(e) {
+                    if (e.target.tagName === 'SELECT' && e.target.name && e.target.name.includes('[status]')) {
+                        setTimeout(updateGrandTotal, 100);
+                        const row = e.target.closest('.tukang-termin-row');
+                        if (row) {
+                            toggleRemoveButtonByStatus(row);
+                            updateStatusStyling(e.target);
+                        }
+                        toggleRemoveSectionButtons();
                     }
                 });
 
@@ -538,13 +619,13 @@
                                 const kreditInput = row.querySelector('.kredit-input');
                                 const sisaInput = row.querySelector('.sisa-input');
                                 const persentaseInput = row.querySelector('.persentase-input');
-                                const statusInput = row.querySelector('input[name*="[status]"]');
+                                const statusInput = row.querySelector('[name*="[status]"]');
                                 
                                 const tanggal = tanggalInput ? tanggalInput.value : '';
                                 const kredit = kreditInput ? getNumericValue(kreditInput) : 0;
                                 const sisa = sisaInput ? getNumericValue(sisaInput) : 0;
                                 const persentase = persentaseInput ? persentaseInput.value : '0%';
-                                const status = statusInput ? statusInput.value : 'Pengajuan';
+                                const status = statusInput ? (statusInput.value || statusInput.textContent) : 'Pengajuan';
                                 
                                 // Only add termin if tanggal and kredit are filled
                                 if (tanggal && kredit > 0) {

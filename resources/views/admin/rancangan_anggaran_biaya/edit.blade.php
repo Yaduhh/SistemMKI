@@ -60,6 +60,9 @@
                 window.existingPengajuanHargaTukang = @json(isset($rab) ? $rab->json_pengajuan_harga_tukang ?? [] : []);
                 window.existingSectionMaterialPendukung = @json(isset($rab) ? $rab->json_section_material_pendukung ?? [] : []);
 
+                // Flag untuk menandai bahwa ini halaman edit, jadi data bisa diedit
+                window.isEditPage = true;
+
                 // Data produk penawaran untuk validasi
                 window.produkPenawaran = @json($produkPenawaran);
             </script>

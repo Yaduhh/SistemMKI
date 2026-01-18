@@ -1359,8 +1359,23 @@
                     }
                 }
 
+                // Pengeluaran Kerja Tambah - hanya termin yang status Disetujui
+                $pengeluaranKerjaTambah = 0;
+                if ($rancanganAnggaranBiaya->json_kerja_tambah) {
+                    foreach ($rancanganAnggaranBiaya->json_kerja_tambah as $section) {
+                        if (isset($section['termin']) && is_array($section['termin'])) {
+                            foreach ($section['termin'] as $termin) {
+                                // Hanya hitung kredit dari termin yang statusnya Disetujui
+                                if (($termin['status'] ?? '') === 'Disetujui') {
+                                    $pengeluaranKerjaTambah += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Sisa Anggaran Section 2
-                $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment;
+                $sisaAnggaranSection2 = $totalPengeluaranPemasangan - $hargaTukang - $pengeluaranEntertainment - $pengeluaranKerjaTambah;
 
                 // Total Sisa Anggaran
                 $totalSisaAnggaran = $sisaAnggaranSection1 + $sisaAnggaranSection2;
@@ -1416,6 +1431,12 @@
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
+                        <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Kerja Tambah:</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">
+                            - Rp {{ number_format($pengeluaranKerjaTambah, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Non Material:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
                             - Rp {{ number_format($pengeluaranEntertainment, 0, ',', '.') }}
@@ -1444,36 +1465,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Tambah Pengeluaran Section -->
-        @if($rancanganAnggaranBiaya->status !== 'selesai')
-            <div class="w-full mb-6">
-                <h2 class="text-lg font-semibold mb-4">Tambah Pengeluaran</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-entertainment', $rancanganAnggaranBiaya) }}"
-                        class="flex items-center justify-center p-4 border border-teal-200 dark:border-teal-700 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors">
-                        <div class="text-center">
-                            <h3 class="font-medium text-teal-700 dark:text-teal-300">Tambah Pengeluaran Non Material</h3>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-tukang', $rancanganAnggaranBiaya) }}"
-                        class="flex items-center justify-center p-4 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                        <div class="text-center">
-                            <h3 class="font-medium text-purple-700 dark:text-purple-300">Tambah Pengeluaran Tukang</h3>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('admin.rancangan-anggaran-biaya.tambah-kerja-tambah', $rancanganAnggaranBiaya) }}"
-                        class="flex items-center justify-center p-4 border border-orange-200 dark:border-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
-                        <div class="text-center">
-                            <h3 class="font-medium text-orange-700 dark:text-orange-300">Tambah Pengeluaran Kerja Tambah</h3>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        @endif
-
         <!-- Status Update Form -->
         <div
             class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm lg:border border-zinc-200 dark:border-zinc-700 p-0 lg:p-6">
