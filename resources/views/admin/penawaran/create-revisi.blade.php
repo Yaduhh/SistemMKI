@@ -535,11 +535,11 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 1 (%)</label>
-                                <input type="number" name="diskon_satu" x-model="diskon_satu" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" value="{{ old('diskon_satu', $penawaran->diskon_satu ?? 0) }}" />
+                                <input type="number" name="diskon_satu" x-model="diskon_satu" @input="handleDiskon1Input($event)" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" value="{{ old('diskon_satu', $penawaran->diskon_satu ?? 0) }}" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Diskon 2 (%)</label>
-                                <input type="number" name="diskon_dua" x-model="diskon_dua" @input="calculateTotal" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" value="{{ old('diskon_dua', $penawaran->diskon_dua ?? 0) }}" />
+                                <input type="number" name="diskon_dua" x-model="diskon_dua" @input="handleDiskon2Input($event)" step="0.01" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400" value="{{ old('diskon_dua', $penawaran->diskon_dua ?? 0) }}" />
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -549,11 +549,11 @@
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Total Diskon 1</label>
-                                <input type="text" x-model="formatCurrency(total_diskon_1)" @input="total_diskon_1 = parseCurrency($event.target.value) || 0; calculateTotal()" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 font-semibold text-gray-900 dark:text-white" />
+                                <input type="text" x-model="formatCurrency(total_diskon_1)" @input="handleTotalDiskon1Input($event)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 font-semibold text-gray-900 dark:text-white" />
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Total Diskon 2</label>
-                                <input type="text" x-model="formatCurrency(total_diskon_2)" @input="total_diskon_2 = parseCurrency($event.target.value) || 0; calculateTotal()" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 font-semibold text-gray-900 dark:text-white" />
+                                <input type="text" x-model="formatCurrency(total_diskon_2)" @input="handleTotalDiskon2Input($event)" class="w-full py-2 px-3 rounded-lg border-2 border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400 font-semibold text-gray-900 dark:text-white" />
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Setelah Diskon</label>
@@ -661,10 +661,35 @@ function penawaranForm() {
         total_diskon_all: 0,
         after_diskon: 0,
         grand_total: {{ $penawaran->grand_total ?? 0 }},
+        total_diskon_1_manual: null, // Flag untuk menandai jika total_diskon_1 diinput manual
+        total_diskon_2_manual: null, // Flag untuk menandai jika total_diskon_2 diinput manual
 
         // Inisialisasi data saat halaman dimuat
         init() {
             console.log('=== INIT METHOD DIPANGGIL ===');
+            
+            // Load total_diskon_1 dan total_diskon_2 dari database TERLEBIH DAHULU jika ada
+            // Ini untuk memastikan nilai yang sudah diinput manual tetap sama saat edit
+            // HARUS dilakukan di awal sebelum perhitungan apapun
+            const dbTotalDiskon1 = {{ $penawaran->total_diskon_1 ?? 'null' }};
+            const dbTotalDiskon2 = {{ $penawaran->total_diskon_2 ?? 'null' }};
+            
+            if (dbTotalDiskon1 !== null && dbTotalDiskon1 !== undefined) {
+                // Jika total_diskon_1 sudah ada di database, set sebagai manual
+                // Ini akan memastikan nilai tetap sama dan tidak dihitung ulang dari persentase yang dibulatkan
+                const value = parseFloat(dbTotalDiskon1) || 0;
+                this.total_diskon_1_manual = value;
+                this.total_diskon_1 = value; // Set langsung nilai total_diskon_1
+                console.log('Loaded total_diskon_1 from DB (early):', this.total_diskon_1_manual);
+            }
+            
+            if (dbTotalDiskon2 !== null && dbTotalDiskon2 !== undefined) {
+                // Jika total_diskon_2 sudah ada di database, set sebagai manual
+                const value = parseFloat(dbTotalDiskon2) || 0;
+                this.total_diskon_2_manual = value;
+                this.total_diskon_2 = value; // Set langsung nilai total_diskon_2
+                console.log('Loaded total_diskon_2 from DB (early):', this.total_diskon_2_manual);
+            }
             
             // Load data produk dari penawaran asli
             const rawData = @json($penawaran->json_produk ?? []);
@@ -1174,15 +1199,55 @@ function penawaranForm() {
         calculateTotal() {
             const subtotal = parseFloat(this.subtotal) || 0;
             const diskon = parseFloat(this.diskon) || 0;
-            const diskon_satu = parseFloat(this.diskon_satu) || 0;
-            const diskon_dua = parseFloat(this.diskon_dua) || 0;
             const ppn = parseFloat(this.ppn) || 0;
             const additionalTotal = parseFloat(this.additional_condition_total) || 0;
 
             // Hitung diskon hanya dari subtotal (produk utama), tidak termasuk additional condition
             const total_diskon = subtotal * (diskon / 100);
-            const total_diskon_1 = (subtotal - total_diskon) * (diskon_satu / 100);
-            const total_diskon_2 = (subtotal - total_diskon - total_diskon_1) * (diskon_dua / 100);
+            
+            // Jika total_diskon_1 sudah di-set manual, hitung diskon_satu dari total_diskon_1
+            // Jika tidak, hitung total_diskon_1 dari diskon_satu
+            let total_diskon_1, diskon_satu;
+            const base_after_diskon_1 = subtotal - total_diskon;
+            
+            if (this.total_diskon_1_manual !== undefined && this.total_diskon_1_manual !== null) {
+                // User sudah input total_diskon_1 manual, hitung diskon_satu
+                total_diskon_1 = parseFloat(this.total_diskon_1_manual) || 0;
+                if (base_after_diskon_1 > 0) {
+                    diskon_satu = (total_diskon_1 / base_after_diskon_1) * 100;
+                    // Bulatkan ke 2 desimal
+                    diskon_satu = Math.round(diskon_satu * 100) / 100;
+                } else {
+                    diskon_satu = 0;
+                }
+                this.diskon_satu = diskon_satu;
+            } else {
+                // Hitung total_diskon_1 dari diskon_satu
+                diskon_satu = parseFloat(this.diskon_satu) || 0;
+                total_diskon_1 = base_after_diskon_1 * (diskon_satu / 100);
+            }
+            
+            // Jika total_diskon_2 sudah di-set manual, hitung diskon_dua dari total_diskon_2
+            // Jika tidak, hitung total_diskon_2 dari diskon_dua
+            let total_diskon_2, diskon_dua;
+            const base_after_diskon_2 = base_after_diskon_1 - total_diskon_1;
+            
+            if (this.total_diskon_2_manual !== undefined && this.total_diskon_2_manual !== null) {
+                // User sudah input total_diskon_2 manual, hitung diskon_dua
+                total_diskon_2 = parseFloat(this.total_diskon_2_manual) || 0;
+                if (base_after_diskon_2 > 0) {
+                    diskon_dua = (total_diskon_2 / base_after_diskon_2) * 100;
+                    // Bulatkan ke 2 desimal
+                    diskon_dua = Math.round(diskon_dua * 100) / 100;
+                } else {
+                    diskon_dua = 0;
+                }
+                this.diskon_dua = diskon_dua;
+            } else {
+                // Hitung total_diskon_2 dari diskon_dua
+                diskon_dua = parseFloat(this.diskon_dua) || 0;
+                total_diskon_2 = base_after_diskon_2 * (diskon_dua / 100);
+            }
             
             // Simpan nilai diskon ke properti Alpine.js
             this.total_diskon = total_diskon;
@@ -1199,6 +1264,42 @@ function penawaranForm() {
             // Grand total = (subtotal setelah diskon + additional condition) + PPN
             // Additional condition tidak kena diskon, tapi kena PPN
             this.grand_total = Math.round(total_sebelum_ppn + ppn_nominal);
+        },
+
+        handleTotalDiskon1Input(event) {
+            const numericValue = this.parseCurrency(event.target.value);
+            if (numericValue !== '') {
+                this.total_diskon_1_manual = parseFloat(numericValue) || 0;
+            } else {
+                this.total_diskon_1_manual = null;
+            }
+            this.calculateTotal();
+        },
+
+        handleTotalDiskon2Input(event) {
+            const numericValue = this.parseCurrency(event.target.value);
+            if (numericValue !== '') {
+                this.total_diskon_2_manual = parseFloat(numericValue) || 0;
+            } else {
+                this.total_diskon_2_manual = null;
+            }
+            this.calculateTotal();
+        },
+
+        handleDiskon1Input(event) {
+            const value = parseFloat(event.target.value) || 0;
+            // Bulatkan ke 2 desimal
+            this.diskon_satu = Math.round(value * 100) / 100;
+            this.total_diskon_1_manual = null;
+            this.calculateTotal();
+        },
+
+        handleDiskon2Input(event) {
+            const value = parseFloat(event.target.value) || 0;
+            // Bulatkan ke 2 desimal
+            this.diskon_dua = Math.round(value * 100) / 100;
+            this.total_diskon_2_manual = null;
+            this.calculateTotal();
         },
 
         formatCurrency(amount) {

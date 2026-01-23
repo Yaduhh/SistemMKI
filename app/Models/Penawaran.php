@@ -44,8 +44,8 @@ class Penawaran extends Model
     protected $casts = [
         'tanggal_penawaran' => 'date',
         'diskon' => 'double',
-        'diskon_satu' => 'integer',
-        'diskon_dua' => 'integer',
+        'diskon_satu' => 'decimal:2',
+        'diskon_dua' => 'decimal:2',
         'ppn' => 'integer',
         'total' => 'double',
         'total_diskon' => 'decimal:2',
