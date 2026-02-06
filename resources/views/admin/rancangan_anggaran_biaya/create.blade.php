@@ -465,7 +465,7 @@
                         satuan: satuan,
                         qty: qty.toString(),
                         harga_satuan: hargaSatuan.toString(),
-                        total_harga: formatRupiah(totalHarga)
+                        total_harga: Math.round(totalHarga).toString()
                     });
                 }
 
