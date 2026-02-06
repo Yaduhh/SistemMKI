@@ -192,11 +192,10 @@
     <script>
         // Format Rupiah function
         function formatRupiah(angka) {
-            const roundedAngka = Math.round(angka);
             return new Intl.NumberFormat('id-ID', {
                 minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(roundedAngka);
+                maximumFractionDigits: 2
+            }).format(angka);
         }
 
         // Calculate harga tukang total
@@ -210,12 +209,11 @@
                     return;
                 }
                 
-                // Parse harga satuan - handle both number and formatted string
-                let hargaSatuan = 0;
-                if (input.value) {
-                    // Remove any formatting and parse as number
-                    hargaSatuan = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
-                }
+                // Parse harga satuan - handle Indonesian format (e.g. 1.000,50 -> 1000.50)
+                let valueStr = input.value.toString();
+                // Replace all dots (thousand units) then replace comma with dot (decimal)
+                let cleanValue = valueStr.replace(/\./g, '').replace(/,/g, '.');
+                let hargaSatuan = parseFloat(cleanValue) || 0;
 
                 const qty = parseFloat(input.dataset.qty) || 0;
                 const totalHarga = hargaSatuan * qty;
@@ -240,8 +238,8 @@
                 // Format qty dengan 2 desimal
                 const qtyFormatted = parseFloat(qty).toFixed(2);
                 
-                // Format total_harga sebagai bilangan bulat (tanpa desimal)
-                const totalHargaFormatted = Math.round(totalHarga).toString();
+                // Format total_harga sebagai float dengan 2 desimal
+                const totalHargaFormatted = totalHarga.toFixed(2);
                 
                 // Only add to hargaTukangData if item has valid data
                 if (itemName !== 'Unknown Item' && qty > 0) {
@@ -249,7 +247,7 @@
                         item: itemName,
                         satuan: satuan,
                         qty: qtyFormatted,
-                        harga_satuan: hargaSatuan.toString(),
+                        harga_satuan: hargaSatuan.toFixed(2),
                         total_harga: totalHargaFormatted,
                         status: status
                     });
@@ -275,13 +273,6 @@
         function prepareFormData() {
             // Update harga tukang data before submit
             calculateHargaTukangTotal();
-            
-            // Ensure hidden input is updated
-            const hiddenInput = document.getElementById('json_pengajuan_harga_tukang');
-            if (hiddenInput) {
-                const data = hiddenInput.value;
-                console.log('Submitting harga tukang data:', data);
-            }
         }
 
         // Load existing harga tukang data
@@ -294,7 +285,6 @@
                     return;
                 }
                 
-                // Find matching existing data by item name + qty + satuan (identifikasi unik)
                 const itemName = input.dataset.debugItem;
                 const itemQty = parseFloat(input.dataset.qty || 0);
                 const itemSatuan = input.dataset.debugSatuan || '';
@@ -329,14 +319,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Format number helper
+            // Format number helper (Indonesian style: dots for thousands, comma for decimals)
             function number_format(number, decimals, dec_point, thousands_sep) {
                 number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
                 const n = !isFinite(+number) ? 0 : +number;
                 const prec = !isFinite(+decimals) ? 0 : Math.abs(decimals);
-                const sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
-                const dec = (typeof dec_point === 'undefined') ? '.' : dec_point;
-                const s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+                const sep = (thousands_sep === undefined) ? '.' : thousands_sep;
+                const dec = (dec_point === undefined) ? ',' : dec_point;
+                let s = '';
+                const toFixedFix = function(n, prec) {
+                    const k = Math.pow(10, prec);
+                    return '' + (Math.round(n * k) / k).toFixed(prec);
+                };
+                s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
                 if (s[0].length > 3) {
                     s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
                 }
@@ -347,27 +342,37 @@
                 return s.join(dec);
             }
 
-            function toFixedFix(n, prec) {
-                const k = Math.pow(10, prec);
-                return '' + Math.round(n * k) / k;
-            }
-
             // Add event listeners to harga tukang inputs
             document.querySelectorAll('.harga-tukang-input').forEach((input) => {
-                // Format existing value if any
-                if (input.value) {
-                    const value = parseFloat(input.value.toString().replace(/[^\d]/g, '')) || 0;
-                    if (value > 0) {
-                        input.value = number_format(value, 0, ',', '.');
-                    }
-                }
-
                 input.addEventListener('input', function(e) {
-                    // Format input value
-                    const value = e.target.value.replace(/[^\d]/g, '');
-                    if (value) {
-                        e.target.value = number_format(parseInt(value), 0, ',', '.');
+                    // Simpan posisi cursor
+                    let cursorPosition = this.selectionStart;
+                    let originalLength = this.value.length;
+
+                    // Allow digits and comma for decimal
+                    let value = e.target.value.replace(/[^0-9,]/g, '');
+                    
+                    // Ensure only one comma
+                    let parts = value.split(',');
+                    if (parts.length > 2) {
+                        value = parts[0] + ',' + parts.slice(1).join('');
                     }
+
+                    if (parts[0]) {
+                        let formatted = number_format(parts[0], 0, ',', '.');
+                        if (parts.length > 1) {
+                            // Limit to 2 decimal places
+                            let decimalPart = parts[1].substring(0, 2);
+                            e.target.value = formatted + ',' + decimalPart;
+                        } else {
+                            e.target.value = formatted;
+                        }
+                    } else if (value === ',') {
+                        e.target.value = '0,';
+                    } else {
+                        e.target.value = value;
+                    }
+
                     calculateHargaTukangTotal();
                 });
             });

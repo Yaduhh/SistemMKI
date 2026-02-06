@@ -65,6 +65,7 @@
                                         <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Qty</th>
                                         <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Satuan</th>
                                         <th class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Harga Satuan</th>
+                                        <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">PPN (%)</th>
                                         <th class="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Total</th>
                                         <th class="px-3 py-2 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">Action</th>
                                     </tr>
@@ -103,6 +104,9 @@
                                                 </td>
                                                 <td class="px-3 py-2">
                                                     <input type="text" name="section_material_pendukung[{{ $index }}][harga_satuan]" value="{{ $hargaSatuan }}" placeholder="Harga Satuan" class="section-material-harga-satuan w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" />
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <input type="number" step="0.01" name="section_material_pendukung[{{ $index }}][ppn]" value="{{ $item['ppn'] ?? 0 }}" placeholder="0" class="section-material-ppn w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-center" />
                                                 </td>
                                                 <td class="px-3 py-2">
                                                     <input type="text" name="section_material_pendukung[{{ $index }}][total]" value="{{ $total }}" placeholder="Total" class="section-material-total w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" readonly />
@@ -186,6 +190,9 @@
                         <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][harga_satuan]" placeholder="Harga Satuan" class="section-material-harga-satuan w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" />
                     </td>
                     <td class="px-3 py-2">
+                        <input type="number" step="0.01" name="section_material_pendukung[${sectionMaterialIndex}][ppn]" placeholder="0" class="section-material-ppn w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-center" value="0" />
+                    </td>
+                    <td class="px-3 py-2">
                         <input type="text" name="section_material_pendukung[${sectionMaterialIndex}][total]" placeholder="Total" class="section-material-total w-full border rounded px-2 py-1 text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-right" readonly />
                     </td>
                     <td class="px-3 py-2 text-center">
@@ -203,13 +210,17 @@
             function calculateSectionMaterialTotal(row) {
                 const qtyInput = row.querySelector('.section-material-qty');
                 const hargaInput = row.querySelector('.section-material-harga-satuan');
+                const ppnInput = row.querySelector('.section-material-ppn');
                 const totalInput = row.querySelector('.section-material-total');
 
-                if (!qtyInput || !hargaInput || !totalInput) return;
+                if (!qtyInput || !hargaInput || !ppnInput || !totalInput) return;
 
                 const qty = parseFloat(qtyInput.value) || 0;
                 let harga = parseRupiah(hargaInput.value) || 0;
-                const total = qty * harga;
+                const ppnPercen = parseFloat(ppnInput.value) || 0;
+                
+                const dpp = qty * harga;
+                const total = dpp + (dpp * ppnPercen / 100);
 
                 totalInput.value = formatRupiah(total);
                 updateSectionMaterialHiddenInput();
@@ -226,6 +237,7 @@
                     const qtyValue = row.querySelector('input[name$="[qty]"]').value;
                     // Format qty dengan 2 desimal
                     const qty = qtyValue ? parseFloat(qtyValue).toFixed(2) : '0.00';
+                    const ppn = row.querySelector('input[name$="[ppn]"]').value || '0';
                     const satuan = row.querySelector('input[name$="[satuan]"]').value;
                     const hargaSatuan = parseRupiah(row.querySelector('input[name$="[harga_satuan]"]').value);
                     const total = parseRupiah(row.querySelector('input[name$="[total]"]').value);
@@ -237,6 +249,7 @@
                         ukuran: ukuran,
                         panjang: panjang,
                         qty: qty,
+                        ppn: ppn,
                         satuan: satuan,
                         harga_satuan: hargaSatuan.toString(),
                         total: totalFormatted,
@@ -261,6 +274,8 @@
                     input.classList.remove('bg-gray-100', 'dark:bg-zinc-700', 'cursor-not-allowed');
                 });
 
+                const ppnInput = row.querySelector('.section-material-ppn');
+                
                 if (qtyInput) {
                     qtyInput.addEventListener('input', () => calculateSectionMaterialTotal(row));
                 }
@@ -272,6 +287,9 @@
                         }
                         calculateSectionMaterialTotal(row);
                     });
+                }
+                if (ppnInput) {
+                    ppnInput.addEventListener('input', () => calculateSectionMaterialTotal(row));
                 }
                 
                 // Add event listeners to all editable fields to update hidden input on change

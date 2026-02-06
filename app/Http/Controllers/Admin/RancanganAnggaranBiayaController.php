@@ -502,38 +502,13 @@ class RancanganAnggaranBiayaController extends Controller
 
     public function update(Request $request, RancanganAnggaranBiaya $rancanganAnggaranBiaya)
     {
-        // Debug: Log request data
-        \Log::info('RAB Update - Request data:', [
-            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
-            'json_pengeluaran_pemasangan_type' => gettype($request->json_pengeluaran_pemasangan),
-            'json_pengeluaran_tukang' => $request->json_pengeluaran_tukang,
-            'json_pengeluaran_tukang_type' => gettype($request->json_pengeluaran_tukang),
-            'penawaran_id' => $request->penawaran_id,
-            'pemasangan_id' => $request->pemasangan_id
-        ]);
-        
         $validated = $request->validate([
             'proyek' => 'required|string|max:255',
             'pekerjaan' => 'required|string|max:255',
             'kontraktor' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
             'material_utama' => 'nullable|array',
-            'material_utama.*.item' => 'nullable|string',
-            'material_utama.*.type' => 'nullable|string',
-            'material_utama.*.dimensi' => 'nullable|string',
-            'material_utama.*.panjang' => 'nullable|string',
-            'material_utama.*.qty' => 'nullable|numeric',
-            'material_utama.*.satuan' => 'required|string',
-            'material_utama.*.warna' => 'nullable|string',
-            'material_utama.*.harga_satuan' => 'nullable|numeric',
-            'material_utama.*.total' => 'nullable|numeric',
-            'json_pengeluaran_material_utama' => 'nullable', // allow any type
-            'json_pengeluaran_material_pendukung' => 'nullable|array',
-            'json_section_material_pendukung' => 'nullable',
-            'json_pengeluaran_material_tambahan' => 'nullable|array',
-            'json_pengeluaran_pemasangan' => 'nullable',
-            'json_pengajuan_harga_tukang' => 'nullable',
-            'json_pengeluaran_tukang' => 'nullable',
+            'json_pengeluaran_material_utama' => 'nullable',
         ]);
         
         // Handle material utama - check if this is a pintu penawaran first
@@ -576,167 +551,19 @@ class RancanganAnggaranBiayaController extends Controller
             }
         }
         
-        // Clean and validate tukang data (remove empty sections)
-        // Handle json_pengeluaran_tukang - bisa berupa array atau JSON string
-        $tukangDataRaw = $request->json_pengeluaran_tukang ?? [];
-        if (is_string($tukangDataRaw)) {
-            $tukangDataRaw = json_decode($tukangDataRaw, true) ?? [];
-        }
-        
-        if (is_array($tukangDataRaw) && !empty($tukangDataRaw)) {
-            $tukangData = $this->convertTukangDataToNumeric($tukangDataRaw);
-        } else {
-            $tukangData = [];
-        }
-        
-        // Clean and validate kerja tambah data (remove empty sections)
-        $kerjaTambahData = [];
-        if ($request->has('json_kerja_tambah') && is_array($request->json_kerja_tambah)) {
-            foreach ($request->json_kerja_tambah as $section) {
-                if (!empty($section['debet']) && isset($section['termin']) && is_array($section['termin'])) {
-                    $cleanTermin = [];
-                    foreach ($section['termin'] as $termin) {
-                        if (!empty($termin['tanggal']) && !empty($termin['kredit'])) {
-                            $cleanTermin[] = [
-                                'tanggal' => $termin['tanggal'],
-                                'kredit' => $termin['kredit'],
-                                'sisa' => $termin['sisa'] ?? 0,
-                                'persentase' => $termin['persentase'] ?? '0%',
-                                'status' => $termin['status'] ?? 'Pengajuan'
-                            ];
-                        }
-                    }
-                    if (!empty($cleanTermin)) {
-                        $kerjaTambahData[] = [
-                            'debet' => $section['debet'],
-                            'termin' => $cleanTermin
-                        ];
-                    }
-                }
-            }
-        }
-        
-        // Clean and validate entertaiment data
-        // Handle json_pengeluaran_entertaiment - bisa berupa array atau JSON string
-        $entertaimentDataRaw = $request->json_pengeluaran_entertaiment ?? [];
-        if (is_string($entertaimentDataRaw)) {
-            $entertaimentDataRaw = json_decode($entertaimentDataRaw, true) ?? [];
-        }
-        
-        $entertaimentData = [];
-        if (is_array($entertaimentDataRaw) && !empty($entertaimentDataRaw)) {
-            foreach ($entertaimentDataRaw as $mr) {
-                if (!isset($mr) || !is_array($mr)) continue;
-                
-                $cleanMaterials = [];
-                if (isset($mr['materials']) && is_array($mr['materials']) && !empty($mr['materials'])) {
-                    foreach ($mr['materials'] as $material) {
-                        if (!isset($material) || !is_array($material)) continue;
-                        
-                        // Only add material if it has at least supplier, item, or harga_satuan
-                        $supplier = $material['supplier'] ?? null;
-                        $item = $material['item'] ?? null;
-                        $hargaSatuan = !empty($material['harga_satuan']) ? floatval($material['harga_satuan']) : null;
-                        
-                        if ($supplier || $item || ($hargaSatuan && $hargaSatuan > 0)) {
-                            $cleanMaterials[] = [
-                                'supplier' => $supplier,
-                                'item' => $item,
-                                'qty' => !empty($material['qty']) ? floatval($material['qty']) : null,
-                                'satuan' => $material['satuan'] ?? null,
-                                'harga_satuan' => $hargaSatuan,
-                                'sub_total' => !empty($material['sub_total']) ? floatval($material['sub_total']) : null,
-                                'status' => $material['status'] ?? 'Disetujui'
-                            ];
-                        }
-                    }
-                }
-                
-                // Only add MR group if it has MR or materials
-                $mrValue = $mr['mr'] ?? null;
-                if ($mrValue || !empty($cleanMaterials)) {
-                    $entertaimentData[] = [
-                        'mr' => $mrValue,
-                        'tanggal' => $mr['tanggal'] ?? null,
-                        'materials' => $cleanMaterials
-                    ];
-                }
-            }
-        }
-        
-        // If no data, set to empty array [] (not null or structure with null values)
-        if (empty($entertaimentData)) {
-            $entertaimentData = [];
-        }
-        
-
-        
         $validated['json_pengeluaran_material_utama'] = $materialUtama;
-        $validated['json_pengeluaran_material_pendukung'] = $request->json_pengeluaran_material_pendukung ?? [];
-        $validated['json_pengeluaran_material_tambahan'] = $request->json_pengeluaran_material_tambahan ?? [];
-        
-        // Handle json_pengeluaran_pemasangan - convert string to array if needed
-        $pemasanganData = $request->json_pengeluaran_pemasangan ?? [];
-        if (is_string($pemasanganData)) {
-            $pemasanganData = json_decode($pemasanganData, true) ?? [];
-        }
-        $validated['json_pengeluaran_pemasangan'] = $pemasanganData;
-        
-        // Handle json_pengajuan_harga_tukang - convert string to array if needed
-        $hargaTukangData = $request->json_pengajuan_harga_tukang ?? [];
-        if (is_string($hargaTukangData)) {
-            $hargaTukangData = json_decode($hargaTukangData, true) ?? [];
-        }
-        $validated['json_pengajuan_harga_tukang'] = $hargaTukangData;
-        
-        // Handle json_section_material_pendukung - convert string to array if needed
-        $sectionMaterialPendukungData = $request->json_section_material_pendukung ?? [];
-        if (is_string($sectionMaterialPendukungData)) {
-            $sectionMaterialPendukungData = json_decode($sectionMaterialPendukungData, true) ?? [];
-        }
-        $validated['json_section_material_pendukung'] = $sectionMaterialPendukungData;
-        
-        // Debug: Log pemasangan data
-        \Log::info('RAB Store Debug - Pemasangan Data', [
-            'json_pengeluaran_pemasangan' => $request->json_pengeluaran_pemasangan,
-            'validated_pemasangan' => $validated['json_pengeluaran_pemasangan']
-        ]);
-        
-        // Set default values for fields that are not used in edit mode
-        $validated['json_pengeluaran_entertaiment'] = $entertaimentData;
-        $validated['json_pengeluaran_tukang'] = $tukangData ?? [];
-        $validated['json_kerja_tambah'] = $kerjaTambahData ?? [];
-        $validated['status_deleted'] = false;
-        $validated['status'] = $request->status ?? 'draft';
-        $validated['created_by'] = auth()->id();
-        $validated['penawaran_id'] = $request->penawaran_id ?? null;
-        $validated['pemasangan_id'] = $request->pemasangan_id ?? null;
+        $validated['status'] = $request->status ?? $rancanganAnggaranBiaya->status;
+        $validated['penawaran_id'] = $request->penawaran_id ?? $rancanganAnggaranBiaya->penawaran_id;
+        $validated['pemasangan_id'] = $request->pemasangan_id ?? $rancanganAnggaranBiaya->pemasangan_id;
         $validated['penawaran_pintu'] = ($penawaran && !empty($penawaran->json_penawaran_pintu)) ? 1 : 0;
         
         try {
-            // Debug: Log data before update
-            \Log::info('RAB Update - Data before update:', [
-                'json_pengeluaran_pemasangan' => $validated['json_pengeluaran_pemasangan'],
-                'json_pengeluaran_tukang' => $validated['json_pengeluaran_tukang'],
-                'penawaran_id' => $validated['penawaran_id'],
-                'pemasangan_id' => $validated['pemasangan_id']
-            ]);
-            
             $rancanganAnggaranBiaya->update($validated);
             
-            // Debug: Check if pemasangan data was saved
-            $pemasanganData = $rancanganAnggaranBiaya->fresh()->json_pengeluaran_pemasangan;
-            $message = 'RAB berhasil diperbarui.';
-            if (!empty($pemasanganData)) {
-                $message .= ' Data pemasangan tersimpan: ' . count($pemasanganData) . ' item.';
-            }
-            
-            \Log::info('RAB Update - Success:', ['message' => $message]);
             return redirect()->route('admin.rancangan-anggaran-biaya.show', $rancanganAnggaranBiaya)
                 ->with('success', 'RAB berhasil diperbarui.');
         } catch (\Exception $e) {
             \Log::error('RAB Update Error: ' . $e->getMessage());
-            \Log::error('RAB Update Error Stack: ' . $e->getTraceAsString());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }

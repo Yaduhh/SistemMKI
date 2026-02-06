@@ -33,7 +33,6 @@
             </div>
             <div class="flex gap-2 mt-4">
                 <button type="button" class="dark:bg-indigo-900 bg-indigo-600 border border-indigo-600 text-indigo-100 hover:bg-indigo-600 hover:text-white transition-all duration-300 rounded-xl px-4 py-2 add-material-row">Tambah Material Tambahan</button>
-                <button type="button" class="dark:bg-green-900 bg-green-600 border border-green-600 text-green-100 hover:bg-green-600 hover:text-white transition-all duration-300 rounded-xl px-4 py-2 add-ppn-row">Tambah PPN</button>
                 <button type="button" class="dark:bg-yellow-900 bg-yellow-600 border border-yellow-600 text-yellow-100 hover:bg-yellow-600 hover:text-white transition-all duration-300 rounded-xl px-4 py-2 add-diskon-row">Tambah Diskon</button>
                 <button type="button" class="dark:bg-purple-900 bg-purple-600 border border-purple-600 text-purple-100 hover:bg-purple-600 hover:text-white transition-all duration-300 rounded-xl px-4 py-2 add-ongkir-row">Tambah Ongkir</button>
             </div>
@@ -74,6 +73,10 @@
                 <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="Harga Satuan" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white harga-satuan-input" />
             </div>
             <div>
+                <label class="block text-xs font-medium mb-1">PPN (%)</label>
+                <input type="number" step="0.01" data-material-field="ppn" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][ppn]" placeholder="0" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white ppn-input" value="0" />
+            </div>
+            <div>
                 <label class="block text-xs font-medium mb-1">Sub Total</label>
                 <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
             </div>
@@ -88,24 +91,6 @@
             <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
         </div>
     </template>
-    <template id="ppn-row-template-tambahan">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end p-6 bg-green-50 dark:bg-green-900/20 relative material-row pt-12 border border-green-200 dark:border-green-800">
-            <div>
-                <label class="block text-xs font-medium mb-1">Item</label>
-                <input type="text" data-material-field="item" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][item]" placeholder="Item" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white" value="PPN" readonly />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Persentase (%)</label>
-                <input type="text" data-material-field="harga_satuan" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][harga_satuan]" placeholder="11.5" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white ppn-persen-input" />
-            </div>
-            <div>
-                <label class="block text-xs font-medium mb-1">Sub Total</label>
-                <input type="text" data-material-field="sub_total" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][sub_total]" placeholder="Sub Total" class="w-full border rounded-lg px-2 py-1 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white sub-total-input" readonly />
-            </div>
-            <!-- Hidden status field to preserve approval status -->
-            <input type="hidden" data-material-field="status" name="json_pengeluaran_material_tambahan[__MRIDX__][materials][__MATIDX__][status]" value="Disetujui" />
-            <button type="button" class="absolute top-6 right-6 text-red-600 font-bold remove-material">Hapus</button>
-        </div>
     </template>
     <template id="diskon-row-template-tambahan">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end p-6 bg-yellow-50 dark:bg-yellow-900/20 relative material-row pt-12 border border-yellow-200 dark:border-yellow-800">
@@ -147,11 +132,10 @@
             const addMrBtn = document.getElementById('add-mr-group-tambahan');
             const mrGroupTemplate = document.getElementById('mr-group-template-tambahan');
             const materialRowTemplate = document.getElementById('material-row-template-tambahan');
-            const ppnRowTemplate = document.getElementById('ppn-row-template-tambahan');
             const diskonRowTemplate = document.getElementById('diskon-row-template-tambahan');
             const ongkirRowTemplate = document.getElementById('ongkir-row-template-tambahan');
             const grandTotalEl = document.getElementById('grand-total-tambahan');
-            if (!mrList || !addMrBtn || !mrGroupTemplate || !materialRowTemplate || !ppnRowTemplate || !diskonRowTemplate || !ongkirRowTemplate || !grandTotalEl) return;
+            if (!mrList || !addMrBtn || !mrGroupTemplate || !materialRowTemplate || !diskonRowTemplate || !ongkirRowTemplate || !grandTotalEl) return;
 
             // Fungsi format rupiah
             function formatRupiahInput(el) {
@@ -217,15 +201,12 @@
             function fillMaterialRow(row, data) {
                 if (!data) return;
                 
-                // Check if this is a special row (PPN, Diskon, Ongkir)
+                // Check if this is a special row (Diskon, Ongkir)
                 const item = data.item || '';
                 let isSpecialRow = false;
                 let specialType = '';
                 
-                if (item === 'PPN') {
-                    isSpecialRow = true;
-                    specialType = 'ppn';
-                } else if (item === 'Diskon') {
+                if (item === 'Diskon') {
                     isSpecialRow = true;
                     specialType = 'diskon';
                 } else if (item === 'Ongkir') {
@@ -244,9 +225,7 @@
                     row.remove();
                     
                     // Add the correct special row
-                    if (specialType === 'ppn') {
-                        addPpnRow(mrGroup, data);
-                    } else if (specialType === 'diskon') {
+                    if (specialType === 'diskon') {
                         addDiskonRow(mrGroup, data);
                     } else if (specialType === 'ongkir') {
                         addOngkirRow(mrGroup, data);
@@ -330,45 +309,7 @@
                 setupRupiahFormatting();
             }
 
-            function addPpnRow(mrGroup, data) {
-                const mrIdx = Array.from(mrList.children).indexOf(mrGroup);
-                const matList = mrGroup.querySelector('.material-list');
-                const matIdx = matList.querySelectorAll('.material-row').length;
-                const html = ppnRowTemplate.innerHTML.replace(/__MRIDX__/g, mrIdx).replace(/__MATIDX__/g, matIdx);
-                const temp = document.createElement('div');
-                temp.innerHTML = html;
-                const row = temp.firstElementChild;
-                matList.appendChild(row);
-                
-                // Set default values untuk field yang tidak ditampilkan
-                setHiddenFieldValues(row, 'ppn');
-                
-                // Fill data if provided
-                if (data) {
-                    for (const key in data) {
-                        const input = row.querySelector(`[data-material-field="${key}"]`);
-                        if (input) {
-                            if (key === 'status' && !data[key]) {
-                                // Default status untuk material tambahan adalah Disetujui
-                                input.value = 'Disetujui';
-                            } else {
-                                input.value = data[key];
-                    }
-                        }
-                    }
-                }
-                
-                // Pastikan status selalu Disetujui jika tidak ada di data
-                const statusInput = row.querySelector('[data-material-field="status"]');
-                if (statusInput && !statusInput.value) {
-                    statusInput.value = 'Disetujui';
-                }
-                
-                renderAllNames();
-                
-                // Setup event listener untuk persentase PPN
-                setupPpnCalculation(mrGroup);
-            }
+
 
             function addDiskonRow(mrGroup, data) {
                 const mrIdx = Array.from(mrList.children).indexOf(mrGroup);
@@ -460,7 +401,8 @@
                     { name: 'ukuran', value: '' },
                     { name: 'panjang', value: '' },
                     { name: 'qty', value: '' },
-                    { name: 'satuan', value: '' }
+                    { name: 'satuan', value: '' },
+                    { name: 'ppn', value: '0' }
                 ];
                 
                 // Untuk ongkir, tambahkan hidden input harga_satuan
@@ -521,10 +463,13 @@
                 const hargaInput = row.querySelector('.harga-satuan-input');
                 // Ambil angka murni dari input harga (hilangkan Rp dan titik)
                 const harga = parseFloat(getAngkaFromRupiah(hargaInput?.value || '0'));
-                const subTotal = qty * harga;
+                const ppnPersen = parseFloat(row.querySelector('.ppn-input')?.value || '0');
+                
+                const subTotalNoPpn = qty * harga;
+                const subTotal = subTotalNoPpn + (subTotalNoPpn * ppnPersen / 100);
                 const subTotalInput = row.querySelector('.sub-total-input');
                 
-                console.log('Qty:', qty, 'Harga:', harga, 'SubTotal:', subTotal); // Debug
+                console.log('Qty:', qty, 'Harga:', harga, 'PPN:', ppnPersen, 'SubTotal:', subTotal); // Debug
                 
                 if (subTotalInput) {
                     if (subTotal > 0) {
@@ -536,92 +481,7 @@
                 updateGrandTotal();
             }
 
-            function setupPpnCalculation(mrGroup) {
-                const ppnInputs = mrGroup.querySelectorAll('.ppn-persen-input');
-                ppnInputs.forEach(input => {
-                    input.addEventListener('input', function() {
-                        // Allow only numbers, comma, and dot
-                        let value = this.value.replace(/[^\d,.]/g, '');
-                        
-                        // Ensure only one decimal separator
-                        const commaCount = (value.match(/,/g) || []).length;
-                        const dotCount = (value.match(/\./g) || []).length;
-                        
-                        if (commaCount > 1 || dotCount > 1) {
-                            // Keep only the first decimal separator
-                            const firstComma = value.indexOf(',');
-                            const firstDot = value.indexOf('.');
-                            
-                            if (firstComma !== -1 && firstDot !== -1) {
-                                // Both comma and dot exist, keep the first one
-                                if (firstComma < firstDot) {
-                                    value = value.replace(/\./g, '');
-                                } else {
-                                    value = value.replace(/,/g, '');
-                                }
-                            } else if (commaCount > 1) {
-                                // Multiple commas, keep only first
-                                const parts = value.split(',');
-                                value = parts[0] + ',' + parts.slice(1).join('');
-                            } else if (dotCount > 1) {
-                                // Multiple dots, keep only first
-                                const parts = value.split('.');
-                                value = parts[0] + '.' + parts.slice(1).join('');
-                            }
-                        }
-                        
-                        this.value = value;
-                        
-                        // Convert to number for calculation
-                        const numericValue = parseFloat(value.replace(',', '.')) || 0;
-                        
-                        // Validate range (0-100)
-                        if (numericValue > 100) {
-                            this.value = '100';
-                        }
-                        
-                        const persen = parseFloat(this.value.replace(',', '.')) || 0;
-                        const row = this.closest('.material-row');
-                        const subTotalInput = row.querySelector('.sub-total-input');
-                        
-                        // Hitung total sub total dari item material tambahan yang ada di atas PPN
-                        let totalSubTotal = 0;
-                        const currentRow = this.closest('.material-row');
-                        const allRows = Array.from(mrGroup.querySelectorAll('.material-row'));
-                        const currentIndex = allRows.indexOf(currentRow);
-                        
-                        // Ambil semua row yang ada di atas row PPN saat ini
-                        for (let i = 0; i < currentIndex; i++) {
-                            const materialRow = allRows[i];
-                            const itemInput = materialRow.querySelector('[data-material-field="item"]');
-                            const subTotal = materialRow.querySelector('.sub-total-input');
-                            
-                            // Hanya hitung jika bukan PPN, Diskon, atau Ongkir
-                            if (itemInput && subTotal) {
-                                const itemValue = itemInput.value.trim();
-                                if (itemValue !== 'PPN' && itemValue !== 'Diskon' && itemValue !== 'Ongkir') {
-                                    const val = parseFloat(getAngkaFromRupiah(subTotal.value || '0'));
-                                    if (!isNaN(val)) totalSubTotal += val;
-                                }
-                            }
-                        }
-                        
-                        const ppnAmount = (totalSubTotal * persen) / 100;
-                        
-                        if (subTotalInput) {
-                            if (ppnAmount > 0) {
-                                subTotalInput.value = 'Rp ' + ppnAmount.toLocaleString('id-ID', {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 0
-                                });
-                            } else {
-                                subTotalInput.value = '';
-                            }
-                        }
-                        updateGrandTotal();
-                    });
-                });
-            }
+
 
             function setupDiskonCalculation(mrGroup) {
                 const diskonInputs = mrGroup.querySelectorAll('.diskon-persen-input');
@@ -683,10 +543,10 @@
                             const itemInput = materialRow.querySelector('[data-material-field="item"]');
                             const subTotal = materialRow.querySelector('.sub-total-input');
                             
-                            // Hanya hitung jika bukan PPN, Diskon, atau Ongkir
+                            // Hanya hitung jika bukan Diskon atau Ongkir
                             if (itemInput && subTotal) {
                                 const itemValue = itemInput.value.trim();
-                                if (itemValue !== 'PPN' && itemValue !== 'Diskon' && itemValue !== 'Ongkir') {
+                                if (itemValue !== 'Diskon' && itemValue !== 'Ongkir') {
                                     const val = parseFloat(getAngkaFromRupiah(subTotal.value || '0'));
                                     if (!isNaN(val)) totalSubTotal += val;
                                 }
@@ -779,11 +639,7 @@
                     const mrGroup = e.target.closest('.mr-group');
                     addMaterialRow(mrGroup);
                 }
-                // Tambah baris PPN
-                if (e.target.classList.contains('add-ppn-row')) {
-                    const mrGroup = e.target.closest('.mr-group');
-                    addPpnRow(mrGroup);
-                }
+
                 // Tambah baris Diskon
                 if (e.target.classList.contains('add-diskon-row')) {
                     const mrGroup = e.target.closest('.mr-group');
@@ -807,7 +663,7 @@
             });
 
             mrList.addEventListener('input', function (e) {
-                if (e.target.classList.contains('qty-input')) {
+                if (e.target.classList.contains('qty-input') || e.target.classList.contains('ppn-input')) {
                     const row = e.target.closest('.material-row');
                     if (row) {
                         updateRowTotal(row);
@@ -845,9 +701,8 @@
                 setupRupiahFormatting();
                 setupOngkirFormatting();
                 
-                // Setup PPN dan Diskon calculation untuk MR yang sudah ada
+                // Setup Diskon calculation untuk MR yang sudah ada
                 mrList.querySelectorAll('.mr-group').forEach(mrGroup => {
-                    setupPpnCalculation(mrGroup);
                     setupDiskonCalculation(mrGroup);
                 });
                 
@@ -874,7 +729,7 @@
                         });
                         
                         // Handle persentase input (ensure decimal format)
-                        form.querySelectorAll('.ppn-persen-input, .diskon-persen-input').forEach(function(input) {
+                        form.querySelectorAll('.ppn-input, .ppn-persen-input, .diskon-persen-input').forEach(function(input) {
                             if (input.value) {
                                 // Replace comma with dot and ensure it's a valid number
                                 let value = input.value.replace(',', '.');
