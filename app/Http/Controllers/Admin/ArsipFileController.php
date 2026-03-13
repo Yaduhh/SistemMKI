@@ -8,6 +8,7 @@ use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class ArsipFileController extends Controller
 {
@@ -19,9 +20,20 @@ class ArsipFileController extends Controller
         $arsipFiles = ArsipFile::with(['client', 'creator'])
             ->where('status_deleted', false)
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->get();
 
-        return view('admin.arsip-file.index', compact('arsipFiles'));
+        $groupedFiles = $arsipFiles->groupBy('created_by')->map(function ($userFiles) {
+            return $userFiles->groupBy(function ($file) {
+                return $file->created_at->format('F Y');
+            });
+        });
+
+        $sales = User::where('status_deleted', false)
+            ->where('role', 2)
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.arsip-file.index', compact('groupedFiles', 'sales', 'arsipFiles'));
     }
 
     /**
@@ -42,6 +54,7 @@ class ArsipFileController extends Controller
             'id_client' => 'nullable|exists:clients,id',
             'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,zip,rar|max:10240', // 10MB
             'status' => 'nullable|in:draft,on progress,done',
+            'created_by' => 'nullable|exists:users,id',
         ]);
 
         // Upload file
@@ -56,7 +69,7 @@ class ArsipFileController extends Controller
             'file' => $filePath,
             'status_deleted' => false,
             'status' => $request->status ?? ArsipFile::STATUS_DRAFT,
-            'created_by' => Auth::id(),
+            'created_by' => $request->created_by ?? Auth::id(),
         ]);
 
         // Log activity
