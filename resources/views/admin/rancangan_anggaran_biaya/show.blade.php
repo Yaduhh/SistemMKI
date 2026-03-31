@@ -604,10 +604,10 @@
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                             {{ $item['qty'] ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0)), 0, ',', '.') }}
+                                            Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0), 2, ',', '.') }}
                                         </td>
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0)), 0, ',', '.') }}
+                                            Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0), 2, ',', '.') }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -705,10 +705,10 @@
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
                                             {{ $item['qty'] ?? '-' }}</td>
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0)), 0, ',', '.') }}
+                                            Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0), 2, ',', '.') }}
                                         </td>
                                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-300">
-                                            Rp {{ number_format((float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0)), 0, ',', '.') }}
+                                            Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0), 2, ',', '.') }}
                                         </td>
                                         <td class="px-4 py-3 text-sm text-center">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
@@ -1476,7 +1476,7 @@
                 if ($rancanganAnggaranBiaya->json_section_material_pendukung) {
                     foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $item) {
                         // Hitung semua item tanpa filter status
-                        $totalMaterialPendukung += (float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['total'] ?? 0));
+                        $totalMaterialPendukung += (float) preg_replace('/[^\d.]/', '', $item['total'] ?? 0);
                     }
                 }
 
@@ -1493,7 +1493,7 @@
                                 }
                                 
                                 $itemValue = $material['item'] ?? '';
-                                $subTotal = (float) str_replace('.', '', preg_replace('/[^\d.]/', '', $material['sub_total'] ?? 0));
+                                $subTotal = (float) preg_replace('/[^\d.]/', '', $material['sub_total'] ?? 0);
 
                                 // Jika item adalah Diskon, kurangkan dari total
                                 if (trim($itemValue) === 'Diskon') {
@@ -1515,11 +1515,11 @@
                             foreach ($mrGroup['materials'] as $material) {
                                 // Hanya hitung yang statusnya Disetujui
                                 if (($material['status'] ?? '') === 'Disetujui') {
-                                    $pengeluaranMaterialTambahan += (float) str_replace('.', '', preg_replace(
+                                    $pengeluaranMaterialTambahan += (float) preg_replace(
                                         '/[^\d.]/',
                                         '',
                                         $material['sub_total'] ?? 0,
-                                    ));
+                                    );
                                 }
                             }
                         }
@@ -1535,7 +1535,7 @@
                 $totalPengeluaranPemasangan = 0;
                 if ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan) {
                     foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $item) {
-                        $totalPengeluaranPemasangan += (float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0));
+                        $totalPengeluaranPemasangan += (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
                     }
                 }
 
@@ -1545,7 +1545,7 @@
                     foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
                         // Hanya hitung yang statusnya Disetujui
                         if (($item['status'] ?? '') === 'Disetujui') {
-                            $hargaTukang += (float) str_replace('.', '', preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0));
+                            $hargaTukang += (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
                         }
                     }
                 }
@@ -1558,11 +1558,11 @@
                             foreach ($mrGroup['materials'] as $material) {
                                 // Hanya hitung yang statusnya Disetujui
                                 if (($material['status'] ?? '') === 'Disetujui') {
-                                    $pengeluaranEntertainment += (float) str_replace('.', '', preg_replace(
+                                    $pengeluaranEntertainment += (float) preg_replace(
                                         '/[^\d.]/',
                                         '',
                                         $material['sub_total'] ?? 0,
-                                    ));
+                                    );
                                 }
                             }
                         }
@@ -1577,7 +1577,7 @@
                             foreach ($section['termin'] as $termin) {
                                 // Hanya hitung kredit dari termin yang statusnya Disetujui
                                 if (($termin['status'] ?? '') === 'Disetujui') {
-                                    $pengeluaranKerjaTambah += (float) str_replace('.', '', preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0));
+                                    $pengeluaranKerjaTambah += (float) preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0);
                                 }
                             }
                         }
@@ -1598,26 +1598,26 @@
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Total Material Pendukung:</span>
                         <span class="font-medium text-zinc-900 dark:text-white">
-                            Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}
+                            Rp {{ number_format($totalMaterialPendukung, 2, ',', '.') }}
                         </span>
                 </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Material Pendukung:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
-                            - Rp {{ number_format($pengeluaranMaterialPendukung, 0, ',', '.') }}
+                            - Rp {{ number_format($pengeluaranMaterialPendukung, 2, ',', '.') }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Material Tambahan:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
-                            - Rp {{ number_format($pengeluaranMaterialTambahan, 0, ',', '.') }}
+                            - Rp {{ number_format($pengeluaranMaterialTambahan, 2, ',', '.') }}
                         </span>
                     </div>
                     <div class="border-t border-blue-200 dark:border-blue-700 pt-2 mt-2">
                         <div class="flex justify-between items-center font-semibold">
                             <span class="text-blue-700 dark:text-blue-300">Sisa Anggaran Material:</span>
                             <span class="text-blue-700 dark:text-blue-300 {{ $sisaAnggaranSection1 < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
-                                Rp {{ number_format($sisaAnggaranSection1, 0, ',', '.') }}
+                                Rp {{ number_format($sisaAnggaranSection1, 2, ',', '.') }}
                             </span>
                         </div>
                     </div>
@@ -1631,32 +1631,32 @@
                         <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Total Pengeluaran Pemasangan:</span>
                         <span class="font-medium text-zinc-900 dark:text-white">
-                            Rp {{ number_format($totalPengeluaranPemasangan, 0, ',', '.') }}
+                            Rp {{ number_format($totalPengeluaranPemasangan, 2, ',', '.') }}
                             </span>
                         </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Harga Tukang:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
-                            - Rp {{ number_format($hargaTukang, 0, ',', '.') }}
+                            - Rp {{ number_format($hargaTukang, 2, ',', '.') }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Kerja Tambah:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
-                            - Rp {{ number_format($pengeluaranKerjaTambah, 0, ',', '.') }}
+                            - Rp {{ number_format($pengeluaranKerjaTambah, 2, ',', '.') }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-600 dark:text-zinc-400">Pengeluaran Non Material:</span>
                         <span class="font-medium text-red-600 dark:text-red-400">
-                            - Rp {{ number_format($pengeluaranEntertainment, 0, ',', '.') }}
+                            - Rp {{ number_format($pengeluaranEntertainment, 2, ',', '.') }}
                         </span>
                     </div>
                     <div class="border-t border-green-200 dark:border-green-700 pt-2 mt-2">
                         <div class="flex justify-between items-center font-semibold">
                             <span class="text-green-700 dark:text-green-300">Sisa Anggaran Pemasangan:</span>
                             <span class="text-green-700 dark:text-green-300 {{ $sisaAnggaranSection2 < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
-                                Rp {{ number_format($sisaAnggaranSection2, 0, ',', '.') }}
+                                Rp {{ number_format($sisaAnggaranSection2, 2, ',', '.') }}
                             </span>
                         </div>
                     </div>
@@ -1667,7 +1667,7 @@
             <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
                 <div class="text-center">
                     <div class="text-3xl font-bold text-red-600 dark:text-red-400">
-                        Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}
+                        Rp {{ number_format($totalSisaAnggaran, 2, ',', '.') }}
                     </div>
                     <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
                         Total Sisa Anggaran

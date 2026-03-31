@@ -232,7 +232,7 @@
                         @endphp
                         @foreach ($section['products'] as $i => $product)
                             @php
-                                $totalHarga = (float) preg_replace('/[^\d]/', '', $product['total_harga'] ?? 0);
+                                $totalHarga = (float) preg_replace('/[^\d.]/', '', $product['total_harga'] ?? 0);
                                 $jumlahPintu = (int) ($section['jumlah'] ?? 1);
                                 $totalHargaDenganJumlah = $totalHarga * $jumlahPintu;
                                 $subtotalSection += $totalHargaDenganJumlah;
@@ -266,7 +266,7 @@
                                 <td class="text-center">{{ $product['warna'] ?? '-' }}</td>
                                 <td class="text-right">
                                     Rp
-                                    {{ number_format((float) preg_replace('/[^\d]/', '', $product['harga'] ?? 0), 0, ',', '.') }}
+                                    {{ number_format((float) preg_replace('/[^\d.]/', '', $product['harga'] ?? 0), 2, ',', '.') }}
                                 </td>
                                 <td class="text-center">
                                     @if (isset($product['jumlah_individual']) && $product['jumlah_individual'] > 1)
@@ -277,7 +277,7 @@
                                 </td>
                                 <td class="text-right">
                                     Rp
-                                    {{ number_format((float) $totalHargaDenganJumlah, 0, ',', '.') }}
+                                    {{ number_format((float) $totalHargaDenganJumlah, 2, ',', '.') }}
                                 </td>
                             </tr>
                         @endforeach
@@ -290,7 +290,7 @@
                                     <tr>
                                         <td class="table-none" style="width: 10%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($subtotalSection, 0, ',', '.') }}
+                                            {{ number_format($subtotalSection, 2, ',', '.') }}
                                         </td>
                                     </tr>
                                 </table>
@@ -311,7 +311,7 @@
                             <tr>
                                 <td class="table-none" style="width: 10%;">Rp</td>
                                 <td class="table-none" style="width: 50%; text-align: right;">
-                                    {{ number_format($totalPintuPenawaran, 0, ',', '.') }}
+                                    {{ number_format($totalPintuPenawaran, 2, ',', '.') }}
                                 </td>
                             </tr>
                         </table>
@@ -397,7 +397,7 @@
                 @endphp
                 @foreach ($rancanganAnggaranBiaya->json_section_material_pendukung as $i => $item)
                     @php
-                        $total = (float) preg_replace('/[^\d]/', '', $item['total'] ?? 0);
+                        $total = (float) preg_replace('/[^\d.]/', '', $item['total'] ?? 0);
                         $totalSectionMaterialPendukung += $total;
                     @endphp
                     <tr>
@@ -407,13 +407,13 @@
                         <td class="text-center">{{ $item['panjang'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
-                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($total, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0), 2, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($total, 2, ',', '.') }}</td>
                     </tr>
                 @endforeach
                 <tr class="highlight">
                     <td colspan="7" class="text-right">TOTAL SECTION MATERIAL PENDUKUNG</td>
-                    <td class="text-right">Rp {{ number_format($totalSectionMaterialPendukung, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($totalSectionMaterialPendukung, 2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>
@@ -439,7 +439,7 @@
                 @endphp
                 @foreach ($rancanganAnggaranBiaya->json_pengeluaran_pemasangan as $i => $item)
                     @php
-                        $totalHarga = (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        $totalHarga = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
                         $totalPemasangan += $totalHarga;
                     @endphp
                     <tr>
@@ -447,13 +447,13 @@
                         <td>{{ $item['item'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
-                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0), 2, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($totalHarga, 2, ',', '.') }}</td>
                     </tr>
                 @endforeach
                 <tr class="highlight">
                     <td colspan="5" class="text-right">TOTAL PENGELUARAN PEMASANGAN</td>
-                    <td class="text-right">Rp {{ number_format($totalPemasangan, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($totalPemasangan, 2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>
@@ -479,7 +479,7 @@
                 @endphp
                 @foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $i => $item)
                     @php
-                        $totalHarga = (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                        $totalHarga = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
                         $totalHargaTukang += $totalHarga;
                     @endphp
                     <tr>
@@ -487,13 +487,13 @@
                         <td>{{ $item['item'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['satuan'] ?? '-' }}</td>
                         <td class="text-center">{{ $item['qty'] ?? '-' }}</td>
-                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d]/', '', $item['harga_satuan'] ?? 0), 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format((float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0), 2, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($totalHarga, 2, ',', '.') }}</td>
                     </tr>
                 @endforeach
                 <tr class="highlight">
                     <td colspan="5" class="text-right">TOTAL HARGA TUKANG</td>
-                    <td class="text-right">Rp {{ number_format($totalHargaTukang, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($totalHargaTukang, 2, ',', '.') }}</td>
                 </tr>
             </tbody>
         </table>
@@ -566,10 +566,10 @@
                         $lastMr = $mrGroup['mr'] ?? '-';
                         $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
                             ? $material['harga_satuan']
-                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $material['harga_satuan'] ?? 0);
                         $subTotal = is_numeric($material['sub_total'] ?? null)
                             ? $material['sub_total']
-                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $material['sub_total'] ?? 0);
                         $itemName = strtolower(trim($material['item'] ?? ''));
                         if ($itemName === 'diskon') {
                             $totalPendukung -= $subTotal;
@@ -606,23 +606,23 @@
                             @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
                                 {{-- kosong --}}
                             @else
-                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                                Rp {{ number_format($hargaSatuan, 2, ',', '.') }}
                             @endif
                         </td>
-                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($subTotal, 2, ',', '.') }}</td>
                     </tr>
                     @php $isFirst = false; @endphp
                     @if ($materialIndex === $materialCount)
                         <tr class="highlightTotal">
                             <td colspan="10" style="text-align:center;">Total: Rp
-                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                                {{ number_format($subtotalMr, 2, ',', '.') }}</td>
                         </tr>
                     @endif
                 @endforeach
             @endforeach
             <tr class="highlight">
                 <td colspan="9" class="text-right">GRAND TOTAL</td>
-                <td class="text-right">Rp {{ number_format($totalPendukung, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($totalPendukung, 2, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
@@ -692,10 +692,10 @@
                         $lastMr = $mrGroup['mr'] ?? '-';
                         $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
                             ? $material['harga_satuan']
-                            : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $material['harga_satuan'] ?? 0);
                         $subTotal = is_numeric($material['sub_total'] ?? null)
                             ? $material['sub_total']
-                            : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $material['sub_total'] ?? 0);
                         $itemName = strtolower(trim($material['item'] ?? ''));
                         if ($itemName === 'diskon') {
                             $totalTambahan -= $subTotal;
@@ -732,16 +732,16 @@
                             @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
                                 {{-- kosong --}}
                             @else
-                                Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                                Rp {{ number_format($hargaSatuan, 2, ',', '.') }}
                             @endif
                         </td>
-                        <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($subTotal, 2, ',', '.') }}</td>
                     </tr>
                     @php $isFirst = false; @endphp
                     @if ($materialIndex === $materialCount)
                         <tr class="highlightTotal">
                             <td colspan="10" style="text-align:center;">Total: Rp
-                                {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                                {{ number_format($subtotalMr, 2, ',', '.') }}</td>
                         </tr>
                     @endif
                     @endforeach
@@ -753,7 +753,7 @@
             @endif
             <tr class="highlight">
                 <td colspan="9" class="text-right">GRAND TOTAL</td>
-                <td class="text-right">Rp {{ number_format($totalTambahan, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($totalTambahan, 2, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
@@ -848,10 +848,10 @@
                             $lastMr = $mrGroup['mr'] ?? '';
                             $hargaSatuan = is_numeric($material['harga_satuan'] ?? null)
                                 ? $material['harga_satuan']
-                                : (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                                : (float) preg_replace('/[^\d.]/', '', $material['harga_satuan'] ?? 0);
                             $subTotal = is_numeric($material['sub_total'] ?? null)
                                 ? $material['sub_total']
-                                : (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                                : (float) preg_replace('/[^\d.]/', '', $material['sub_total'] ?? 0);
                             $itemName = strtolower(trim($material['item'] ?? ''));
                             if ($itemName === 'diskon') {
                                 $totalEntertaiment -= $subTotal;
@@ -887,16 +887,16 @@
                                 @if (in_array($itemName, ['ppn', 'diskon', 'ongkir']))
                                     {{-- kosong --}}
                                 @else
-                                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
+                                    Rp {{ number_format($hargaSatuan, 2, ',', '.') }}
                                 @endif
                             </td>
-                            <td class="text-right">Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
+                            <td class="text-right">Rp {{ number_format($subTotal, 2, ',', '.') }}</td>
                         </tr>
                         @php $isFirst = false; @endphp
                         @if ($materialIndex === $materialCount)
                             <tr class="highlightTotal">
                                 <td colspan="10" style="text-align:center;">Total: Rp
-                                    {{ number_format($subtotalMr, 0, ',', '.') }}</td>
+                                    {{ number_format($subtotalMr, 2, ',', '.') }}</td>
                             </tr>
                         @endif
                     @endforeach
@@ -908,7 +908,7 @@
             @endif
             <tr class="highlight">
                 <td colspan="9" class="text-right">GRAND TOTAL</td>
-                <td class="text-right">Rp {{ number_format($totalEntertaiment, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($totalEntertaiment, 2, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
@@ -945,7 +945,7 @@
 
                 $debet = is_numeric($section['debet'] ?? null)
                     ? $section['debet']
-                    : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
+                    : (float) preg_replace('/[^\d.]/', '', $section['debet'] ?? 0);
                 $rowspan = count($approvedTermins);
             @endphp
             <table>
@@ -985,7 +985,7 @@
                                                 Rp
                                             </td>
                                             <td class="table-none" style="width: 50%; text-align: right;">
-                                                {{ number_format($debet, 0, ',', '.') }}
+                                                {{ number_format($debet, 2, ',', '.') }}
                                             </td>
                                         </tr>
                                     </table>
@@ -999,7 +999,7 @@
                                     <tr>
                                         <td class="table-none" style="width: 50%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($kredit, 0, ',', '.') }}</td>
+                                            {{ number_format($kredit, 2, ',', '.') }}</td>
                                     </tr>
                                 </table>
                             </td>
@@ -1008,7 +1008,7 @@
                                     <tr>
                                         <td class="table-none" style="width: 50%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($sisa, 0, ',', '.') }}</td>
+                                            {{ number_format($sisa, 2, ',', '.') }}</td>
                                     </tr>
                                 </table>
                             </td>
@@ -1021,7 +1021,7 @@
                                 <tr>
                                     <td class="table-none" style="width: 50%;">Rp</td>
                                     <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($subtotalTukang, 0, ',', '.') }}</td>
+                                        {{ number_format($subtotalTukang, 2, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -1081,7 +1081,7 @@
 
                 $debet = is_numeric($section['debet'] ?? null)
                     ? $section['debet']
-                    : (int) preg_replace('/[^0-9]/', '', $section['debet'] ?? 0);
+                    : (float) preg_replace('/[^\d.]/', '', $section['debet'] ?? 0);
                 $rowspan = count($approvedTermins);
             @endphp
             <table>
@@ -1102,10 +1102,10 @@
                         @php
                             $kredit = is_numeric($termin['kredit'] ?? null)
                                 ? $termin['kredit']
-                                : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                                : (float) preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0);
                             $sisa = is_numeric($termin['sisa'] ?? null)
                                 ? $termin['sisa']
-                                : (int) preg_replace('/[^0-9]/', '', $termin['sisa'] ?? 0);
+                                : (float) preg_replace('/[^\d.]/', '', $termin['sisa'] ?? 0);
                             $subtotalKerjaTambah += $kredit;
                         @endphp
                         <tr>
@@ -1119,7 +1119,7 @@
                                         <tr>
                                             <td class="table-none" style="width: 50%;">Rp</td>
                                             <td class="table-none" style="width: 50%; text-align: right;">
-                                                {{ number_format($debet, 0, ',', '.') }}</td>
+                                                {{ number_format($debet, 2, ',', '.') }}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -1132,7 +1132,7 @@
                                     <tr>
                                         <td class="table-none" style="width: 50%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($kredit, 0, ',', '.') }}</td>
+                                            {{ number_format($kredit, 2, ',', '.') }}</td>
                                     </tr>
                                 </table>
                             </td>
@@ -1141,7 +1141,7 @@
                                     <tr>
                                         <td class="table-none" style="width: 50%;">Rp</td>
                                         <td class="table-none" style="width: 50%; text-align: right;">
-                                            {{ number_format($sisa, 0, ',', '.') }}</td>
+                                            {{ number_format($sisa, 2, ',', '.') }}</td>
                                     </tr>
                                 </table>
                             </td>
@@ -1154,7 +1154,7 @@
                                 <tr>
                                     <td class="table-none" style="width: 50%;">Rp</td>
                                     <td class="table-none" style="width: 50%; text-align: right;">
-                                        {{ number_format($subtotalKerjaTambah, 0, ',', '.') }}</td>
+                                        {{ number_format($subtotalKerjaTambah, 2, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -1195,7 +1195,7 @@
                     if (($termin['status'] ?? '') === 'Disetujui') {
                         $kredit = is_numeric($termin['kredit'] ?? null)
                             ? $termin['kredit']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0);
                         $totalTukangDebet += $kredit;
                     }
                 }
@@ -1211,7 +1211,7 @@
                     if (($termin['status'] ?? '') === 'Disetujui') {
                         $kredit = is_numeric($termin['kredit'] ?? null)
                             ? $termin['kredit']
-                            : (int) preg_replace('/[^0-9]/', '', $termin['kredit'] ?? 0);
+                            : (float) preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0);
                         $totalKerjaTambahDebet += $kredit;
                     }
                 }
@@ -1232,7 +1232,7 @@
             foreach ($rancanganAnggaranBiaya->json_pengajuan_harga_tukang as $item) {
                 // Hanya hitung yang statusnya Disetujui
                 if (($item['status'] ?? '') === 'Disetujui') {
-                    $hargaTukang += (float) preg_replace('/[^\d]/', '', $item['total_harga'] ?? 0);
+                    $hargaTukang += (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
                 }
             }
         }
@@ -1245,7 +1245,7 @@
                     foreach ($section['termin'] as $termin) {
                         // Hanya hitung kredit dari termin yang statusnya Disetujui
                         if (($termin['status'] ?? '') === 'Disetujui') {
-                            $pengeluaranKerjaTambah += (float) preg_replace('/[^\d]/', '', $termin['kredit'] ?? 0);
+                            $pengeluaranKerjaTambah += (float) preg_replace('/[^\d.]/', '', $termin['kredit'] ?? 0);
                         }
                     }
                 }
@@ -1279,7 +1279,7 @@
             $materialPemasangan + $materialTambahan + $biayaEntertaint + $biayaTukang + $kerjaTambah;
         $sisaPemasanganFix = $nilaiKontrakPemasanganFix - $totalPengeluaranPemasanganFix;
     @endphp
-    <div class="section-title grand-total">SISA ANGGARAN : Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}</div>
+    <div class="section-title grand-total">SISA ANGGARAN : Rp {{ number_format($totalSisaAnggaran, 2, ',', '.') }}</div>
 
     {{-- REKAPITULASI KONTRAK (MATERIAL + PEMASANGAN & PEMASANGAN SAJA) --}}
     <div style="page-break-before: always;"></div>
@@ -1322,19 +1322,19 @@
             <tr class="no-border">
                 <td class="no-border" style="width: 20%;">Harga Material</td>
                 <td class="no-border" style="width: 10px;">:</td>
-                <td class="no-border" style="width: 70%;">Rp {{ number_format($totalUtama, 0, ',', '.') }}</td>
+                <td class="no-border" style="width: 70%;">Rp {{ number_format($totalUtama, 2, ',', '.') }}</td>
             </tr>
             <tr class="no-border">
                 <td class="no-border" style="width: 20%;">Harga Pemasangan</td>
                 <td class="no-border" style="width: 10px;">:</td>
                 <td class="no-border" style="width: 70%;">Rp
-                    {{ number_format($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0, 0, ',', '.') }}</td>
+                    {{ number_format($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0, 2, ',', '.') }}</td>
             </tr>
             <tr class="no-border">
                 <td class="no-border" style="width: 20%;">Total Nilai Kontrak</td>
                 <td class="no-border" style="width: 10px;">:</td>
                 <td class="no-border" style="width: 70%;">Rp
-                    {{ number_format($totalUtama + ($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0), 0, ',', '.') }}
+                    {{ number_format($totalUtama + ($rancanganAnggaranBiaya->pemasangan->grand_total ?? 0), 2, ',', '.') }}
                 </td>
             </tr>
         </table>
@@ -1360,24 +1360,24 @@
             <tr>
                 <td class="no-border" style="width:60%;">Total Material Pendukung</td>
                 <td style="width:2%" class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($totalMaterialPendukung, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($totalMaterialPendukung, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Pengeluaran Material Pendukung</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialPendukung, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialPendukung, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Pengeluaran Material Tambahan</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialTambahan, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranMaterialTambahan, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border" style="padding: 6px;"></td>
             </tr>
             <tr style="font-weight:bold;">
                 <td colspan="2" class="no-border">Sisa Anggaran Material</td>
-                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection1, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection1, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
@@ -1394,29 +1394,29 @@
             <tr>
                 <td class="no-border" style="width:60%;">Total Pengeluaran Pemasangan</td>
                 <td style="width:2%" class="no-border">:</td>
-                <td class="text-right no-border">Rp {{ number_format($totalPengeluaranPemasangan, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($totalPengeluaranPemasangan, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Harga Tukang</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">- Rp {{ number_format($hargaTukang, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($hargaTukang, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Pengeluaran Kerja Tambah</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">- Rp {{ number_format($pengeluaranKerjaTambah, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranKerjaTambah, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border">Pengeluaran Non Material</td>
                 <td class="no-border">:</td>
-                <td class="text-right no-border">- Rp {{ number_format($pengeluaranEntertainment, 0, ',', '.') }}</td>
+                <td class="text-right no-border">- Rp {{ number_format($pengeluaranEntertainment, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border" style="padding: 6px;"></td>
             </tr>
             <tr style="font-weight:bold;">
                 <td colspan="2" class="no-border">Sisa Anggaran Pemasangan</td>
-                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection2, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($sisaAnggaranSection2, 2, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="no-border" style="padding: 12px;"></td>
@@ -1424,7 +1424,7 @@
             </tr>
             <tr style="font-weight:bold; background-color: #f2f2f2;">
                 <td colspan="2" class="no-border">TOTAL SISA ANGGARAN</td>
-                <td class="text-right no-border">Rp {{ number_format($totalSisaAnggaran, 0, ',', '.') }}</td>
+                <td class="text-right no-border">Rp {{ number_format($totalSisaAnggaran, 2, ',', '.') }}</td>
             </tr>
         </table>
     </div>

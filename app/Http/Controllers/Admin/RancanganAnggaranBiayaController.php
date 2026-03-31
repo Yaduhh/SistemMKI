@@ -9,6 +9,7 @@ use App\Models\Penawaran;
 use App\Models\Pemasangan;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class RancanganAnggaranBiayaController extends Controller
 {
@@ -18,16 +19,20 @@ class RancanganAnggaranBiayaController extends Controller
     private function convertToNumeric($value)
     {
         if (is_numeric($value)) {
-            return $value;
+            return (float) $value;
         }
         
         if (is_string($value)) {
-            // Remove all non-numeric characters except decimal point
-            $numericValue = preg_replace('/[^\d.]/', '', $value);
-            return is_numeric($numericValue) ? $numericValue : 0;
+            // Format Indonesia: hapus titik (ribuan), ubah koma (desimal) jadi titik
+            $cleanValue = str_replace('.', '', $value);
+            $cleanValue = str_replace(',', '.', $cleanValue);
+            
+            // Hanya sisakan angka dan titik desimal
+            $numericValue = preg_replace('/[^\d.]/', '', $cleanValue);
+            return is_numeric($numericValue) ? (float) $numericValue : 0.0;
         }
         
-        return 0;
+        return 0.0;
     }
 
     /**
@@ -836,10 +841,10 @@ class RancanganAnggaranBiayaController extends Controller
             // Clean numeric values
             foreach ($pemasanganData as &$item) {
                 if (isset($item['harga_satuan'])) {
-                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                    $item['harga_satuan'] = $this->convertToNumeric($item['harga_satuan']);
                 }
                 if (isset($item['total_harga'])) {
-                    $item['total_harga'] = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
+                    $item['total_harga'] = $this->convertToNumeric($item['total_harga']);
                 }
             }
 
@@ -910,10 +915,10 @@ class RancanganAnggaranBiayaController extends Controller
             // Clean numeric values
             foreach ($hargaTukangData as &$item) {
                 if (isset($item['harga_satuan'])) {
-                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                    $item['harga_satuan'] = $this->convertToNumeric($item['harga_satuan']);
                 }
                 if (isset($item['total_harga'])) {
-                    $item['total_harga'] = (float) preg_replace('/[^\d.]/', '', $item['total_harga'] ?? 0);
+                    $item['total_harga'] = $this->convertToNumeric($item['total_harga']);
                 }
             }
 
@@ -984,13 +989,13 @@ class RancanganAnggaranBiayaController extends Controller
             // Clean numeric values and calculate total
             foreach ($sectionMaterialData as &$item) {
                 if (isset($item['harga_satuan'])) {
-                    $item['harga_satuan'] = (float) preg_replace('/[^\d.]/', '', $item['harga_satuan'] ?? 0);
+                    $item['harga_satuan'] = $this->convertToNumeric($item['harga_satuan']);
                 }
                 if (isset($item['qty'])) {
                     $item['qty'] = (float) ($item['qty'] ?? 0);
                 }
-                // Calculate total (bulat, tanpa desimal)
-                $item['total'] = round(($item['qty'] ?? 0) * ($item['harga_satuan'] ?? 0));
+                // Calculate total (dengan desimal)
+                $item['total'] = ($item['qty'] ?? 0) * ($item['harga_satuan'] ?? 0);
             }
 
             \Log::info('Update Section Material Pendukung - Processed data:', [
@@ -1041,10 +1046,10 @@ class RancanganAnggaranBiayaController extends Controller
             if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                 foreach ($mrGroup['materials'] as &$material) {
                     if (isset($material['harga_satuan'])) {
-                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                        $material['harga_satuan'] = $this->convertToNumeric($material['harga_satuan']);
                     }
                     if (isset($material['sub_total'])) {
-                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                        $material['sub_total'] = $this->convertToNumeric($material['sub_total']);
                     }
                     // Preserve status, default to 'Pengajuan' if not set
                     if (!isset($material['status']) || empty($material['status'])) {
@@ -1087,10 +1092,10 @@ class RancanganAnggaranBiayaController extends Controller
             if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                 foreach ($mrGroup['materials'] as &$material) {
                     if (isset($material['harga_satuan'])) {
-                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                        $material['harga_satuan'] = $this->convertToNumeric($material['harga_satuan']);
                     }
                     if (isset($material['sub_total'])) {
-                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                        $material['sub_total'] = $this->convertToNumeric($material['sub_total']);
                     }
                 }
             }
@@ -1129,10 +1134,10 @@ class RancanganAnggaranBiayaController extends Controller
             if (isset($mrGroup['materials']) && is_array($mrGroup['materials'])) {
                 foreach ($mrGroup['materials'] as &$material) {
                     if (isset($material['harga_satuan'])) {
-                        $material['harga_satuan'] = (int) preg_replace('/[^0-9]/', '', $material['harga_satuan'] ?? 0);
+                        $material['harga_satuan'] = $this->convertToNumeric($material['harga_satuan']);
                     }
                     if (isset($material['sub_total'])) {
-                        $material['sub_total'] = (int) preg_replace('/[^0-9]/', '', $material['sub_total'] ?? 0);
+                        $material['sub_total'] = $this->convertToNumeric($material['sub_total']);
                     }
                 }
             }
