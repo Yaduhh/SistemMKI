@@ -218,29 +218,32 @@
                             </svg>
                             Ringkasan Keuangan
                         </h2>
+                        @php
+                            $total = (float) ($pemasangan->total ?? 0);
+                            $diskon = (float) ($pemasangan->diskon ?? 0);
+                            $diskonNominal = ($total * $diskon) / 100;
+                            $setelahDiskon = $total - $diskonNominal;
+                            $ppn = (float) ($pemasangan->ppn ?? 0);
+                            $ppnNominal = round($setelahDiskon * ($ppn / 100));
+                            $totalFinal = (float) ($pemasangan->grand_total ?? ($setelahDiskon + $ppnNominal));
+                        @endphp
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Total:</span>
                                 <span class="font-medium text-gray-900 dark:text-white">Rp
-                                    {{ number_format((float) ($pemasangan->total ?? 0), 0, ',', '.') }}</span>
+                                    {{ number_format($total, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Diskon
-                                    ({{ $pemasangan->diskon ?? 0 }}%):</span>
+                                    ({{ $diskon }}%):</span>
                                 <span class="font-medium text-gray-900 dark:text-white">Rp
-                                    {{ number_format(((float) ($pemasangan->total ?? 0) * (float) ($pemasangan->diskon ?? 0)) / 100, 0, ',', '.') }}</span>
+                                    {{ number_format($diskonNominal, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">Grand Total (Setelah Diskon):</span>
                                 <span class="font-medium text-gray-900 dark:text-white">Rp
-                                    {{ number_format((float) ($pemasangan->grand_total ?? 0), 0, ',', '.') }}</span>
+                                    {{ number_format($setelahDiskon, 0, ',', '.') }}</span>
                             </div>
-                            @php
-                                $ppn = $pemasangan->ppn ?? 0;
-                                $grandTotal = (float) ($pemasangan->grand_total ?? 0);
-                                $ppnNominal = $grandTotal * ($ppn / 100);
-                                $totalFinal = $grandTotal + $ppnNominal;
-                            @endphp
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-400">PPN ({{ $ppn }}%):</span>
                                 <span class="font-medium text-gray-900 dark:text-white">Rp

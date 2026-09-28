@@ -217,9 +217,14 @@
             if (sections.length === 0) {
                 sections = [{ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] }];
             }
+            @php
+                $dbTotal = (float) ($pemasangan->total ?? 0);
+                $dbDiskon = (float) ($pemasangan->diskon ?? 0);
+                $dbSetelahDiskon = $dbTotal - ($dbTotal * ($dbDiskon / 100));
+            @endphp
             return {
                 sections: sections,
-                grandTotalManual: {{ $pemasangan->grand_total ?? 0 }},
+                grandTotalManual: {{ $dbSetelahDiskon > 0 ? $dbSetelahDiskon : ($pemasangan->grand_total ?? 0) }},
                 ppn: {{ $pemasangan->ppn ?? 11 }},
                 addSection() {
                     this.sections.push({ sub_judul: '', items: [ { item: '', satuan: '', qty: 0, harga_satuan: 0, total_harga: 0 } ] });
@@ -234,7 +239,7 @@
                     this.sections.splice(sIdx, 1);
                 },
                 formatRupiah(val) {
-                    val = Number(val) || 0;
+                    val = Math.round(Number(val) || 0);
                     return 'Rp ' + val.toLocaleString('id-ID');
                 },
                 parseRupiah(str) {
@@ -249,7 +254,7 @@
                             total += subtotal;
                         });
                     });
-                    return total;
+                    return Math.round(total);
                 },
                 hitungDiskon() {
                     let total = this.totalHarga();
@@ -260,13 +265,13 @@
                 },
                 ppnNominal() {
                     // PPN dihitung dari Grand Total (setelah diskon)
-                    let grandTotal = this.grandTotalManual || 0;
+                    let grandTotal = Number(this.grandTotalManual) || 0;
                     let ppnValue = Number(this.ppn) || 0;
-                    return grandTotal * (ppnValue / 100);
+                    return Math.round(grandTotal * (ppnValue / 100));
                 },
                 get grandTotalFinal() {
                     // Total Final = Grand Total (setelah diskon) + PPN
-                    return this.grandTotalManual + this.ppnNominal();
+                    return (Number(this.grandTotalManual) || 0) + this.ppnNominal();
                 }
             }
         }

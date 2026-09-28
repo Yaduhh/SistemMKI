@@ -3,16 +3,177 @@
 
 <head>
     @include('partials.head')
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem('sidebar_collapsed') === 'true') {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <style>
+        @media (min-width: 1024px) {
+            /* Smooth transitions for sidebar container */
+            [data-flux-sidebar] {
+                transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), padding 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                will-change: width, padding;
+            }
+
+            /* Collapsed sidebar container */
+            html.sidebar-collapsed [data-flux-sidebar] {
+                width: 4.5rem !important; /* 72px */
+                min-width: 4.5rem !important;
+                max-width: 4.5rem !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                overflow-x: hidden !important;
+            }
+
+            /* Header row layout when collapsed - ALWAYS visible and centered */
+            html.sidebar-collapsed .sidebar-header-row {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.5rem !important;
+                padding-top: 0.25rem !important;
+                padding-bottom: 0.5rem !important;
+                margin-bottom: 0.5rem !important;
+                width: 100% !important;
+            }
+
+            html.sidebar-collapsed .sidebar-logo-link {
+                display: flex !important;
+                justify-content: center !important;
+                margin: 0 auto !important;
+            }
+
+            /* Hide logo text in collapsed mode */
+            html.sidebar-collapsed .sidebar-logo-link > div:not(:first-child) {
+                display: none !important;
+            }
+
+            /* Center logo icon in collapsed mode */
+            html.sidebar-collapsed .sidebar-logo-link > div:first-child {
+                display: flex !important;
+                margin: 0 auto !important;
+            }
+
+            /* Toggle button in collapsed mode - ALWAYS visible */
+            html.sidebar-collapsed .sidebar-toggle-btn {
+                display: flex !important;
+                margin: 0 auto !important;
+            }
+
+            /* Toggle button icon switch */
+            html.sidebar-collapsed .sidebar-icon-expanded {
+                display: none !important;
+            }
+
+            html.sidebar-collapsed .sidebar-icon-collapsed {
+                display: block !important;
+            }
+
+            /* Hide group headings in collapsed mode */
+            html.sidebar-collapsed [data-flux-sidebar] .flux-group-heading,
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist-group] > .flux-group-heading,
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist-group] > div:first-child:has(> .text-xs),
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist] .px-1.py-2,
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist] .px-3.py-2 {
+                display: none !important;
+            }
+
+            /* Turn mt-10 on groups into subtle dividers */
+            html.sidebar-collapsed [data-flux-sidebar] .mt-10 {
+                margin-top: 0.625rem !important;
+                padding-top: 0.5rem !important;
+                border-top: 1px solid rgba(228, 228, 231, 0.6) !important;
+            }
+
+            html.dark.sidebar-collapsed [data-flux-sidebar] .mt-10 {
+                border-top-color: rgba(255, 255, 255, 0.08) !important;
+            }
+
+            /* Expandable groups in collapsed mode */
+            html.sidebar-collapsed [data-flux-sidebar] ui-disclosure > button {
+                display: none !important;
+            }
+
+            html.sidebar-collapsed [data-flux-sidebar] ui-disclosure > div {
+                padding-inline-start: 0 !important;
+                padding-left: 0 !important;
+                display: block !important;
+            }
+
+            html.sidebar-collapsed [data-flux-sidebar] ui-disclosure > div > div.absolute {
+                display: none !important;
+            }
+
+            /* Center nav items and hide text */
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist-item] {
+                justify-content: center !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                width: 100% !important;
+                gap: 0 !important;
+            }
+
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist-item] [data-content] {
+                display: none !important;
+            }
+
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-navlist-item] > :not(:first-child) {
+                display: none !important;
+            }
+
+            /* Center profile in collapsed mode */
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-profile] {
+                justify-content: center !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                width: 100% !important;
+            }
+
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-profile] > span,
+            html.sidebar-collapsed [data-flux-sidebar] [data-flux-profile] > div:not(:first-child) {
+                display: none !important;
+            }
+        }
+
+        .sidebar-toggle-btn {
+            cursor: pointer;
+            user-select: none;
+        }
+        .sidebar-toggle-btn:hover {
+            transform: scale(1.05);
+        }
+        .sidebar-toggle-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:sidebar sticky stashable
         class="hidden-scrollbar-webkit border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-        <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+        <div class="sidebar-header-row sticky top-0 z-30 bg-zinc-50 dark:bg-zinc-900 pt-1 pb-2 flex items-center justify-between gap-2 border-b border-zinc-200/80 dark:border-zinc-800 mb-1">
+            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-        <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
-            <x-app-logo />
-        </a>
+            <a href="{{ route('dashboard') }}" class="sidebar-logo-link flex items-center gap-2 overflow-hidden transition-all duration-200" wire:navigate title="Mega Komposit Indonesia">
+                <x-app-logo />
+            </a>
+
+            <!-- Desktop Collapse / Expand Toggle Button -->
+            <button type="button"
+                onclick="toggleSidebar()"
+                id="sidebar-toggle-btn"
+                class="sidebar-toggle-btn hidden lg:flex items-center justify-center size-8 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white bg-zinc-200/80 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-all duration-150 cursor-pointer shrink-0 shadow-xs"
+                title="Kecilkan Sidebar (Cmd+B)">
+                <flux:icon.chevron-double-left class="size-4 sidebar-icon-expanded" />
+                <flux:icon.chevron-double-right class="size-4 sidebar-icon-collapsed hidden" />
+            </button>
+        </div>
 
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Platform')" class="grid">
@@ -163,7 +324,7 @@
 
         <flux:navlist variant="outline">
             <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
+                target="_blank" title="{{ __('Documentation') }}">
                 {{ __('Documentation') }}
             </flux:navlist.item>
         </flux:navlist>
@@ -171,7 +332,7 @@
         <!-- Desktop User Menu -->
         <flux:dropdown position="bottom" align="start">
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
-                icon-trailing="chevrons-up-down" />
+                icon-trailing="chevrons-up-down" :title="auth()->user()->name" />
 
             <flux:menu class="w-[220px]">
                 <flux:menu.radio.group>
@@ -396,6 +557,63 @@
             capture: true
         });
 
+        // Sidebar minimize/collapse state management
+        window.toggleSidebar = function() {
+            const html = document.documentElement;
+            const isCollapsed = html.classList.toggle('sidebar-collapsed');
+            try {
+                localStorage.setItem('sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            } catch (e) {}
+            
+            const toggleBtn = document.querySelector('.sidebar-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.setAttribute('title', isCollapsed ? 'Buka Sidebar (Cmd+B)' : 'Kecilkan Sidebar (Cmd+B)');
+            }
+            
+            window.dispatchEvent(new CustomEvent('sidebar-toggled', { detail: { collapsed: isCollapsed } }));
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 230);
+        };
+
+        function syncSidebarState() {
+            try {
+                const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+                if (isCollapsed) {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                } else {
+                    document.documentElement.classList.remove('sidebar-collapsed');
+                }
+                const toggleBtn = document.querySelector('.sidebar-toggle-btn');
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('title', isCollapsed ? 'Buka Sidebar (Cmd+B)' : 'Kecilkan Sidebar (Cmd+B)');
+                }
+            } catch (e) {}
+            updateNavlistTitles();
+        }
+
+        function updateNavlistTitles() {
+            document.querySelectorAll('[data-flux-sidebar] [data-flux-navlist-item]').forEach(item => {
+                if (!item.hasAttribute('title')) {
+                    const content = item.querySelector('[data-content]');
+                    if (content && content.textContent.trim()) {
+                        item.setAttribute('title', content.textContent.trim());
+                    }
+                }
+            });
+        }
+
+        // Keyboard shortcut: Cmd+B or Ctrl+B to toggle sidebar
+        document.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+                const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+                if (activeTag !== 'input' && activeTag !== 'textarea') {
+                    e.preventDefault();
+                    window.toggleSidebar();
+                }
+            }
+        });
+
         // Intercept BEFORE Livewire navigation
         document.addEventListener('livewire:before-navigate', function() {
             saveSidebarScroll();
@@ -403,6 +621,8 @@
 
         // Restore IMMEDIATELY after navigation - multiple quick attempts
         document.addEventListener('livewire:navigated', function() {
+            syncSidebarState();
+
             // Restore immediately (0ms)
             restoreSidebarScroll(true);
 
@@ -453,6 +673,7 @@
         function tryInitialRestore() {
             if (hasRestored) return;
             hasRestored = true;
+            syncSidebarState();
             setTimeout(() => restoreSidebarScroll(false), 200);
         }
 

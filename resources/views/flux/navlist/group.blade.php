@@ -32,8 +32,8 @@
 
 <?php elseif ($heading): ?>
 
-<div {{ $attributes->class('block space-y-[2px]') }}>
-    <div class="px-1 py-2">
+<div {{ $attributes->class('block space-y-[2px]') }} data-flux-navlist-group>
+    <div class="px-1 py-2 flux-group-heading">
         <div class="text-xs leading-none text-zinc-400">{{ $heading }}</div>
     </div>
 
