@@ -6,6 +6,7 @@ use App\Livewire\Admin\CreateUser;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Tests\TestCase;
 
 class CreateUserTest extends TestCase
 {
@@ -26,7 +27,7 @@ class CreateUserTest extends TestCase
         $this->actingAs($sales);
 
         $response = $this->get(route('admin.akun.create'));
-        $response->assertStatus(403);
+        $response->assertRedirect(route('dashboard'));
     }
 
     public function test_admin_can_create_user()
